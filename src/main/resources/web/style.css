@@ -1,0 +1,10 @@
+.appversion {float:right; color:#EEEEEE; font-size:small; margin-right:4px;} 
+.appicon {padding:8px;height:64;width:64;} 
+.apptitlecell {text-align: left; padding:4px; background-color: #3D3D3E;color: #EEEEEE;} 
+.appfilelistcell {text-align:left;}
+.appcell {border: 0} 
+.applistitem {border: 1px solid #3D3D3E;background-color:#EBE2FD;margin-top: 10px; border-collapse: collapse;}
+
+.outerlist {border: 1px solid #ffffff;background-color: #ffffff;}
+
+.filelist {background-color: #F3F3F3;border-collapse: collapse;width: 100%; margin: 15px 0;}
