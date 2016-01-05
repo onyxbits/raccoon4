@@ -94,7 +94,7 @@ public class LoginLogic extends WizardBuilder {
 				status.setText(Messages.getString("LoginLogic.badcredentials"));
 				return;
 			}
-			if (err.getMessage().matches("rowser")) {
+			if (err.getMessage().startsWith("Error=NeedsBrowser")) {
 				status.setText(Messages.getString("LoginLogic.oauthonly"));
 				return;
 			}
