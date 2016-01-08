@@ -52,6 +52,9 @@ class ListItemBuilder extends AbstractPanelBuilder implements ActionListener {
 	public ListItemBuilder(AndroidApp androidApp, BufferedImage image) {
 		this.androidApp = androidApp;
 		this.image = image;
+		if (image == null) {
+			this.image = new BufferedImage(48, 48, BufferedImage.TYPE_INT_ARGB);
+		}
 	}
 
 	/**
