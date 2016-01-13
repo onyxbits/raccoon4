@@ -184,8 +184,8 @@ public class InstallWorker implements TransferWorker, ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		try {
 
-			device.exec("monkey -p " + app.getPackageName()
-					+ " -c android.intent.category.LAUNCHER 1");
+			new Thread(new CommandRunner(device, "monkey -p " + app.getPackageName()
+					+ " -c android.intent.category.LAUNCHER 1")).start();
 		}
 		catch (Exception exp) {
 			exp.printStackTrace();
