@@ -18,7 +18,6 @@ package de.onyxbits.raccoon;
 import java.awt.EventQueue;
 import java.sql.SQLException;
 
-
 import de.onyxbits.raccoon.appmgr.DetailsViewBuilder;
 import de.onyxbits.raccoon.appmgr.MyAppsViewBuilder;
 import de.onyxbits.raccoon.db.DatabaseManager;
@@ -70,7 +69,7 @@ public final class Main {
 	 * @throws SQLException
 	 * @throws ClassNotFoundException
 	 */
-	private static void startGui() throws Exception, Exception {
+	private static void startGui() throws Exception {
 		// TBD: Should we really force a LAF? This costs us a good 100 ms startup
 		// time and some people prefer platform LAF.
 		/*
