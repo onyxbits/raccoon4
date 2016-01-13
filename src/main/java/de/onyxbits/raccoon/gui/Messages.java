@@ -15,19 +15,21 @@
  */
 package de.onyxbits.raccoon.gui;
 
+import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 import de.onyxbits.weave.swing.ActionLocalizer;
 
 public final class Messages {
-	
+
+	private static final Locale locale = Locale.getDefault();
 	public static final String BUNDLE_NAME = Messages.class.getName()
-			.toLowerCase();
+			.toLowerCase(locale);
 
 	private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle
-			.getBundle(BUNDLE_NAME);
-	
+			.getBundle(BUNDLE_NAME, locale);
+
 	private static ActionLocalizer actionLocalizer;
 
 	private Messages() {
@@ -35,17 +37,17 @@ public final class Messages {
 
 	public static String getString(String key) {
 		try {
-			return RESOURCE_BUNDLE.getString(key);
+			return (String) RESOURCE_BUNDLE.getObject(key);
 		}
 		catch (MissingResourceException e) {
 			return '!' + key + '!';
 		}
 	}
-	
+
 	public static ActionLocalizer getLocalizer() {
 		if (actionLocalizer == null) {
 			actionLocalizer = new ActionLocalizer(RESOURCE_BUNDLE, "action");
 		}
 		return actionLocalizer;
-	}	
+	}
 }

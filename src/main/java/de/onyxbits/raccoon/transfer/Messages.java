@@ -15,6 +15,7 @@
  */
 package de.onyxbits.raccoon.transfer;
 
+import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
@@ -22,10 +23,12 @@ import de.onyxbits.weave.swing.ActionLocalizer;
 
 public final class Messages {
 	
-	public static final String BUNDLE_NAME = Messages.class.getName().toLowerCase();
+	private static final Locale locale = Locale.getDefault();
+	public static final String BUNDLE_NAME = Messages.class.getName()
+			.toLowerCase(locale);
 
 	private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle
-			.getBundle(BUNDLE_NAME);
+			.getBundle(BUNDLE_NAME, locale);
 	
 	private static ActionLocalizer actionLocalizer;
 
