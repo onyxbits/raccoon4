@@ -23,7 +23,6 @@ import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
 import javax.swing.JFileChooser;
 import javax.swing.JTextField;
-import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import de.onyxbits.raccoon.gui.Traits;
@@ -49,14 +48,12 @@ public class SaveAction extends AbstractAction {
 
 	private File dir;
 
-	private FileFilter fileFilter;
 	private Globals globals;
 
 	public SaveAction(Globals globals, QrPanel panel, File dir) {
 		this.panel = panel;
 		this.dir = dir;
 		this.globals = globals;
-		this.fileFilter = new ImageFileFilter();
 		putValue(NAME, Messages.getString("action.save"));
 	}
 
@@ -67,6 +64,8 @@ public class SaveAction extends AbstractAction {
 			String fn = MessageFormat.format(
 					Messages.getString("SaveAction.filename"), seq);
 			jfc.setSelectedFile(new File(dir, fn));
+			FileNameExtensionFilter fileFilter = new FileNameExtensionFilter(
+					Messages.getString("SaveAction.types"), "png");
 			jfc.setFileFilter(fileFilter);
 			jfc.setFileFilter(new FileNameExtensionFilter(Messages
 					.getString("SaveAction.filetype"), "png"));
