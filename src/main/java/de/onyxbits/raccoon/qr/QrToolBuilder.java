@@ -18,6 +18,7 @@ package de.onyxbits.raccoon.qr;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.io.File;
 
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
@@ -28,7 +29,6 @@ import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 
 import de.onyxbits.raccoon.gui.TitleStrip;
-import de.onyxbits.raccoon.vfs.Layout;
 import de.onyxbits.weave.swing.AbstractPanelBuilder;
 
 public class QrToolBuilder extends AbstractPanelBuilder implements
@@ -54,9 +54,10 @@ public class QrToolBuilder extends AbstractPanelBuilder implements
 
 		empty = Messages.getString(ID + ".empty");
 
-		output
-				.withActions(new CopyCodeAction(globals, output), null, new SaveAction(
-						globals, output, globals.get(Layout.class).screenshotDir));
+		File tmpDir = new File(System.getProperty("java.io.tmpdir"));
+
+		output.withActions(new CopyCodeAction(globals, output), null,
+				new SaveAction(globals, output, tmpDir));
 		if (input.getText().length() == 0) {
 			output.setContentString(empty);
 		}

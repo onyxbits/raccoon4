@@ -29,7 +29,6 @@ import javax.imageio.ImageIO;
 import de.onyxbits.raccoon.gui.TransferableImage;
 import de.onyxbits.raccoon.transfer.TransferPeerBuilder;
 import de.onyxbits.raccoon.transfer.TransferWorker;
-import de.onyxbits.raccoon.vfs.Layout;
 import de.onyxbits.weave.Globals;
 import de.onyxbits.weave.swing.BrowseAction;
 import de.onyxbits.weave.swing.ImageLoaderService;
@@ -69,7 +68,8 @@ public class ScreenshotWorker implements TransferWorker, ActionListener {
 		}
 		catch (IOException e) {
 		}
-		local = new File(globals.get(Layout.class).screenshotDir, fileName);
+		File tmpDir = new File(System.getProperty("java.io.tmpdir"));
+		local = new File(tmpDir, fileName);
 	}
 
 	@Override

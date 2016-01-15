@@ -52,11 +52,6 @@ public final class Layout {
 	public final File shareDir;
 
 	/**
-	 * Directory for device screenshots
-	 */
-	public final File screenshotDir;
-
-	/**
 	 * Toplevel directory for keeping external scripts and binaries in. May have
 	 * subdirectories.
 	 */
@@ -70,7 +65,6 @@ public final class Layout {
 	 */
 	public Layout(File homeDir) {
 		this.homeDir = homeDir;
-		screenshotDir = new File(homeDir, "screenshots");
 		binDir = new File(homeDir, "bin");
 		shareDir = new File(homeDir, "share");
 		contentDir = new File(homeDir, "content");
@@ -119,7 +113,6 @@ public final class Layout {
 	 */
 	public Layout mkdirs() {
 		homeDir.mkdirs();
-		screenshotDir.mkdir();
 		binDir.mkdir();
 		shareDir.mkdir();
 
