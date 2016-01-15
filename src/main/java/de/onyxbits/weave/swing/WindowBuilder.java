@@ -16,13 +16,14 @@
 package de.onyxbits.weave.swing;
 
 import java.awt.Component;
+import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.Image;
+import java.awt.Toolkit;
 import java.awt.Window;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.ImageIcon;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 
@@ -35,7 +36,7 @@ import de.onyxbits.weave.Lifecycle;
  * @author patrick
  * 
  */
-public class WindowBuilder {
+public final class WindowBuilder {
 
 	private String title;
 	private String[] iconresources;
@@ -125,7 +126,7 @@ public class WindowBuilder {
 	 * 
 	 * @return this reference for chaining.
 	 */
-	public WindowBuilder withNoDecoration() {
+	public WindowBuilder withoutDecoration() {
 		undecorated = true;
 		return this;
 	}
@@ -186,7 +187,7 @@ public class WindowBuilder {
 	public Window build(Globals globals) {
 		Window ret = null;
 		if (owner != null) {
-			JDialog tmp = new JDialog(owner, title);
+			JDialog tmp = new JDialog(owner, title, Dialog.ModalityType.MODELESS);
 			tmp.setUndecorated(undecorated);
 			if (menuBarBuilder != null) {
 				tmp.setJMenuBar(menuBarBuilder.build());
@@ -214,16 +215,20 @@ public class WindowBuilder {
 		if (iconresources != null) {
 
 			List<Image> iconlst = new ArrayList<Image>(iconresources.length);
+			Class<?> clazz = getClass();
+			Toolkit tk = Toolkit.getDefaultToolkit();
 			for (String icon : iconresources) {
-				iconlst.add(new ImageIcon(getClass().getResource(icon), "").getImage());
+				iconlst.add(tk.getImage(clazz.getResource(icon)));
 			}
 			ret.setIconImages(iconlst);
 		}
 
-		ret.pack();
 		if (size != null) {
 			ret.setSize(size);
 			ret.revalidate();
+		}
+		else {
+			ret.pack();
 		}
 
 		ret.setLocationRelativeTo(center);
