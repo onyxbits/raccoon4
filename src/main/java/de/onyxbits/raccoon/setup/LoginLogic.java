@@ -71,6 +71,7 @@ public class LoginLogic extends WizardBuilder {
 	}
 
 	public void onDoInBackground() {
+		err = null;
 		try {
 			PlayProfile pp = globals.get(PlayProfile.class);
 			GooglePlayAPI api = PlayManager.createConnection(pp);
