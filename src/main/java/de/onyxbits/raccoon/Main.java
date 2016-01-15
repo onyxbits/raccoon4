@@ -32,7 +32,6 @@ import de.onyxbits.raccoon.net.ServerManager;
 import de.onyxbits.raccoon.ptools.BridgeManager;
 import de.onyxbits.raccoon.qr.QrToolBuilder;
 import de.onyxbits.raccoon.qr.ShareToolBuilder;
-import de.onyxbits.raccoon.rss.FeedTask;
 import de.onyxbits.raccoon.setup.WizardLifecycle;
 import de.onyxbits.raccoon.transfer.TransferViewBuilder;
 import de.onyxbits.raccoon.vfs.Layout;
@@ -145,7 +144,6 @@ public final class Main {
 		preload = TransferViewBuilder.ID;
 		preload = ManualDownloadBuilder.ID;
 
-		new FeedTask(lifecycle, database).run();
 		new VersionTask(lifecycle).run();
 
 		// Shutdown

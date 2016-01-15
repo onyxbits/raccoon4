@@ -17,6 +17,8 @@ package de.onyxbits.raccoon.gplay;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.MessageFormat;
 import java.util.List;
 
@@ -68,8 +70,14 @@ final class OverviewBuilder extends AbstractPanelBuilder implements
 	protected JPanel assemble() {
 		Border border = new EmptyBorder(10, 5, 5, 5);
 		titleStrip = new TitleStrip("", "", TitleStrip.BLANK);
-		AbstractPanelBuilder news = new SyndicationBuilder(Messages.getString(ID
-				+ ".newsfeed"), Bookmarks.NEWSFEED).withBorder(border);
+		URL feed = null;
+		try {
+			feed = Bookmarks.SHOUTBOXFEED.toURL();
+		}
+		catch (MalformedURLException e) {
+		}
+		AbstractPanelBuilder shouts = new SyndicationBuilder(Messages.getString(ID
+				+ ".shoutfeed"), feed).withBorder(border);
 		version = new InfoBuilder(Messages.getString(ID + ".info"));
 		versionPanel = version.build(globals);
 		versionPanel.setVisible(false);
@@ -112,7 +120,7 @@ final class OverviewBuilder extends AbstractPanelBuilder implements
 		gbc.fill = GridBagConstraints.BOTH;
 		gbc.weightx = 1;
 		gbc.weighty = 1;
-		panel.add(news.build(globals), gbc);
+		panel.add(shouts.build(globals), gbc);
 
 		PlayManager pm = globals.get(PlayManager.class);
 		setTitle(pm);

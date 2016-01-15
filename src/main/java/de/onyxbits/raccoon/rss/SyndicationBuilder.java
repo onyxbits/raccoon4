@@ -18,7 +18,8 @@ package de.onyxbits.raccoon.rss;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
-import java.net.URI;
+import java.awt.Insets;
+import java.net.URL;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -27,18 +28,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
-import javax.swing.text.JTextComponent;
 
-import de.onyxbits.raccoon.db.DatabaseManager;
-import de.onyxbits.raccoon.db.FeedItem;
-import de.onyxbits.raccoon.db.FeedItemDao;
 import de.onyxbits.raccoon.gui.HyperTextPane;
-import de.onyxbits.raccoon.gui.UnavailableBuilder;
-import de.onyxbits.weave.Globals;
-import de.onyxbits.weave.LifecycleManager;
 import de.onyxbits.weave.swing.AbstractPanelBuilder;
-import de.onyxbits.weave.util.BusMessageHandler;
-import de.onyxbits.weave.util.BusMultiplexer;
 
 /**
  * A panel for showing RSS feeds
@@ -46,12 +38,11 @@ import de.onyxbits.weave.util.BusMultiplexer;
  * @author patrick
  * 
  */
-public class SyndicationBuilder extends AbstractPanelBuilder implements
-		BusMessageHandler {
+public class SyndicationBuilder extends AbstractPanelBuilder {
 
 	private String title;
 	private HyperTextPane content;
-	private URI source;
+	private URL source;
 
 	/**
 	 * 
@@ -59,7 +50,7 @@ public class SyndicationBuilder extends AbstractPanelBuilder implements
 	 * @param source
 	 *          rss url
 	 */
-	public SyndicationBuilder(String title, URI source) {
+	public SyndicationBuilder(String title, URL source) {
 		this.title = title;
 		this.source = source;
 	}
@@ -71,6 +62,7 @@ public class SyndicationBuilder extends AbstractPanelBuilder implements
 		GridBagConstraints gbc = new GridBagConstraints();
 
 		content = new HyperTextPane(title).withWidth(300);
+		content.setMargin(new Insets(5, 5, 5, 5));
 		JPanel wrapper = new JPanel();
 		wrapper.setLayout(new GridLayout());
 		wrapper.add(new JLabel(title, new ImageIcon(getClass().getResource(
@@ -90,34 +82,28 @@ public class SyndicationBuilder extends AbstractPanelBuilder implements
 		gbc.weighty = 1;
 		JScrollPane scroll = new JScrollPane(content);
 		ret.add(scroll, gbc);
-		globals.get(BusMultiplexer.class).subscribe(this);
 		reload();
 
 		return ret;
 	}
 
-	@Override
-	public void onBusMessage(Globals globals, Object message) {
-		if (message instanceof FeedTask) {
-			reload();
-		}
-		if (message instanceof JTextComponent) {
-			globals.get(UnavailableBuilder.class).setAbout(
-					((JTextComponent) message).getText());
-			globals.get(LifecycleManager.class).getWindow(UnavailableBuilder.ID)
-					.setVisible(true);
-		}
+	public void reload() {
+		new FeedWorker(this, source).execute();
 	}
 
-	private void reload() {
-
-		List<FeedItem> items = globals.get(DatabaseManager.class)
-				.get(FeedItemDao.class).list(source);
+	public void onResult(List<FeedItem> items) {
 		StringBuilder sb = new StringBuilder("<dl>");
 		for (FeedItem item : items) {
-			sb.append("<dt><a href=\"" + item.getLink() + "\">" + item.getTitle()
-					+ "</a></dt>");
-			sb.append("<dd>" + item.getDescription() + "<p></dd>");
+			sb.append("<dt><a href=\"");
+			sb.append(item.getLink());
+			sb.append("\">");
+			sb.append(item.getTitle());
+			sb.append("</a></dt>");
+			sb.append("<dd>");
+			sb.append(item.getDescription());
+			sb.append("<p><div align=\"right\"><small><i>");
+			sb.append(item.getAuthor());
+			sb.append("</i></small></dd>");
 		}
 		sb.append("</dl>");
 		if (!content.getText().equals(sb.toString())) {

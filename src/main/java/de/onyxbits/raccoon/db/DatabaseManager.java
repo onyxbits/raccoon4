@@ -57,8 +57,7 @@ public final class DatabaseManager {
 	public DatabaseManager(File databaseDir) {
 		// Register all available DAOS here!
 		DataAccessObject[] tmp = { new AndroidAppDao(), new AppGroupDao(),
-				new FeedItemDao(), new PlayProfileDao(), new VariableDao(),
-				new PlayAppOwnerDao() };
+				new PlayProfileDao(), new VariableDao(), new PlayAppOwnerDao() };
 		daos = tmp;
 
 		pool = new Stack<Connection>();

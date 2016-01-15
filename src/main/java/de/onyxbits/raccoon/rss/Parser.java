@@ -18,10 +18,11 @@ package de.onyxbits.raccoon.rss;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.sql.Date;
+import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Locale;
 import java.util.Vector;
 
 import javax.xml.stream.XMLEventReader;
@@ -30,7 +31,6 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.Characters;
 import javax.xml.stream.events.XMLEvent;
 
-import de.onyxbits.raccoon.db.FeedItem;
 
 public class Parser {
 	static final String TITLE = "title";
@@ -39,6 +39,8 @@ public class Parser {
 	static final String ITEM = "item";
 	static final String PUB_DATE = "pubDate";
 	static final String GUID = "guid";
+	static final String CREATOR = "creator";
+	static final String AUTHOR = "author";
 
 	private URL url;
 
@@ -49,7 +51,8 @@ public class Parser {
 	public List<FeedItem> readFeed() {
 		FeedItem item = null;
 		Vector<FeedItem> ret = new Vector<FeedItem>();
-		DateFormat formatter = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz");
+		DateFormat formatter = new SimpleDateFormat(
+				"EEE, dd MMM yyyy HH:mm:ss zzz", Locale.ENGLISH);
 		InputStream in = null;
 		try {
 			in = url.openStream();
@@ -74,16 +77,23 @@ public class Parser {
 					if (localPart.equals(LINK) && item != null) {
 						item.setLink(getCharacterData(event, eventReader));
 					}
+					if (localPart.equals(AUTHOR) && item != null) {
+						item.setAuthor(getCharacterData(event, eventReader));
+					}
+					if (localPart.equals(CREATOR) && item != null) {
+						item.setAuthor(getCharacterData(event, eventReader));
+					}
 					if (localPart.equals(GUID) && item != null) {
 						item.setGuid(getCharacterData(event, eventReader));
 					}
 					if (localPart.equals(PUB_DATE) && item != null) {
 						try {
-							item.setPublished(new Date(formatter.parse(
+							item.setPublished(new Timestamp(formatter.parse(
 									getCharacterData(event, eventReader)).getTime()));
 						}
 						catch (Exception e) {
-							item.setPublished(new Date(System.currentTimeMillis()));
+							item.setPublished(new Timestamp(System.currentTimeMillis()));
+							//e.printStackTrace();
 						}
 					}
 				}

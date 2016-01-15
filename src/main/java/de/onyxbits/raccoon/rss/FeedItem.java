@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.onyxbits.raccoon.db;
+package de.onyxbits.raccoon.rss;
 
-import java.sql.Date;
+import java.sql.Timestamp;
 
 /**
  * An item in an RSS feed. Multiple feeds can be stored in the same table. The
@@ -26,21 +26,6 @@ import java.sql.Date;
  */
 public class FeedItem {
 
-	/**
-	 * The item was fetched in the current session and was not clicked.
-	 */
-	public static final int JUSTIN = 0;
-
-	/**
-	 * The item has not been marked as read
-	 */
-	public static final int UNREAD = 1;
-
-	/**
-	 * Old news
-	 */
-	public static final int SEEN = 2;
-
 	private String source;
 
 	private String title;
@@ -49,9 +34,9 @@ public class FeedItem {
 
 	private String link;
 
-	private Date published;
+	private String author;
 
-	private int state;
+	private Timestamp published;
 
 	private String guid;
 
@@ -95,20 +80,12 @@ public class FeedItem {
 		this.source = source;
 	}
 
-	public Date getPublished() {
+	public Timestamp getPublished() {
 		return published;
 	}
 
-	public void setPublished(Date date) {
+	public void setPublished(Timestamp date) {
 		this.published = date;
-	}
-
-	public int getState() {
-		return state;
-	}
-
-	public void setState(int state) {
-		this.state = state;
 	}
 
 	public static String clip(String input, int maxlen) {
@@ -118,6 +95,14 @@ public class FeedItem {
 		else {
 			return input.substring(0, maxlen);
 		}
+	}
+
+	public String getAuthor() {
+		return author;
+	}
+
+	public void setAuthor(String author) {
+		this.author = author;
 	}
 
 	@Override

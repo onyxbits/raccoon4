@@ -39,7 +39,7 @@ public final class Layout {
 	/**
 	 * Top level directory for all user media files
 	 */
-	public final File poolDir;
+	public final File contentDir;
 
 	/**
 	 * Directory for storing apps.
@@ -70,12 +70,12 @@ public final class Layout {
 	 */
 	public Layout(File homeDir) {
 		this.homeDir = homeDir;
-		databaseDir = new File(homeDir, "db");
-		shareDir = new File(homeDir, "share");
-		poolDir = new File(homeDir, "pool");
-		appsDir = new File(poolDir, "apps");
 		screenshotDir = new File(homeDir, "screenshots");
 		binDir = new File(homeDir, "bin");
+		shareDir = new File(homeDir, "share");
+		contentDir = new File(homeDir, "content");
+		databaseDir = new File(contentDir, "database");
+		appsDir = new File(contentDir, "apps");
 	}
 
 	/**
@@ -121,7 +121,7 @@ public final class Layout {
 		homeDir.mkdirs();
 		shareDir.mkdir();
 		databaseDir.mkdir();
-		poolDir.mkdir();
+		contentDir.mkdir();
 		appsDir.mkdirs();
 		screenshotDir.mkdir();
 		binDir.mkdir();

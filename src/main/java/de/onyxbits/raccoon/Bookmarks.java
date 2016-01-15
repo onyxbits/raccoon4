@@ -35,6 +35,6 @@ public final class Bookmarks {
 	public static final URI SETUP = BASE.resolve("/content/first-steps-setup-wizard");
 	public static final URI MARKETIMPORT = BASE.resolve("/faq/marketimport");
 
-	public static final URI NEWSFEED = BASE.resolve("/feed/news");
+	public static final URI SHOUTBOXFEED = BASE.resolve("/feed/shoutbox");
 
 }
