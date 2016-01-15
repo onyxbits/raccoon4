@@ -68,18 +68,18 @@ public class ProfilesMenuBuilder implements PlayListener, ActionListener {
 		edit.addActionListener(this);
 		delete.addActionListener(this);
 
-		reload();
+		load();
 		globals.get(PlayManager.class).addPlayListener(this);
 		return menu;
 	}
 
 	@Override
 	public void onProfileActivated(PlayManager pm) {
-		reload();
+		menu.removeAll();
+		load();
 	}
 
-	private void reload() {
-		menu.removeAll();
+	private void load() {
 		List<PlayProfile> profiles = globals.get(DatabaseManager.class)
 				.get(PlayProfileDao.class).list();
 		PlayManager pm = globals.get(PlayManager.class);
