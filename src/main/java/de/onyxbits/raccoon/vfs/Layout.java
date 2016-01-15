@@ -119,12 +119,13 @@ public final class Layout {
 	 */
 	public Layout mkdirs() {
 		homeDir.mkdirs();
-		shareDir.mkdir();
-		databaseDir.mkdir();
-		contentDir.mkdir();
-		appsDir.mkdirs();
 		screenshotDir.mkdir();
 		binDir.mkdir();
+		shareDir.mkdir();
+
+		contentDir.mkdir();
+		databaseDir.mkdir();
+		appsDir.mkdir();
 		return this;
 	}
 }
