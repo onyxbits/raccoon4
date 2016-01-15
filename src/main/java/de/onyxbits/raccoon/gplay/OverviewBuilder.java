@@ -18,6 +18,7 @@ package de.onyxbits.raccoon.gplay;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.text.MessageFormat;
 import java.util.List;
@@ -45,6 +46,7 @@ import de.onyxbits.raccoon.rss.SyndicationBuilder;
 import de.onyxbits.raccoon.transfer.TransferManager;
 import de.onyxbits.raccoon.transfer.TransferWorker;
 import de.onyxbits.weave.swing.AbstractPanelBuilder;
+import de.onyxbits.weave.swing.BrowseAction;
 import de.onyxbits.weave.util.Version;
 
 final class OverviewBuilder extends AbstractPanelBuilder implements
@@ -144,7 +146,8 @@ final class OverviewBuilder extends AbstractPanelBuilder implements
 
 	@Override
 	public void onConnectivityChange(BridgeManager manager) {
-		String s = MessageFormat.format(Messages.getString(ID + ".noadb"), INSTALL);
+		String s = MessageFormat.format(Messages.getString(ID + ".noadb"), INSTALL,
+				Bookmarks.USB_DEBUGGING);
 		adb.setInfo(s);
 		adbPanel.setVisible(!manager.isRunning());
 	}
@@ -204,6 +207,16 @@ final class OverviewBuilder extends AbstractPanelBuilder implements
 				TransferWorker w = new FetchToolsWorker(globals);
 				globals.get(TransferManager.class).schedule(globals, w,
 						TransferManager.WAN);
+			}
+		}
+		else {
+			if (e.getEventType() == EventType.ACTIVATED) {
+				try {
+					BrowseAction.open(e.getURL().toURI());
+				}
+				catch (Exception e1) {
+					e1.printStackTrace();
+				}
 			}
 		}
 	}
