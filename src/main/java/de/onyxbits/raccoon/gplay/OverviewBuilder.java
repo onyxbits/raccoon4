@@ -32,7 +32,6 @@ import javax.swing.event.HyperlinkEvent.EventType;
 import com.akdeniz.googleplaycrawler.GooglePlay.DocV2;
 
 import de.onyxbits.raccoon.Bookmarks;
-import de.onyxbits.raccoon.VersionMessage;
 import de.onyxbits.raccoon.db.DatabaseManager;
 import de.onyxbits.raccoon.db.PlayProfile;
 import de.onyxbits.raccoon.db.VariableDao;
@@ -45,14 +44,11 @@ import de.onyxbits.raccoon.ptools.FetchToolsWorker;
 import de.onyxbits.raccoon.rss.SyndicationBuilder;
 import de.onyxbits.raccoon.transfer.TransferManager;
 import de.onyxbits.raccoon.transfer.TransferWorker;
-import de.onyxbits.weave.Globals;
 import de.onyxbits.weave.swing.AbstractPanelBuilder;
-import de.onyxbits.weave.util.BusMessageHandler;
-import de.onyxbits.weave.util.BusMultiplexer;
 import de.onyxbits.weave.util.Version;
 
 final class OverviewBuilder extends AbstractPanelBuilder implements
-		BusMessageHandler, BridgeListener, PlayListener, HyperlinkListener {
+		BridgeListener, PlayListener, HyperlinkListener {
 
 	private static final String ID = OverviewBuilder.class.getSimpleName();
 	private static final String INSTALL = "install://platformtools";
@@ -126,21 +122,18 @@ final class OverviewBuilder extends AbstractPanelBuilder implements
 		setTitle(pm);
 		pm.addPlayListener(this);
 
-		globals.get(BusMultiplexer.class).subscribe(this);
 		globals.get(BridgeManager.class).addBridgeListener(this);
+		new VersionWorker(this).execute();
 		return panel;
 	}
 
-	@Override
-	public void onBusMessage(Globals globals, Object message) {
-		if (message instanceof VersionMessage) {
-			Version current = globals.get(Version.class);
-			if (current.compareTo(((VersionMessage) message).latest) < 0) {
-				String s = MessageFormat.format(Messages.getString(ID + ".newversion"),
-						Bookmarks.RELEASES.toString(), ((VersionMessage) message).latest);
-				version.setInfo(s);
-				versionPanel.setVisible(true);
-			}
+	public void onVersion(Version latest) {
+		Version current = globals.get(Version.class);
+		if (current.compareTo(latest) < 0) {
+			String s = MessageFormat.format(Messages.getString(ID + ".newversion"),
+					Bookmarks.RELEASES.toString(), latest);
+			version.setInfo(s);
+			versionPanel.setVisible(true);
 		}
 	}
 

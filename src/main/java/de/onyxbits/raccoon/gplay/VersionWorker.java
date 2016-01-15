@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Patrick Ahlbrecht
+ * Copyright 2016 Patrick Ahlbrecht
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,39 +13,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.onyxbits.raccoon;
+package de.onyxbits.raccoon.gplay;
 
 import java.io.InputStream;
+import java.util.concurrent.ExecutionException;
+
+import javax.swing.SwingWorker;
 
 import org.apache.commons.io.IOUtils;
 
-import de.onyxbits.weave.LifecycleManager;
+import de.onyxbits.raccoon.Bookmarks;
 import de.onyxbits.weave.util.Version;
 
-/**
- * Checks if there is a new version available
- * 
- * @author patrick
- * 
- */
-public class VersionTask {
+class VersionWorker extends SwingWorker<Version, Integer> {
 
-	private LifecycleManager lifecycleManager;
+	private OverviewBuilder owner;
 
-	public VersionTask(LifecycleManager lm) {
-		this.lifecycleManager = lm;
+	public VersionWorker(OverviewBuilder owner) {
+		this.owner = owner;
 	}
 
-	public void run() {
+	@Override
+	protected Version doInBackground() throws Exception {
 		InputStream in = null;
 		try {
 			in = Bookmarks.LATEST.toURL().openStream();
-			Version latest = new Version(IOUtils.toString(in, "UTF-8").trim());
-			lifecycleManager.sendBusMessage(new VersionMessage(latest));
+			return new Version(IOUtils.toString(in, "UTF-8").trim());
 		}
 		catch (Exception e) {
 			// Not important enough to make a fuss about.
-			//e.printStackTrace();
+			// e.printStackTrace();
 		}
 
 		try {
@@ -54,5 +51,18 @@ public class VersionTask {
 		catch (Exception e) {
 
 		}
+		return new Version("0.0.0");
 	}
+
+	@Override
+	protected void done() {
+		try {
+			owner.onVersion(get());
+		}
+		catch (InterruptedException e) {
+		}
+		catch (ExecutionException e) {
+		}
+	}
+
 }

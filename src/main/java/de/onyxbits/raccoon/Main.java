@@ -144,8 +144,6 @@ public final class Main {
 		preload = TransferViewBuilder.ID;
 		preload = ManualDownloadBuilder.ID;
 
-		new VersionTask(lifecycle).run();
-
 		// Shutdown
 		lifecycle.waitForState(LifecycleManager.FINISHED);
 		bridgeManager.shutdown();
