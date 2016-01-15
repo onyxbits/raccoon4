@@ -84,7 +84,7 @@ public class ActionLocalizer {
 	 */
 	public Action localize(Action a, String id) {
 		a.putValue(Action.NAME, lookup(id, NAME));
-		
+
 		a.putValue(Action.SHORT_DESCRIPTION, lookup(id, SHORT_DESCRIPTION));
 		a.putValue(Action.LONG_DESCRIPTION, lookup(id, LONG_DESCRIPTION));
 		a.putValue(Action.SMALL_ICON, lookup(id, SMALL_ICON));
@@ -147,7 +147,7 @@ public class ActionLocalizer {
 			key = globalPrefix + "." + key;
 		}
 		if (rsrc.containsKey(key)) {
-			return rsrc.getString(key);
+			return (String) rsrc.getObject(key);
 		}
 		return null;
 	}
