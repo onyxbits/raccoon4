@@ -4,6 +4,7 @@ import java.awt.Window;
 
 import javax.swing.JOptionPane;
 import javax.swing.border.EmptyBorder;
+import javax.swing.text.JTextComponent;
 
 import de.onyxbits.raccoon.Bookmarks;
 import de.onyxbits.raccoon.Main;
@@ -66,6 +67,13 @@ public final class MainLifecycle implements Lifecycle, GlobalsFactory {
 			globals.get(TransferManager.class).schedule(globals, (NetWorker) message,
 					TransferManager.LAN);
 		}
+		if (message instanceof JTextComponent) {
+			globals.get(UnavailableBuilder.class).setAbout(
+					((JTextComponent) message).getText());
+			globals.get(LifecycleManager.class).getWindow(UnavailableBuilder.ID)
+					.setVisible(true);
+		}
+
 		globals.get(BusMultiplexer.class).broadcast(globals, message);
 	}
 
