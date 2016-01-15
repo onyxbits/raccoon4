@@ -20,6 +20,7 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.net.URISyntaxException;
 
 import javax.swing.JEditorPane;
 import javax.swing.event.HyperlinkEvent;
@@ -40,6 +41,7 @@ public class HyperTextPane extends JEditorPane {
   *
   */
 	private static final long serialVersionUID = 1L;
+	private boolean tooltip;
 
 	public HyperTextPane(String txt) {
 		super("text/html", txt);
@@ -80,8 +82,32 @@ public class HyperTextPane extends JEditorPane {
 		return this;
 	}
 
+	/**
+	 * Show the target URL in a tooltip when hovering over a link
+	 * 
+	 * @return this reference for chaining.
+	 */
+	public HyperTextPane withLinkToolTip() {
+		tooltip = true;
+		return this;
+	}
+
 	@Override
 	public void fireHyperlinkUpdate(HyperlinkEvent e) {
+		if (tooltip) {
+			if (e.getEventType() == EventType.ENTERED) {
+				try {
+					setToolTipText(e.getURL().toURI().toString());
+				}
+				catch (URISyntaxException e1) {
+					setToolTipText(null);
+				}
+			}
+			if (e.getEventType() == EventType.EXITED) {
+				setToolTipText(null);
+			}
+		}
+
 		if (e.getEventType() == EventType.ACTIVATED) {
 			try {
 				BrowseAction.open(e.getURL().toURI());

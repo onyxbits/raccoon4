@@ -61,7 +61,7 @@ public class SyndicationBuilder extends AbstractPanelBuilder {
 		ret.setLayout(new GridBagLayout());
 		GridBagConstraints gbc = new GridBagConstraints();
 
-		content = new HyperTextPane("").withWidth(300);
+		content = new HyperTextPane("").withWidth(300).withLinkToolTip();
 		content.setMargin(new Insets(5, 5, 5, 5));
 		JPanel wrapper = new JPanel();
 		wrapper.setLayout(new GridLayout());
