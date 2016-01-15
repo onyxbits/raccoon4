@@ -15,14 +15,12 @@
  */
 package de.onyxbits.weave.swing;
 
-import java.awt.Window;
 
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.border.Border;
 
 import de.onyxbits.weave.Globals;
-import de.onyxbits.weave.LifecycleManager;
 
 /**
  * Panel builders compose {@link JComponent}S onto {@link JPanel}S and implement
