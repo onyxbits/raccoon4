@@ -18,7 +18,6 @@ package de.onyxbits.raccoon.gplay;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URL;
 import java.text.MessageFormat;
 import java.util.List;
