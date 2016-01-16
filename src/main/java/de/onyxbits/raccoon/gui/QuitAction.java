@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.onyxbits.weave.swing;
+package de.onyxbits.raccoon.gui;
 
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -46,28 +46,11 @@ public class QuitAction extends AbstractAction {
 	 * 
 	 * @param globals
 	 *          registry
-	 * @param keycode
-	 *          a VK_ constant from {@link KeyEvent}.
-	 */
-	public QuitAction(Globals globals, int keycode, boolean useModifier) {
-		this.globals = globals;
-		if (useModifier) {
-			putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(keycode, Toolkit
-					.getDefaultToolkit().getMenuShortcutKeyMask()));
-		}
-		else {
-			putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(keycode, 0));
-		}
-	}
-
-	/**
-	 * Create a new action and bind MODIFIER-Q to it.
-	 * 
-	 * @param globals
-	 *          registry
 	 */
 	public QuitAction(Globals globals) {
-		this(globals, KeyEvent.VK_Q, true);
+		this.globals = globals;
+		putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_Q,
+				Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
 	}
 
 	@Override

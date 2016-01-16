@@ -35,7 +35,6 @@ import de.onyxbits.weave.LifecycleManager;
 import de.onyxbits.weave.swing.AbstractPanelBuilder;
 import de.onyxbits.weave.swing.BrowseAction;
 import de.onyxbits.weave.swing.MenuBarBuilder;
-import de.onyxbits.weave.swing.QuitAction;
 import de.onyxbits.weave.swing.WindowBuilder;
 import de.onyxbits.weave.util.BusMultiplexer;
 import de.onyxbits.weave.util.Version;

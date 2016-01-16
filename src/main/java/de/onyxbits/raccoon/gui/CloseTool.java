@@ -30,7 +30,6 @@ import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 
 import de.onyxbits.weave.Globals;
-import de.onyxbits.weave.swing.QuitAction;
 
 /**
  * Adds "Escape to close" and "CTRL-Q to quit" actions to secondary windows.
