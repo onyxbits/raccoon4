@@ -77,7 +77,9 @@ final class OverviewBuilder extends AbstractPanelBuilder implements
 		titleStrip.setSubTitle(Messages.getString(ID + ".waitadb"));
 
 		versionPanel = new JPanel(false);
+		versionPanel.setVisible(false);
 		adbPanel = new JPanel(false);
+		adbPanel.setVisible(false);
 
 		JComponent plugPanel;
 		if (showPlug()) {
@@ -135,6 +137,7 @@ final class OverviewBuilder extends AbstractPanelBuilder implements
 			version.setInfo(s);
 			versionPanel.setBorder(border);
 			versionPanel.setLayout(new GridLayout(1, 0, 0, 0));
+			versionPanel.setVisible(true);
 		}
 	}
 
@@ -151,6 +154,7 @@ final class OverviewBuilder extends AbstractPanelBuilder implements
 		adbPanel.setVisible(!manager.isRunning());
 		if (manager.isRunning()) {
 			adbPanel.removeAll();
+			adbPanel.setVisible(false);
 		}
 		else {
 			InfoBuilder adb = new InfoBuilder(Messages.getString(ID + ".info"))
@@ -159,6 +163,7 @@ final class OverviewBuilder extends AbstractPanelBuilder implements
 			adb.setInfo(s);
 			adbPanel.setBorder(border);
 			adbPanel.setLayout(new GridLayout(1, 0, 0, 0));
+			adbPanel.setVisible(true);
 		}
 	}
 
