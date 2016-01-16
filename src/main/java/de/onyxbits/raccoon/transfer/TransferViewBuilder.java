@@ -107,13 +107,6 @@ public class TransferViewBuilder extends AbstractPanelBuilder implements
 		list.revalidate();
 	}
 
-	protected void clear() {
-		for (int i = 0; i < list.getComponentCount() - 1; i++) {
-			list.remove(i);
-		}
-		list.revalidate();
-	}
-
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == trim) {
