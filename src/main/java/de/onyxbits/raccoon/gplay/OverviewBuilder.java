@@ -17,11 +17,14 @@ package de.onyxbits.raccoon.gplay;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.MessageFormat;
 import java.util.List;
 
+import javax.swing.Box;
+import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
@@ -55,17 +58,13 @@ final class OverviewBuilder extends AbstractPanelBuilder implements
 	private static final String INSTALL = "install://platformtools";
 	private TitleStrip titleStrip;
 
-	private InfoBuilder version;
-	private InfoBuilder adb;
-	private InfoBuilder plug;
 	private JPanel versionPanel;
-	private JPanel plugPanel;
 	private JPanel adbPanel;
-	private JPanel panel;
+	private Border border;
 
 	@Override
 	protected JPanel assemble() {
-		Border border = new EmptyBorder(10, 5, 5, 5);
+		border = new EmptyBorder(10, 5, 5, 5);
 		titleStrip = new TitleStrip("", "", TitleStrip.BLANK);
 		URL feed = null;
 		try {
@@ -75,49 +74,47 @@ final class OverviewBuilder extends AbstractPanelBuilder implements
 		}
 		AbstractPanelBuilder shouts = new SyndicationBuilder(Messages.getString(ID
 				+ ".shoutfeed"), feed).withBorder(border);
-		version = new InfoBuilder(Messages.getString(ID + ".info"));
-		versionPanel = version.build(globals);
-		versionPanel.setVisible(false);
-		versionPanel.setBorder(border);
 		titleStrip.setSubTitle(Messages.getString(ID + ".waitadb"));
 
-		adb = new InfoBuilder(Messages.getString(ID + ".info"))
-				.withHyperLinkListener(this);
-		adbPanel = adb.build(globals);
-		adbPanel.setVisible(false);
-		adbPanel.setBorder(border);
+		versionPanel = new JPanel(false);
+		adbPanel = new JPanel(false);
 
-		plug = new InfoBuilder(Messages.getString(ID + ".plug.title"));
-		plugPanel = plug.build(globals);
-		plug.setInfo(MessageFormat.format(Messages.getString(ID + ".plug.message"),
-				Bookmarks.ORDER));
-		plugPanel.setVisible(showPlug());
-		plugPanel.setBorder(border);
+		JComponent plugPanel;
+		if (showPlug()) {
+			InfoBuilder plug = new InfoBuilder(Messages.getString(ID + ".plug.title"));
+			plugPanel = plug.build(globals);
+			plug.setInfo(MessageFormat.format(
+					Messages.getString(ID + ".plug.message"), Bookmarks.ORDER));
+			plugPanel.setBorder(border);
+		}
+		else {
+			plugPanel = Box.createVerticalBox();
+		}
 
-		panel = new JPanel();
-		panel.setLayout(new GridBagLayout());
+		JPanel ret = new JPanel();
+		ret.setLayout(new GridBagLayout());
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.gridx = 0;
 		gbc.gridy = 0;
 		gbc.anchor = GridBagConstraints.NORTHWEST;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 
-		panel.add(titleStrip, gbc);
+		ret.add(titleStrip, gbc);
 
 		gbc.gridy++;
-		panel.add(plugPanel, gbc);
+		ret.add(plugPanel, gbc);
 
 		gbc.gridy++;
-		panel.add(versionPanel, gbc);
+		ret.add(versionPanel, gbc);
 
 		gbc.gridy++;
-		panel.add(adbPanel, gbc);
+		ret.add(adbPanel, gbc);
 
 		gbc.gridy++;
 		gbc.fill = GridBagConstraints.BOTH;
 		gbc.weightx = 1;
 		gbc.weighty = 1;
-		panel.add(shouts.build(globals), gbc);
+		ret.add(shouts.build(globals), gbc);
 
 		PlayManager pm = globals.get(PlayManager.class);
 		setTitle(pm);
@@ -125,7 +122,7 @@ final class OverviewBuilder extends AbstractPanelBuilder implements
 
 		globals.get(BridgeManager.class).addBridgeListener(this);
 		new VersionWorker(this).execute();
-		return panel;
+		return ret;
 	}
 
 	public void onVersion(Version latest) {
@@ -133,8 +130,11 @@ final class OverviewBuilder extends AbstractPanelBuilder implements
 		if (current.compareTo(latest) < 0) {
 			String s = MessageFormat.format(Messages.getString(ID + ".newversion"),
 					Bookmarks.RELEASES.toString(), latest);
+			InfoBuilder version = new InfoBuilder(Messages.getString(ID + ".info"));
+			versionPanel.add(version.build(globals));
 			version.setInfo(s);
-			versionPanel.setVisible(true);
+			versionPanel.setBorder(border);
+			versionPanel.setLayout(new GridLayout(1, 0, 0, 0));
 		}
 	}
 
@@ -147,8 +147,19 @@ final class OverviewBuilder extends AbstractPanelBuilder implements
 	public void onConnectivityChange(BridgeManager manager) {
 		String s = MessageFormat.format(Messages.getString(ID + ".noadb"), INSTALL,
 				Bookmarks.USB_DEBUGGING);
-		adb.setInfo(s);
+
 		adbPanel.setVisible(!manager.isRunning());
+		if (manager.isRunning()) {
+			adbPanel.removeAll();
+		}
+		else {
+			InfoBuilder adb = new InfoBuilder(Messages.getString(ID + ".info"))
+					.withHyperLinkListener(this);
+			adbPanel.add(adb.build(globals));
+			adb.setInfo(s);
+			adbPanel.setBorder(border);
+			adbPanel.setLayout(new GridLayout(1, 0, 0, 0));
+		}
 	}
 
 	private void setSubTitle(BridgeManager m) {

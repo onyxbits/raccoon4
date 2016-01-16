@@ -58,8 +58,8 @@ class InfoBuilder extends AbstractPanelBuilder {
 		if (listener != null) {
 			content.addHyperlinkListener(listener);
 		}
-		JPanel wrapper = new JPanel();
-		wrapper.setLayout(new GridLayout());
+		JPanel wrapper = new JPanel(false);
+		wrapper.setLayout(new GridLayout(1, 0, 0, 0));
 		wrapper.add(new JLabel(title, new ImageIcon(getClass().getResource(
 				"/icons/famfam/icons/bell.png")), SwingConstants.LEADING));
 		wrapper.setBackground(wrapper.getBackground().darker());
@@ -71,7 +71,7 @@ class InfoBuilder extends AbstractPanelBuilder {
 	}
 
 	/**
-	 * Show an info mesage
+	 * Show an info message
 	 * 
 	 * @param info
 	 *          what to display
