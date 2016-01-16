@@ -84,7 +84,7 @@ public final class Main {
 		// Startup speed matters big time! So in order to show the UI ASAP, use
 		// every bit of idle time to force the classloader into resolving bytecode
 		// and initializing constants ahead of time.
-		Object preload = null;
+		Object preload;
 
 		// Pre GUI initialization
 		DatabaseManager database = new DatabaseManager(Layout.DEFAULT.databaseDir);
