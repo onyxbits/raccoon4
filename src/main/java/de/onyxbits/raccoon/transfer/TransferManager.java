@@ -208,21 +208,6 @@ public class TransferManager {
 		return (!(state == Driver.CANCELLED || state == Driver.FAILED || state == Driver.FINISHED));
 	}
 
-	public void trim() {
-		synchronized (wanWorkers) {
-			for (Driver worker : wanWorkers) {
-			}
-		}
-		synchronized (lanWorkers) {
-			for (Driver worker : lanWorkers) {
-			}
-		}
-		synchronized (usbWorkers) {
-			for (Driver worker : usbWorkers) {
-			}
-		}
-	}
-
 	/**
 	 * Format a filesize
 	 * 

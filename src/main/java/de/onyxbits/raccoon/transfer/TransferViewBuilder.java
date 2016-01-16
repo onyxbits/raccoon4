@@ -20,7 +20,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.HashMap;
+import java.util.Vector;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -53,11 +53,11 @@ public class TransferViewBuilder extends AbstractPanelBuilder implements
 	protected JPanel list;
 	private GridBagConstraints contentConstraints;
 	protected JButton trim;
-	private HashMap<TransferWorker, JPanel> items;
+	private Vector<TransferPeerBuilder> peers;
 
 	@Override
 	protected JPanel assemble() {
-		items = new HashMap<TransferWorker, JPanel>();
+		peers = new Vector<TransferPeerBuilder>();
 		GridBagConstraints spacerConstraints = new GridBagConstraints();
 		spacerConstraints.gridx = GridBagConstraints.REMAINDER;
 		spacerConstraints.gridy = GridBagConstraints.RELATIVE;
@@ -95,17 +95,15 @@ public class TransferViewBuilder extends AbstractPanelBuilder implements
 	}
 
 	protected void add(TransferWorker tw) {
-		JPanel ctrl = items.get(tw);
-		if (ctrl == null) {
-			ctrl = tw.getPeer().withBorder(BorderFactory.createEtchedBorder())
-					.build(globals);
-			Dimension d = ctrl.getPreferredSize();
-			d.width = ITEMWIDTH;
-			ctrl.setPreferredSize(d);
-			items.put(tw, ctrl);
-		}
+		TransferPeerBuilder peer = tw.getPeer();
+		JPanel ctrl = peer.withBorder(BorderFactory.createEtchedBorder())
+				.build(globals);
+		Dimension d = ctrl.getPreferredSize();
+		d.width = ITEMWIDTH;
+		ctrl.setPreferredSize(d);
 		// last item is always the spacer.
 		list.add(ctrl, contentConstraints, list.getComponentCount() - 1);
+		peers.add(peer);
 		list.revalidate();
 	}
 
@@ -119,9 +117,9 @@ public class TransferViewBuilder extends AbstractPanelBuilder implements
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == trim) {
-			clear();
-			TransferManager tq = globals.get(TransferManager.class);
-			tq.trim();
+			for (int i=0;i<peers.size();i++) {
+				list.getComponent(i).setVisible(peers.get(i).cancel.isEnabled());
+			}
 		}
 	}
 }
