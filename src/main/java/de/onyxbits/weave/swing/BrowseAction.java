@@ -25,13 +25,7 @@ import javax.swing.Action;
 
 /**
  * An {@link Action} that understands URIs and how to open them in an external
- * program. Two non standard schemes are supported:
- * <ul>
- * <li>print
- * <li>edit
- * </ul>
- * Both are an alias for the "file" scheme and instruct the action to open a
- * file for printing/editing.
+ * program.
  * 
  * @author patrick
  * 
