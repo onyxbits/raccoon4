@@ -26,6 +26,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Stack;
 
+import javax.swing.JOptionPane;
+
 import org.hsqldb.jdbc.JDBCConnection;
 import org.hsqldb.persist.HsqlProperties;
 
@@ -125,9 +127,20 @@ public final class DatabaseManager {
 					dao.upgradeFrom(dbVer, c);
 					versionTo(codeVer, dao.getClass().getSimpleName(), c);
 				}
+				if (dbVer > codeVer) {
+					throw new IllegalStateException();
+				}
 			}
 
 			c.commit();
+		}
+		catch (IllegalStateException e) {
+			// TODO: Communicate this better!
+			c.rollback();
+			res.close();
+			JOptionPane.showMessageDialog(null, "Can't downgrade database",
+					"Version conflict", JOptionPane.ERROR_MESSAGE);
+			System.exit(1);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
