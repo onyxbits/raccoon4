@@ -29,7 +29,7 @@ class LifecycleBackend implements WindowListener, Runnable {
 
 	private LifecycleManager lifecycleManager;
 	private Lifecycle lifecycle;
-	private Object intent;
+	private Object message;
 	private Globals globals;
 
 	protected LifecycleBackend(LifecycleManager lifecycleManager) {
@@ -37,9 +37,9 @@ class LifecycleBackend implements WindowListener, Runnable {
 	}
 
 	protected LifecycleBackend(Globals globals, Lifecycle lifecycle,
-			Object intent) {
+			Object message) {
 		this.lifecycle = lifecycle;
-		this.intent = intent;
+		this.message = message;
 		this.globals = globals;
 	}
 
@@ -81,7 +81,7 @@ class LifecycleBackend implements WindowListener, Runnable {
 
 	@Override
 	public void run() {
-		lifecycle.onBusMessage(globals, intent);
+		lifecycle.onBusMessage(globals, message);
 	}
 
 }

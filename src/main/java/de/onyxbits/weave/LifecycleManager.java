@@ -228,7 +228,7 @@ public final class LifecycleManager implements Runnable {
 	 * This method is primarily designed as a communication channel between
 	 * background threads and the {@link Lifecycle}, but it can also be used as
 	 * general purpose messaging channel between otherwise independent application
-	 * pacakges.
+	 * packages (though that should be avoided).
 	 * 
 	 * @param message
 	 *          the message
