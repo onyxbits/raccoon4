@@ -29,7 +29,6 @@ public final class Bookmarks {
 
 	public static final URI HANDBOOK = BASE.resolve("/handbook");
 	public static final URI RELEASES = BASE.resolve("/releases");
-	public static final URI FAQ = BASE.resolve("/faq");
 	public static final URI ORDER = BASE.resolve("/ordering");
 	public static final URI LATEST = BASE.resolve("latestversion");
 	public static final URI SETUP = BASE.resolve("/content/first-steps-setup-wizard");
