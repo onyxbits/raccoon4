@@ -52,9 +52,11 @@ public class HyperTextPane extends JEditorPane {
 	@Override
 	public void paintComponent(Graphics g) {
 		Graphics2D graphics2d = (Graphics2D) g;
+		Object tmp = graphics2d.getRenderingHint(RenderingHints.KEY_ANTIALIASING);
 		graphics2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
 				RenderingHints.VALUE_ANTIALIAS_ON);
 		super.paintComponent(g);
+		graphics2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, tmp);
 	}
 
 	/**
