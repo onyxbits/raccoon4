@@ -26,13 +26,11 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
-import de.onyxbits.raccoon.Bookmarks;
 import de.onyxbits.raccoon.gui.ButtonBarBuilder;
 import de.onyxbits.raccoon.gui.DialogBuilder;
 import de.onyxbits.weave.swing.AbstractPanelBuilder;
 import de.onyxbits.weave.swing.ActionLocalizer;
 import de.onyxbits.weave.swing.AdapterBuilder;
-import de.onyxbits.weave.swing.BrowseAction;
 
 /**
  * A dialog that allows the user to submit market:// urls and import the
