@@ -26,8 +26,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Stack;
 
-import javax.swing.JOptionPane;
-
 import org.hsqldb.jdbc.JDBCConnection;
 import org.hsqldb.persist.HsqlProperties;
 
@@ -45,10 +43,11 @@ public final class DatabaseManager {
 	 */
 	public static final String DBNAME = "raccoondb_4";
 
-	private DataAccessObject[] daos;
 	private Stack<Connection> pool;
 	private List<EntityListener> listeners;
 	private HsqlProperties props;
+	private HashMap<Class<?>, Object> daos;
+	private HashMap<String, Integer> daoversions;
 
 	/**
 	 * Create a new manager
@@ -57,21 +56,20 @@ public final class DatabaseManager {
 	 *          directory to keep the files in.
 	 */
 	public DatabaseManager(File databaseDir) {
-		// Register all available DAOS here!
-		DataAccessObject[] tmp = { new AndroidAppDao(), new AppGroupDao(),
-				new PlayProfileDao(), new VariableDao(), new PlayAppOwnerDao() };
-		daos = tmp;
-
 		pool = new Stack<Connection>();
 		listeners = new ArrayList<EntityListener>();
 		props = new HsqlProperties();
 		props.setProperty("connection_type", "file:");
 		props.setProperty("database",
 				new File(databaseDir, DBNAME).getAbsolutePath());
+		daos = new HashMap<Class<?>, Object>();
+		daoversions = new HashMap<String, Integer>();
 	}
 
 	/**
-	 * Lookup a DAO by class
+	 * Lookup a DAO by class. Tables are automatically created/updated if
+	 * necessary. Trying to access a table that is newer than the dao will result
+	 * in an {@link IllegalStateException}.
 	 * 
 	 * @param daoclass
 	 *          class of the database object to get
@@ -79,17 +77,75 @@ public final class DatabaseManager {
 	 */
 	@SuppressWarnings("unchecked")
 	public <T extends DataAccessObject> T get(Class<T> daoclass) {
-		for (DataAccessObject dao : daos) {
-			if (daoclass.equals(dao.getClass())) {
-				return (T) dao;
+		T ret = (T) daos.get(daoclass);
+		if (ret == null) {
+			try {
+				ret = daoclass.newInstance();
 			}
+			catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+
+			// Make sure DAO and TABLE versions match!
+			int codeVer = ret.getVersion();
+			int dbVer = 0; // 0: Table not yet created
+			Integer tmp = daoversions.get(daoclass.getSimpleName());
+			if (tmp != null) {
+				dbVer = tmp.intValue();
+			}
+			if (codeVer > dbVer) {
+				Connection c = null;
+				try {
+					c = connect();
+					c.setAutoCommit(false);
+					ret.upgradeFrom(dbVer, c);
+					versionTo(codeVer, daoclass.getSimpleName(), c);
+					c.commit();
+				}
+				catch (SQLException e) {
+					try {
+						c.rollback();
+					}
+					catch (SQLException e1) {
+						throw new RuntimeException(e1);
+					}
+				}
+				finally {
+					disconnect(c);
+				}
+			}
+			if (dbVer > codeVer) {
+				throw new IllegalStateException("Database version conflict!");
+			}
+
+			ret.setOwner(this);
+			daos.put(daoclass, ret);
 		}
-		// We should not be able to get here (assuming all daos are registered).
-		return null;
+		return ret;
 	}
 
 	/**
-	 * Initialize the database (create/update if necessary).
+	 * Check if a DAO is compatible with the database files.
+	 * 
+	 * @param daoclass
+	 *          the DAO to check
+	 * @return true if the DAO can be used with the database, false otherwise.
+	 */
+	public <T extends DataAccessObject> boolean isCompatible(Class<T> daoclass) {
+		try {
+			get(daoclass);
+		}
+		catch (Exception e) {
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * Initialize the manager. After initializing the manager, call isCompatible()
+	 * on the DAO with the highest version number to ensure that the user is not
+	 * trying to run an older version of the application with a database that
+	 * belongs to a newer version.
 	 * 
 	 * @throws SQLException
 	 */
@@ -98,7 +154,6 @@ public final class DatabaseManager {
 		Connection c = new JDBCConnection(props);
 		Statement st = null;
 		ResultSet res = null;
-		HashMap<String, Integer> daover = new HashMap<String, Integer>();
 		try {
 			// Load the DAO version table
 			st = c.createStatement();
@@ -109,43 +164,8 @@ public final class DatabaseManager {
 			st.execute("SELECT dao, version FROM versions");
 			res = st.getResultSet();
 			while (res.next()) {
-				daover.put(res.getString(1), res.getInt(2));
+				daoversions.put(res.getString(1), res.getInt(2));
 			}
-			st.close();
-			// Check if any table needs an update.
-			c.setAutoCommit(false);
-
-			for (DataAccessObject dao : daos) {
-				dao.setOwner(this);
-				int codeVer = dao.getVersion();
-				int dbVer = 0; // 0: Table not yet created
-				Integer tmp = daover.get(dao.getClass().getSimpleName());
-				if (tmp != null) {
-					dbVer = tmp.intValue();
-				}
-				if (codeVer > dbVer) {
-					dao.upgradeFrom(dbVer, c);
-					versionTo(codeVer, dao.getClass().getSimpleName(), c);
-				}
-				if (dbVer > codeVer) {
-					throw new IllegalStateException();
-				}
-			}
-
-			c.commit();
-		}
-		catch (IllegalStateException e) {
-			// TODO: Communicate this better!
-			c.rollback();
-			res.close();
-			JOptionPane.showMessageDialog(null, "Can't downgrade database",
-					"Version conflict", JOptionPane.ERROR_MESSAGE);
-			System.exit(1);
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-			c.rollback();
-			throw e;
 		}
 		finally {
 			if (res != null) {

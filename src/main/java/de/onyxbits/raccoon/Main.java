@@ -18,6 +18,8 @@ package de.onyxbits.raccoon;
 import java.awt.EventQueue;
 import java.sql.SQLException;
 
+import javax.swing.JOptionPane;
+
 import de.onyxbits.raccoon.appmgr.DetailsViewBuilder;
 import de.onyxbits.raccoon.appmgr.MyAppsViewBuilder;
 import de.onyxbits.raccoon.db.DatabaseManager;
@@ -92,6 +94,13 @@ public final class Main {
 		BridgeManager bridgeManager = new BridgeManager(Layout.DEFAULT);
 		database.startup();
 		System.err.println("Time to DB: " + (System.currentTimeMillis() - now));
+
+		if (!database.isCompatible(VariableDao.class)) {
+			JOptionPane.showMessageDialog(null,
+					"Application is older than the database! Can't launch!",
+					"Version conflict detected!", JOptionPane.ERROR_MESSAGE);
+			System.exit(1);
+		}
 
 		String alias = database.get(VariableDao.class).getVar(
 				VariableDao.PLAYPASSPORT_ALIAS, null);
