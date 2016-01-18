@@ -58,12 +58,8 @@ public class ImportBuilder extends AbstractPanelBuilder implements
 		list = new JTextArea(15, 45);
 		list.setMargin(new Insets(2, 2, 2, 2));
 		DialogBuilder db = new DialogBuilder(new AdapterBuilder(new JScrollPane(
-				list)))
-				.withTitle(Messages.getString(ID + ".title"))
-				.withSubTitle(Messages.getString(ID + ".subtitle"))
-				.withButtons(bbb)
-				.withHelp(
-						al.localize(new BrowseAction(Bookmarks.MARKETIMPORT), "helpbutton"));
+				list))).withTitle(Messages.getString(ID + ".title"))
+				.withSubTitle(Messages.getString(ID + ".subtitle")).withButtons(bbb);
 		return db.build(globals);
 	}
 
