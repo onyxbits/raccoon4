@@ -27,9 +27,9 @@ import javax.swing.JPanel;
 
 import de.onyxbits.raccoon.Bookmarks;
 import de.onyxbits.raccoon.db.DatabaseManager;
-import de.onyxbits.raccoon.db.PlayProfile;
-import de.onyxbits.raccoon.db.PlayProfileDao;
 import de.onyxbits.raccoon.gplay.PlayManager;
+import de.onyxbits.raccoon.gplay.PlayProfile;
+import de.onyxbits.raccoon.gplay.PlayProfileDao;
 import de.onyxbits.raccoon.gui.ButtonBarBuilder;
 import de.onyxbits.raccoon.gui.DialogBuilder;
 import de.onyxbits.raccoon.vfs.Layout;

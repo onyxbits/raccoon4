@@ -30,11 +30,8 @@ import com.akdeniz.googleplaycrawler.GooglePlay.BulkDetailsResponse;
 import com.akdeniz.googleplaycrawler.GooglePlay.DocV2;
 import com.akdeniz.googleplaycrawler.GooglePlayAPI;
 
-import de.onyxbits.raccoon.db.AndroidApp;
+import de.onyxbits.raccoon.appmgr.AndroidApp;
 import de.onyxbits.raccoon.db.DatabaseManager;
-import de.onyxbits.raccoon.db.PlayAppOwnerDao;
-import de.onyxbits.raccoon.db.PlayProfile;
-import de.onyxbits.raccoon.db.PlayProfileDao;
 import de.onyxbits.raccoon.transfer.TransferManager;
 import de.onyxbits.weave.Globals;
 import de.onyxbits.weave.LifecycleManager;

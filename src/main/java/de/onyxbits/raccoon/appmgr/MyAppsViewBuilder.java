@@ -39,9 +39,6 @@ import javax.swing.JTextField;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 
-import de.onyxbits.raccoon.db.AndroidApp;
-import de.onyxbits.raccoon.db.AppGroup;
-import de.onyxbits.raccoon.db.AppGroupDao;
 import de.onyxbits.raccoon.db.DatabaseManager;
 import de.onyxbits.raccoon.db.EntityListener;
 import de.onyxbits.raccoon.gui.ButtonBarBuilder;

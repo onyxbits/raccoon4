@@ -22,8 +22,6 @@ import java.util.List;
 import javax.swing.AbstractAction;
 import javax.swing.JOptionPane;
 
-import de.onyxbits.raccoon.db.AndroidApp;
-import de.onyxbits.raccoon.db.AndroidAppDao;
 import de.onyxbits.raccoon.db.DatabaseManager;
 import de.onyxbits.raccoon.vfs.AppExpansionMainNode;
 import de.onyxbits.raccoon.vfs.AppExpansionPatchNode;

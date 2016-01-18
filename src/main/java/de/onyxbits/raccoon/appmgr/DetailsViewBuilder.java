@@ -41,8 +41,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 
-import de.onyxbits.raccoon.db.AndroidApp;
-import de.onyxbits.raccoon.db.AndroidAppDao;
 import de.onyxbits.raccoon.db.DatabaseManager;
 import de.onyxbits.raccoon.db.EntityListener;
 import de.onyxbits.raccoon.gui.ButtonBarBuilder;

@@ -19,7 +19,6 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
 
-import de.onyxbits.raccoon.db.PlayProfile;
 
 /**
  * An action for changing the active {@link PlayProfile}

@@ -24,8 +24,8 @@ import javax.swing.JProgressBar;
 
 import com.akdeniz.googleplaycrawler.GooglePlayAPI;
 
-import de.onyxbits.raccoon.db.PlayProfile;
 import de.onyxbits.raccoon.gplay.PlayManager;
+import de.onyxbits.raccoon.gplay.PlayProfile;
 import de.onyxbits.raccoon.gui.HyperTextPane;
 
 /**

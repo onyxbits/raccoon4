@@ -25,8 +25,6 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.SwingWorker;
 
-import de.onyxbits.raccoon.db.AndroidApp;
-import de.onyxbits.raccoon.db.AndroidAppDao;
 import de.onyxbits.raccoon.db.DatabaseManager;
 import de.onyxbits.raccoon.gui.Traits;
 import de.onyxbits.raccoon.net.ServerManager;

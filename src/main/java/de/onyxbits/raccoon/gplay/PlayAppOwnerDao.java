@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.onyxbits.raccoon.db;
+package de.onyxbits.raccoon.gplay;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -21,6 +21,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
+import de.onyxbits.raccoon.appmgr.AndroidApp;
+import de.onyxbits.raccoon.db.DataAccessObject;
 
 public class PlayAppOwnerDao extends DataAccessObject {
 

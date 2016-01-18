@@ -23,7 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import de.onyxbits.raccoon.db.AndroidApp;
+import de.onyxbits.raccoon.appmgr.AndroidApp;
 import de.onyxbits.raccoon.transfer.TransferPeerBuilder;
 import de.onyxbits.raccoon.transfer.TransferWorker;
 import de.onyxbits.raccoon.vfs.AppExpansionMainNode;

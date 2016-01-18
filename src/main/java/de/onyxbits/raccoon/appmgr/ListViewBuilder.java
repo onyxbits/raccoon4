@@ -26,8 +26,6 @@ import java.util.Vector;
 
 import javax.swing.JPanel;
 
-import de.onyxbits.raccoon.db.AndroidApp;
-import de.onyxbits.raccoon.db.AppGroup;
 import de.onyxbits.raccoon.gui.Traits;
 import de.onyxbits.raccoon.net.ServerManager;
 import de.onyxbits.raccoon.ptools.BridgeManager;

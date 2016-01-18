@@ -24,7 +24,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.onyxbits.raccoon.db.AndroidApp;
+import de.onyxbits.raccoon.appmgr.AndroidApp;
 import de.onyxbits.raccoon.vfs.AppExpansionMainNode;
 import de.onyxbits.raccoon.vfs.AppExpansionPatchNode;
 import de.onyxbits.raccoon.vfs.AppIconNode;

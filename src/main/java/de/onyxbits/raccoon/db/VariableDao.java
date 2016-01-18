@@ -20,6 +20,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import de.onyxbits.raccoon.gplay.PlayProfile;
+
 public final class VariableDao extends DataAccessObject {
 
 	/**

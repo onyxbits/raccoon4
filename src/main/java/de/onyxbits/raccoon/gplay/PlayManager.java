@@ -35,8 +35,6 @@ import com.akdeniz.googleplaycrawler.GooglePlayAPI;
 import com.akdeniz.googleplaycrawler.Utils;
 
 import de.onyxbits.raccoon.db.DatabaseManager;
-import de.onyxbits.raccoon.db.PlayProfile;
-import de.onyxbits.raccoon.db.PlayProfileDao;
 import de.onyxbits.raccoon.db.VariableDao;
 
 /**

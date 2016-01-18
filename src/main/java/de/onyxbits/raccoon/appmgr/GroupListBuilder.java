@@ -29,10 +29,6 @@ import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import de.onyxbits.raccoon.db.AndroidApp;
-import de.onyxbits.raccoon.db.AndroidAppDao;
-import de.onyxbits.raccoon.db.AppGroup;
-import de.onyxbits.raccoon.db.AppGroupDao;
 import de.onyxbits.raccoon.db.DatabaseManager;
 import de.onyxbits.weave.swing.AbstractPanelBuilder;
 

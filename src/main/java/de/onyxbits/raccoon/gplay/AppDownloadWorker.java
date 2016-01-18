@@ -29,13 +29,10 @@ import com.akdeniz.googleplaycrawler.DownloadData;
 import com.akdeniz.googleplaycrawler.GooglePlay.DocV2;
 import com.akdeniz.googleplaycrawler.GooglePlayAPI;
 
+import de.onyxbits.raccoon.appmgr.AndroidApp;
+import de.onyxbits.raccoon.appmgr.AndroidAppDao;
 import de.onyxbits.raccoon.appmgr.DetailsViewBuilder;
-import de.onyxbits.raccoon.db.AndroidApp;
-import de.onyxbits.raccoon.db.AndroidAppDao;
 import de.onyxbits.raccoon.db.DatabaseManager;
-import de.onyxbits.raccoon.db.PlayAppOwner;
-import de.onyxbits.raccoon.db.PlayAppOwnerDao;
-import de.onyxbits.raccoon.db.PlayProfile;
 import de.onyxbits.raccoon.transfer.TransferPeerBuilder;
 import de.onyxbits.raccoon.transfer.TransferWorker;
 import de.onyxbits.raccoon.vfs.AppExpansionMainNode;

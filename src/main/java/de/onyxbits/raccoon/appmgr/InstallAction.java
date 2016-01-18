@@ -22,7 +22,6 @@ import java.util.List;
 
 import javax.swing.JTextField;
 
-import de.onyxbits.raccoon.db.AndroidApp;
 import de.onyxbits.raccoon.gui.Traits;
 import de.onyxbits.raccoon.ptools.BridgeAction;
 import de.onyxbits.raccoon.ptools.InstallWorker;

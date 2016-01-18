@@ -19,7 +19,10 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
- * Superclass for DAOs.
+ * Superclass for data access objects. All DAOs are versioned by their simple
+ * name, so the simple name must be unique (we use the simple name instead of
+ * the FQN because the later would create havoc in case a DAO containing package
+ * gets renamed or the DAO is moved to a different package).
  * 
  * @author patrick
  * 
@@ -50,7 +53,7 @@ public abstract class DataAccessObject {
 	 *          the version of the DAO that created the database table. This may
 	 *          be zero if the table doesn't exist, yet.
 	 * @param c
-	 *          the connection (transaction) to use for altering tables.
+	 *          the connection (in transaction mode) to use for altering tables.
 	 * @throws SQLException
 	 */
 	protected abstract void upgradeFrom(int tableVersion, Connection c)

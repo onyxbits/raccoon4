@@ -31,8 +31,6 @@ import javax.swing.JTextField;
 import com.akdeniz.googleplaycrawler.GooglePlay.DocV2;
 
 import de.onyxbits.raccoon.db.DatabaseManager;
-import de.onyxbits.raccoon.db.PlayProfile;
-import de.onyxbits.raccoon.db.PlayProfileDao;
 import de.onyxbits.raccoon.gui.Traits;
 import de.onyxbits.raccoon.setup.WizardLifecycle;
 import de.onyxbits.weave.Globals;

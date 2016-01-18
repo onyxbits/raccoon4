@@ -29,7 +29,7 @@ import javax.swing.JTextField;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 
-import de.onyxbits.raccoon.db.PlayProfile;
+import de.onyxbits.raccoon.gplay.PlayProfile;
 import de.onyxbits.raccoon.gui.HyperTextPane;
 
 /**

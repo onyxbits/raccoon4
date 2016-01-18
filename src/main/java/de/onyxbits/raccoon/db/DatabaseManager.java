@@ -233,7 +233,7 @@ public final class DatabaseManager {
 	 * @return a connection connection from the pool. The connection should be
 	 *         returned using disconnect() after doing it's unit of work.
 	 */
-	protected Connection connect() {
+	public Connection connect() {
 		if (pool.isEmpty()) {
 			try {
 				// Speedhack: The proper way of creating a connection is by looking it
@@ -255,7 +255,7 @@ public final class DatabaseManager {
 	 * @param c
 	 *          connection to return to the pool (do not close it).
 	 */
-	protected void disconnect(Connection c) {
+	public void disconnect(Connection c) {
 		try {
 			if (c.getAutoCommit() == false) {
 				// Getting here is actually a bug.

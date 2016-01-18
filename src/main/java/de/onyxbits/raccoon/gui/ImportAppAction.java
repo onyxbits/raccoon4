@@ -22,7 +22,7 @@ import javax.swing.AbstractAction;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import de.onyxbits.raccoon.db.AndroidApp;
+import de.onyxbits.raccoon.appmgr.AndroidApp;
 import de.onyxbits.raccoon.transfer.TransferManager;
 import de.onyxbits.weave.Globals;
 import de.onyxbits.weave.LifecycleManager;

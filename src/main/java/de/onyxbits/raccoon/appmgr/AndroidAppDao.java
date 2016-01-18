@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.onyxbits.raccoon.db;
+package de.onyxbits.raccoon.appmgr;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -26,6 +26,8 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+
+import de.onyxbits.raccoon.db.DataAccessObject;
 
 import net.dongliu.apk.parser.ApkParser;
 import net.dongliu.apk.parser.bean.ApkMeta;

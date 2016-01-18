@@ -33,7 +33,7 @@ import org.apache.commons.io.IOUtils;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 
-import de.onyxbits.raccoon.db.AndroidApp;
+import de.onyxbits.raccoon.appmgr.AndroidApp;
 import de.onyxbits.raccoon.gui.Traits;
 import de.onyxbits.raccoon.vfs.AppExpansionMainNode;
 import de.onyxbits.raccoon.vfs.AppExpansionPatchNode;

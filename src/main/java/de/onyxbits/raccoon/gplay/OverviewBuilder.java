@@ -36,7 +36,6 @@ import com.akdeniz.googleplaycrawler.GooglePlay.DocV2;
 
 import de.onyxbits.raccoon.Bookmarks;
 import de.onyxbits.raccoon.db.DatabaseManager;
-import de.onyxbits.raccoon.db.PlayProfile;
 import de.onyxbits.raccoon.db.VariableDao;
 import de.onyxbits.raccoon.gui.TitleStrip;
 import de.onyxbits.raccoon.gui.Traits;

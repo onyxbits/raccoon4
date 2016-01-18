@@ -27,9 +27,9 @@ import java.io.OutputStream;
 
 import javax.swing.SwingUtilities;
 
+import de.onyxbits.raccoon.appmgr.AndroidApp;
+import de.onyxbits.raccoon.appmgr.AndroidAppDao;
 import de.onyxbits.raccoon.appmgr.DetailsViewBuilder;
-import de.onyxbits.raccoon.db.AndroidApp;
-import de.onyxbits.raccoon.db.AndroidAppDao;
 import de.onyxbits.raccoon.db.DatabaseManager;
 import de.onyxbits.raccoon.transfer.TransferPeerBuilder;
 import de.onyxbits.raccoon.transfer.TransferWorker;

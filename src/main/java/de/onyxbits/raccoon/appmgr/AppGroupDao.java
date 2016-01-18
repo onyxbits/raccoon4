@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.onyxbits.raccoon.db;
+package de.onyxbits.raccoon.appmgr;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -22,7 +22,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Vector;
 
-public class AppGroupDao extends DataAccessObject {
+import de.onyxbits.raccoon.db.DataAccessObject;
+
+class AppGroupDao extends DataAccessObject {
 
 	/**
 	 * Table version

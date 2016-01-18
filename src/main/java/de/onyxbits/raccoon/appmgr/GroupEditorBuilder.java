@@ -32,8 +32,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import de.onyxbits.raccoon.db.AppGroup;
-import de.onyxbits.raccoon.db.AppGroupDao;
 import de.onyxbits.raccoon.db.DatabaseManager;
 import de.onyxbits.raccoon.gui.ButtonBarBuilder;
 import de.onyxbits.raccoon.gui.DialogBuilder;
