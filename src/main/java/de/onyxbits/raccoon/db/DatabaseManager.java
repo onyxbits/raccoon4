@@ -118,7 +118,7 @@ public final class DatabaseManager {
 				throw new IllegalStateException("Database version conflict!");
 			}
 
-			ret.setOwner(this);
+			ret.setManager(this);
 			daos.put(daoclass, ret);
 		}
 		return ret;

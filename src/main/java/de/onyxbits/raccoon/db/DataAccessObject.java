@@ -23,6 +23,9 @@ import java.sql.SQLException;
  * name, so the simple name must be unique (we use the simple name instead of
  * the FQN because the later would create havoc in case a DAO containing package
  * gets renamed or the DAO is moved to a different package).
+ * <p>
+ * DAO instances should only be acquired through
+ * {@link DatabaseManager#get(Class)}.
  * 
  * @author patrick
  * 
@@ -32,14 +35,14 @@ public abstract class DataAccessObject {
 	protected DatabaseManager manager;
 
 	/**
-	 * Initialize.
+	 * Set the owning manager.
 	 * 
 	 * @param m
 	 *          the manager this DAO belongs to
 	 * @param c
 	 *          the connection to use.
 	 */
-	protected void setOwner(DatabaseManager m) {
+	public void setManager(DatabaseManager m) {
 		this.manager = m;
 	}
 
