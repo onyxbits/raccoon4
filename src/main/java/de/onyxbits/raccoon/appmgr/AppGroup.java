@@ -21,7 +21,7 @@ package de.onyxbits.raccoon.appmgr;
  * @author patrick
  * 
  */
-class AppGroup {
+public class AppGroup {
 
 	private long groupId;
 

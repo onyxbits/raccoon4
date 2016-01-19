@@ -24,7 +24,7 @@ import java.util.Vector;
 
 import de.onyxbits.raccoon.db.DataAccessObject;
 
-class AppGroupDao extends DataAccessObject {
+public class AppGroupDao extends DataAccessObject {
 
 	/**
 	 * Table version
