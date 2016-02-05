@@ -21,8 +21,6 @@ import java.util.concurrent.CancellationException;
 
 import javax.imageio.IIOException;
 import javax.imageio.ImageIO;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
 import javax.swing.SwingWorker;
 
 import de.onyxbits.raccoon.db.DatabaseManager;
@@ -68,10 +66,10 @@ class ListWorker extends SwingWorker<List<AndroidApp>, ListItemBuilder> {
 			AppIconNode ain = new AppIconNode(layout, app.getPackageName(),
 					app.getVersionCode());
 			try {
-			publish(new ListItemBuilder(app, ImageIO.read(ain.resolve())));
+				publish(new ListItemBuilder(app, ImageIO.read(ain.resolve())));
 			}
 			catch (IIOException e) {
-				publish(new ListItemBuilder(app,null));
+				publish(new ListItemBuilder(app, null));
 			}
 		}
 		return apps;
