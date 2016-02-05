@@ -143,9 +143,6 @@ public final class LifecycleManager implements Runnable {
 	public void destroyWindow(String id) {
 		Window bye = secondaries.get(id);
 		if (bye != null) {
-			// Be explicit! There might be listeners that want notification
-			bye.getToolkit().getSystemEventQueue()
-					.postEvent(new WindowEvent(bye, WindowEvent.WINDOW_CLOSING));
 			bye.dispose();
 			secondaries.remove(id);
 			lifecycle.onDestroySecondaryWindow(id);
@@ -153,29 +150,16 @@ public final class LifecycleManager implements Runnable {
 	}
 
 	/**
-	 * Close a managed window by sending a window event. The window may be
-	 * reopened later.
+	 * Hide a managed window. The window may be reopened later.
 	 * 
 	 * @param id
 	 *          window identifier.
 	 */
-	public void closeWindow(String id) {
+	public void hideWindow(String id) {
 		Window w = getWindow(id);
 		if (w != null) {
-			closeWindow(w);
+			w.setVisible(false);
 		}
-	}
-
-	/**
-	 * Send a {@link WindowEvent#WINDOW_CLOSING} event to a given window. The
-	 * window is only hidden and may be shown again later.
-	 * 
-	 * @param w
-	 *          the window to close.
-	 */
-	public static void closeWindow(Window w) {
-		w.getToolkit().getSystemEventQueue()
-				.postEvent(new WindowEvent(w, WindowEvent.WINDOW_CLOSING));
 	}
 
 	/**

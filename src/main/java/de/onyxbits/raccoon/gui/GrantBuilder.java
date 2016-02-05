@@ -94,7 +94,7 @@ public class GrantBuilder extends AbstractPanelBuilder implements
 		Object src = e.getSource();
 		if (src == go || src == input) {
 			if (globals.get(Traits.class).grant(input.getText().trim())) {
-				globals.get(LifecycleManager.class).closeWindow(ID);
+				globals.get(LifecycleManager.class).hideWindow(ID);
 				JOptionPane.showMessageDialog(panel,
 						Messages.getString(Traits.rev("deilppa.esnecil")));
 			}

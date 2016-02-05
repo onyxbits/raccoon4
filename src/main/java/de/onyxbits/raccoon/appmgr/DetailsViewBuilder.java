@@ -320,7 +320,7 @@ public class DetailsViewBuilder extends AbstractPanelBuilder implements
 				}
 
 				globals.get(MyAppsViewBuilder.class).reloadList();
-				globals.get(LifecycleManager.class).closeWindow(ID);
+				globals.get(LifecycleManager.class).hideWindow(ID);
 			}
 			catch (Exception e) {
 				e.printStackTrace();
@@ -337,7 +337,7 @@ public class DetailsViewBuilder extends AbstractPanelBuilder implements
 				CardLayout l = (CardLayout) container.getLayout();
 				l.show(container, NOAPP);
 				// Slightly redundant:
-				globals.get(LifecycleManager.class).closeWindow(ID);
+				globals.get(LifecycleManager.class).hideWindow(ID);
 			}
 		}
 		groupList.reload();

@@ -68,6 +68,6 @@ public class UnavailableBuilder extends AbstractPanelBuilder implements
 		if (src == getit) {
 			lm.getWindow(GrantBuilder.ID).setVisible(true);
 		}
-		lm.closeWindow(ID);
+		lm.hideWindow(ID);
 	}
 }
