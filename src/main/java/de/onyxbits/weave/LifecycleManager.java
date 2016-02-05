@@ -17,7 +17,6 @@ package de.onyxbits.weave;
 
 import java.awt.EventQueue;
 import java.awt.Window;
-import java.awt.event.WindowEvent;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Set;
