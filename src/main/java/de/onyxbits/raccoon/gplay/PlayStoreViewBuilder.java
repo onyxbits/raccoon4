@@ -219,7 +219,7 @@ public class PlayStoreViewBuilder extends AbstractPanelBuilder implements
 	public void actionPerformed(ActionEvent e) {
 		globals.get(PlayManager.class).searchApps(query.getText());
 		query.requestFocusInWindow();
-		query.setText("");
+		query.selectAll();
 		globals.get(ImageLoaderService.class).cancelPending();
 	}
 
