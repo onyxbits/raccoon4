@@ -44,8 +44,6 @@ import de.onyxbits.raccoon.db.VariableDao;
  * 
  */
 public class PlayManager {
-	
-	private static final int LIMIT = 15;
 
 	private ArrayList<PlayListener> listeners;
 	private String appQuery;
@@ -83,8 +81,8 @@ public class PlayManager {
 			currentAppSearch.cancel(false);
 		}
 		currentAppSearch = new SearchAppWorker(this, createConnection(), appQuery,
-				appOffset, LIMIT);
-		appOffset += LIMIT;
+				appOffset, AppStoreListBuilder.PAGESIZE);
+		appOffset += AppStoreListBuilder.PAGESIZE;
 		currentAppSearch.execute();
 	}
 
@@ -204,7 +202,8 @@ public class PlayManager {
 	protected void fireAppSearchResult(List<DocV2> apps) {
 		currentAppSearch = null;
 		for (PlayListener listener : listeners) {
-			listener.onAppSearchResult(apps, appOffset > LIMIT);
+			listener
+					.onAppSearchResult(apps, appOffset > AppStoreListBuilder.PAGESIZE);
 		}
 	}
 

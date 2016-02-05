@@ -20,6 +20,7 @@ import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 import java.util.List;
 
+import javax.swing.Box;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
@@ -32,7 +33,7 @@ import de.onyxbits.weave.swing.AbstractPanelBuilder;
  * Display search results as a list of {@link BriefAppDescriptionBuilder}S. The
  * panel is suppose to be wrapped in a {@link JScrollPane} for which the builder
  * is subscribed as {@link AdjustmentListener}. Scrolling down results in more
- * entires being loaded.
+ * entries being loaded.
  * 
  * @author patrick
  * 
@@ -40,8 +41,15 @@ import de.onyxbits.weave.swing.AbstractPanelBuilder;
 class AppStoreListBuilder extends AbstractPanelBuilder implements
 		AdjustmentListener, PlayListener {
 
+	/**
+	 * Number of entries per result page.
+	 */
+	protected static final int PAGESIZE = 15;
+
 	private JPanel catalog;
 	private boolean loading;
+
+	private boolean padded;
 
 	@Override
 	protected JPanel assemble() {
@@ -56,7 +64,7 @@ class AppStoreListBuilder extends AbstractPanelBuilder implements
 		if (e.getSource() instanceof JScrollBar) {
 			JScrollBar bar = (JScrollBar) e.getSource();
 			if (e.getValue() > (bar.getMaximum() - bar.getModel().getExtent()) * 0.85f) {
-				if (!loading) {
+				if (!loading && !padded) {
 					globals.get(PlayManager.class).moreApps();
 				}
 			}
@@ -69,8 +77,14 @@ class AppStoreListBuilder extends AbstractPanelBuilder implements
 			catalog.removeAll();
 		}
 
+		padded = false;
 		for (DocV2 app : apps) {
 			catalog.add(new BriefAppDescriptionBuilder(app).build(globals));
+		}
+		for (int x = apps.size(); x < PAGESIZE; x++) {
+			// Pad if we don't have enough results.
+			catalog.add(Box.createGlue());
+			padded = true;
 		}
 		catalog.revalidate();
 		loading = false;
