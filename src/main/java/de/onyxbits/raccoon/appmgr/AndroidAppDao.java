@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Locale;
 
 import de.onyxbits.raccoon.db.DataAccessObject;
+import de.onyxbits.raccoon.db.DatabaseManager;
 
 import net.dongliu.apk.parser.ApkParser;
 import net.dongliu.apk.parser.bean.ApkMeta;
@@ -46,6 +47,13 @@ public final class AndroidAppDao extends DataAccessObject {
 				v1(c);
 			}
 		}
+	}
+
+	@Override
+	public void setManager(DatabaseManager dbm) {
+		super.setManager(dbm);
+		// We JOIN tables in details(), so make sure they exist.
+		dbm.get(AppGroupDao.class);
 	}
 
 	@Override
