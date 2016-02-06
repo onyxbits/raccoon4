@@ -31,7 +31,7 @@ import de.onyxbits.raccoon.vfs.Layout;
 /**
  * Utility for executing a bulk details query and printing the result. The query
  * is performed with the default database, profile and language unless
- * overwritten by -Draccoon.homdir, -Draccoon.profile, and -Duser.language
+ * overwritten by -Draccoon.homdir, -Draccoon.playprofile, and -Duser.language
  * <p>
  * The main method either excepts a list of packagenames as input parameters or
  * the path to a textfile containing packagenames (one name per line, empty
@@ -72,7 +72,7 @@ public class BulkDetailsQuery {
 
 		String alias = database.get(VariableDao.class).getVar(
 				VariableDao.PLAYPASSPORT_ALIAS,
-				System.getProperty("raccoon.profile", database.get(VariableDao.class)
+				System.getProperty("raccoon.playprofile", database.get(VariableDao.class)
 						.getVar(VariableDao.PLAYPASSPORT_ALIAS, null)));
 		if (alias == null) {
 			fail("No profile to connect with");
