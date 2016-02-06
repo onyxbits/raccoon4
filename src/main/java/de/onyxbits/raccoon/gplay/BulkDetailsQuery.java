@@ -24,9 +24,9 @@ import java.util.Vector;
 import com.akdeniz.googleplaycrawler.GooglePlay.BulkDetailsResponse;
 import com.akdeniz.googleplaycrawler.GooglePlayAPI;
 
+import de.onyxbits.raccoon.cli.GlobalsProvider;
 import de.onyxbits.raccoon.db.DatabaseManager;
-import de.onyxbits.raccoon.db.VariableDao;
-import de.onyxbits.raccoon.vfs.Layout;
+import de.onyxbits.weave.Globals;
 
 /**
  * Utility for executing a bulk details query and printing the result. The query
@@ -48,7 +48,7 @@ public class BulkDetailsQuery {
 		System.err.println(reason);
 		System.exit(1);
 	}
-
+	
 	/**
 	 * Execute a bulk query, dump the result on the console or into files.
 	 * 
@@ -62,24 +62,6 @@ public class BulkDetailsQuery {
 		if (args == null || args.length == 0) {
 			fail("Either supply a text file with one packagename per line or a list of packagenames as argument(s).");
 		}
-
-		DatabaseManager database = new DatabaseManager(Layout.DEFAULT.databaseDir);
-		database.startup();
-
-		if (!database.isCompatible(VariableDao.class)) {
-			fail("Incompatible database");
-		}
-
-		String alias = database.get(VariableDao.class).getVar(
-				VariableDao.PLAYPASSPORT_ALIAS,
-				System.getProperty("raccoon.playprofile", database.get(VariableDao.class)
-						.getVar(VariableDao.PLAYPASSPORT_ALIAS, null)));
-		if (alias == null) {
-			fail("No profile to connect with");
-		}
-
-		PlayManager playManager = new PlayManager(database);
-		playManager.selectProfile(alias);
 
 		Vector<String> tmp = new Vector<String>();
 		File input = new File(args[0]);
@@ -103,6 +85,16 @@ public class BulkDetailsQuery {
 
 		if (tmp.size() == 0) {
 			fail("No package names!");
+		}
+
+		Globals globals = GlobalsProvider.getGlobals();
+		if (globals.get(DatabaseManager.class) == null) {
+			fail("Database in use by another process or incompatible with this version.");
+		}
+
+		PlayManager playManager = globals.get(PlayManager.class);
+		if (playManager == null) {
+			fail("No profile to connect with");
 		}
 
 		GooglePlayAPI api = playManager.createConnection();
