@@ -213,6 +213,7 @@ public class PlayStoreViewBuilder extends AbstractPanelBuilder implements
 		}
 		CardLayout l = (CardLayout) sidebar.getLayout();
 		l.show(sidebar, RESULTS);
+		query.requestFocusInWindow();
 	}
 
 	@Override
