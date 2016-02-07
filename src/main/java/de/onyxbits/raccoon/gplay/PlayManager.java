@@ -97,7 +97,7 @@ public class PlayManager {
 		active = databaseManager.get(PlayProfileDao.class).get(alias);
 		if (active != null) {
 			databaseManager.get(VariableDao.class).setVar(
-					VariableDao.PLAYPASSPORT_ALIAS, active.getAlias());
+					VariableDao.PLAYPROFILE, active.getAlias());
 		}
 		for (PlayListener listener : listeners) {
 			listener.onProfileActivated(this);

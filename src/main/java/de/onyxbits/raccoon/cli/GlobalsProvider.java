@@ -19,6 +19,8 @@ import de.onyxbits.raccoon.Main;
 import de.onyxbits.raccoon.db.DatabaseManager;
 import de.onyxbits.raccoon.db.VariableDao;
 import de.onyxbits.raccoon.gplay.PlayManager;
+import de.onyxbits.raccoon.gui.Traits;
+import de.onyxbits.raccoon.ptools.BridgeManager;
 import de.onyxbits.raccoon.vfs.Layout;
 import de.onyxbits.weave.Globals;
 import de.onyxbits.weave.GlobalsFactory;
@@ -31,7 +33,7 @@ import de.onyxbits.weave.util.Version;
  * @author patrick
  * 
  */
-public final class GlobalsProvider implements GlobalsFactory {
+final class GlobalsProvider implements GlobalsFactory {
 
 	/**
 	 * System property name
@@ -71,16 +73,30 @@ public final class GlobalsProvider implements GlobalsFactory {
 			return Layout.DEFAULT;
 		}
 
+		if (requested.equals(Traits.class)) {
+			return new Traits(globals.get(DatabaseManager.class).get(
+					VariableDao.class));
+		}
+
+		if (requested.equals(BridgeManager.class)) {
+			BridgeManager ret = new BridgeManager(Layout.DEFAULT);
+			ret.startup();
+			if (!ret.isRunning()) {
+				Router.fail("ptools.nobridge");
+			}
+			return ret;
+		}
+
 		if (requested.equals(DatabaseManager.class)) {
 			DatabaseManager ret = new DatabaseManager(Layout.DEFAULT.databaseDir);
 			try {
 				ret.startup();
 				if (!ret.isCompatible(VariableDao.class)) {
-					throw new RuntimeException("Version missmatch");
+					Router.fail("db.incompatible");
 				}
 			}
 			catch (Exception e) {
-				// e.printStackTrace();
+				Router.fail("db.inuse");
 				return null;
 			}
 			return ret;
@@ -88,16 +104,13 @@ public final class GlobalsProvider implements GlobalsFactory {
 
 		if (requested.equals(PlayManager.class)) {
 			DatabaseManager dbm = globals.get(DatabaseManager.class);
-			if (dbm == null) {
-				return null;
-			}
 			PlayManager ret = new PlayManager(dbm);
 			String alias = dbm.get(VariableDao.class).getVar(
-					VariableDao.PLAYPASSPORT_ALIAS,
+					VariableDao.PLAYPROFILE,
 					System.getProperty(PLAYPROFILESYSPROP, dbm.get(VariableDao.class)
-							.getVar(VariableDao.PLAYPASSPORT_ALIAS, null)));
+							.getVar(VariableDao.PLAYPROFILE, null)));
 			if (alias == null) {
-				return null;
+				Router.fail("play.profile");
 			}
 			ret.selectProfile(alias);
 			return ret;
@@ -113,5 +126,4 @@ public final class GlobalsProvider implements GlobalsFactory {
 		}
 		return null;
 	}
-
 }

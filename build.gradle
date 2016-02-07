@@ -69,6 +69,7 @@ dependencies {
     compile 'org.apache.httpcomponents:httpclient:4.2.3'
     compile 'org.apache.httpcomponents:httpcore:4.2.2'
     compile 'commons-io:commons-io:2.4'
+    compile 'commons-cli:commons-cli:1.3.1'
 
     // Declare the dependency for your favourite test framework you want to use in your tests.
     // TestNG is also supported by the Gradle Test task. Just change the

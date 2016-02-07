@@ -22,6 +22,7 @@ import javax.swing.JOptionPane;
 
 import de.onyxbits.raccoon.appmgr.DetailsViewBuilder;
 import de.onyxbits.raccoon.appmgr.MyAppsViewBuilder;
+import de.onyxbits.raccoon.cli.Router;
 import de.onyxbits.raccoon.db.DatabaseManager;
 import de.onyxbits.raccoon.db.VariableDao;
 import de.onyxbits.raccoon.gplay.ImportBuilder;
@@ -59,7 +60,7 @@ public final class Main {
 			startGui();
 		}
 		else {
-
+			Router.main(args);
 		}
 	}
 
@@ -103,7 +104,7 @@ public final class Main {
 		}
 
 		String alias = database.get(VariableDao.class).getVar(
-				VariableDao.PLAYPASSPORT_ALIAS, null);
+				VariableDao.PLAYPROFILE, null);
 		PlayManager playManager = new PlayManager(database);
 		playManager.selectProfile(alias);
 
