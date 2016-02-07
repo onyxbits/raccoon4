@@ -27,7 +27,7 @@ public final class VariableDao extends DataAccessObject {
 	/**
 	 * KEY: the alias of the {@link PlayProfile} to use by default.
 	 */
-	public static final String PLAYPASSPORT_ALIAS = "playpassport_alias";
+	public static final String PLAYPROFILE = "playprofile";
 	
 	/**
 	 * KEY: when the database was created
