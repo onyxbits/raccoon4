@@ -104,7 +104,7 @@ public class Router {
 			System.exit(0);
 		}
 
-		if (commandLine.hasOption(help.getOpt())) {
+		if (commandLine.hasOption(version.getOpt())) {
 			System.out.println(GlobalsProvider.getGlobals().get(Version.class));
 			System.exit(0);
 		}
