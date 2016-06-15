@@ -1,6 +1,5 @@
 package com.akdeniz.googleplaycrawler;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
@@ -8,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -130,7 +128,8 @@ public class GooglePlayAPI {
 		this.setEmail(email);
 		this.password = password;
 		setClient(new DefaultHttpClient(getConnectionManager()));
-		setUseragent("Android-Finsky/3.10.14 (api=3,versionCode=8016014,sdk=15,device=GT-I9300,hardware=aries,product=GT-I9300)");
+		// setUseragent("Android-Finsky/3.10.14 (api=3,versionCode=8016014,sdk=15,device=GT-I9300,hardware=aries,product=GT-I9300)");
+		setUseragent("Android-Finsky/6.5.08.D-all (versionCode=80650800,sdk=23,device=noblelte,hardware=noblelte,product=noblelte,build=MMB29K:user)");
 	}
 
 	/**
@@ -184,16 +183,16 @@ public class GooglePlayAPI {
 				new String[][] {
 						{ "Email", this.getEmail() },
 						{ "Passwd", this.password },
+						{ "add_account", "1"},
 						{ "service", "ac2dm" },
 						{ "accountType", ACCOUNT_TYPE_HOSTED_OR_GOOGLE },
 						{ "has_permission", "1" },
-						{ "add_account", "1"},
 						{ "source", "android" },
 						{ "app", "com.google.android.gsf" },
 						{ "device_country", "us" },
 						{ "device_country", "us" },
 						{ "lang", "en" },
-						{ "sdk_version", "21" }, }, null);
+						{ "sdk_version", "17" }, }, null);
 
 		Map<String, String> c2dmAuth = Utils.parseResponse(new String(Utils.readAll(c2dmResponseEntity
 				.getContent())));
@@ -232,15 +231,15 @@ public class GooglePlayAPI {
 				{ "Email", this.getEmail() },
 				{ "Passwd", this.password },
 				{ "service", "androidmarket" },
+				{ "add_account", "1"},
 				{ "accountType", ACCOUNT_TYPE_HOSTED_OR_GOOGLE },
 				{ "has_permission", "1" },
-				{ "add_account", "1"},
 				{ "source", "android" },
 				{ "androidId", this.getAndroidID() },
 				{ "app", "com.android.vending" },
 				{ "device_country", "en" },
 				{ "lang", "en" },
-				{ "sdk_version", "21" }, }, null);
+				{ "sdk_version", "17" }, }, null);
 
 		Map<String, String> response = Utils.parseResponse(new String(Utils.readAll(responseEntity
 				.getContent())));
@@ -487,6 +486,7 @@ public class GooglePlayAPI {
 
 		HttpEntity httpEntity = executePost(path, datapost, getHeaderParameters(this.getToken(), null));
 		return GooglePlay.ResponseWrapper.parseFrom(httpEntity.getContent());
+
 	}
 
 	/**
@@ -603,9 +603,7 @@ public class GooglePlayAPI {
 						"nocache:billing.use_charging_poller,market_emails,buyer_currency,prod_baseline,checkin.set_asset_paid_app_field,shekel_test,content_ratings,buyer_currency_in_app,nocache:encrypted_apk,recent_changes" },
 				{ "X-DFE-Device-Id", this.getAndroidID() },
 				{ "X-DFE-Client-Id", "am-android-google" },
-				{
-						"User-Agent",
-						getUseragent() },
+				{ "User-Agent", getUseragent() },
 				{ "X-DFE-SmallestScreenWidthDp", "320" },
 				{ "X-DFE-Filter-Level", "3" },
 				{ "Host", "android.clients.google.com" },
@@ -691,7 +689,8 @@ public class GooglePlayAPI {
 	}
 
 	/**
-	 * @param useragent the useragent to set
+	 * @param useragent
+	 *          the useragent to set
 	 */
 	public void setUseragent(String useragent) {
 		this.useragent = useragent;

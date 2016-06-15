@@ -172,14 +172,14 @@ public class Utils {
 				.newBuilder()
 				.setBuild(
 					AndroidBuildProto.newBuilder()
-						.setId("samsung/m0xx/m0:4.0.4/IMM76D/I9300XXALF2:user/release-keys")
-						.setProduct("smdk4x12").setCarrier("Google").setRadio("I9300XXALF2")
+						.setId("samsung/nobleltejv/noblelte:6.0.1/MMB29K/N920CXXU2BPD6:user/release-keys")
+						.setProduct("noblelte").setCarrier("Google").setRadio("I9300XXALF2")
 						.setBootloader("PRIMELA03").setClient("android-google")
-						.setTimestamp(new Date().getTime() / 1000).setGoogleServices(16).setDevice("m0")
-						.setSdkVersion(21).setModel("GT-I9300").setManufacturer("Samsung")
-						.setBuildProduct("m0xx").setOtaInstalled(false)).setLastCheckinMsec(0)
+						.setTimestamp(new Date().getTime() / 1000).setGoogleServices(16).setDevice("noblelte")
+						.setSdkVersion(23).setModel("SM-N920C").setManufacturer("Samsung")
+						.setBuildProduct("noblelte").setOtaInstalled(false)).setLastCheckinMsec(0)
 				.setCellOperator("310260").setSimOperator("310260").setRoaming("mobile-notroaming")
-				.setUserNumber(0)).setLocale("en_US").setTimeZone("Europe/Istanbul").setVersion(3)
+				.setUserNumber(0)).setLocale("en_US").setTimeZone("Europe/Berlin").setVersion(3)
 		.setDeviceConfiguration(getDeviceConfigurationProto()).setFragment(0).build();
     }
 
@@ -213,7 +213,7 @@ public class Utils {
 				"android.hardware.touchscreen.multitouch.jazzhand", "android.hardware.usb.accessory",
 				"android.hardware.usb.host", "android.hardware.wifi", "android.hardware.wifi.direct",
 				"android.software.live_wallpaper", "android.software.sip", "android.software.sip.voip",
-				"com.cyanogenmod.android", "com.cyanogenmod.nfc.enhanced",
+				"com.cyanogenmod.android", "com.cyanogenmod.nfc.enhanced", "org.cyanogenmod.theme",
 				"com.google.android.feature.GOOGLE_BUILD", "com.nxp.mifare", "com.tmobile.software.themes"))
 		.addAllNativePlatform(Arrays.asList("armeabi-v7a", "armeabi"))
 		.setScreenWidth(720)
