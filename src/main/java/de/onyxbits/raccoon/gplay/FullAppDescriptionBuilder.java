@@ -20,6 +20,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Image;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.URL;
@@ -146,37 +147,57 @@ class FullAppDescriptionBuilder extends AbstractPanelBuilder implements
 		ratingCount.setPreferredSize(max);
 
 		JPanel stats = new JPanel();
-		stats.setLayout(new GridLayout(0, 2, 15, 5));
-		stats.add(size);
-		stats.add(published);
-		stats.add(starRating);
-		stats.add(ratingCount);
-		stats.add(price);
-		stats.add(downloads);
+		stats.setLayout(new GridBagLayout());
+		gbc = new GridBagConstraints();
+		gbc.gridx = 0;
+		gbc.gridy = 0;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.anchor = GridBagConstraints.NORTHWEST;
+		gbc.insets = new Insets(2, 2, 2, 2);
+		stats.add(size, gbc);
+
+		gbc.gridx = 1;
+		gbc.gridy = 0;
+		stats.add(published, gbc);
+
+		gbc.gridx = 0;
+		gbc.gridy = 1;
+		stats.add(starRating, gbc);
+
+		gbc.gridx = 1;
+		gbc.gridy = 1;
+		stats.add(ratingCount, gbc);
+
+		gbc.gridx = 0;
+		gbc.gridy = 2;
+		stats.add(price, gbc);
+
+		gbc.gridx = 1;
+		gbc.gridy = 2;
+		gbc.weightx = 1;
+		stats.add(downloads, gbc);
 
 		gbc = new GridBagConstraints();
 		gbc.gridx = 0;
 		gbc.gridy = 0;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.anchor = GridBagConstraints.NORTHWEST;
-		gbc.gridwidth = 2;
 		panel.add(titleStrip, gbc);
 
 		gbc.gridx = 0;
 		gbc.gridy = 1;
 
 		gbc.weightx = 0;
-		gbc.fill = GridBagConstraints.NONE;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.anchor = GridBagConstraints.NORTHWEST;
 		gbc.insets.bottom = 15;
 		gbc.insets.left = 10;
-		gbc.insets.right = 20;
+		gbc.insets.right = 10;
 		gbc.insets.top = 10;
-		gbc.gridwidth = 1;
 		panel.add(stats, gbc);
 
-		gbc.gridx = 1;
-		gbc.gridy = 1;
+		gbc.gridx = 0;
+		gbc.gridy = 3;
 		gbc.gridheight = 1;
 		gbc.weightx = 1;
 		gbc.fill = GridBagConstraints.NONE;
@@ -187,7 +208,6 @@ class FullAppDescriptionBuilder extends AbstractPanelBuilder implements
 		gbc.gridy = 2;
 		gbc.weighty = 1;
 		gbc.weightx = 1;
-		gbc.gridwidth = 2;
 		gbc.insets.bottom = 0;
 		gbc.insets.left = 0;
 		gbc.insets.right = 0;
