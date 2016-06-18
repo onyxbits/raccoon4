@@ -39,6 +39,8 @@ import de.onyxbits.raccoon.setup.WizardLifecycle;
 import de.onyxbits.raccoon.transfer.TransferViewBuilder;
 import de.onyxbits.raccoon.vfs.Layout;
 import de.onyxbits.weave.LifecycleManager;
+import de.onyxbits.weave.diag.DefaultReportHandler;
+import de.onyxbits.weave.diag.ReportManager;
 
 /**
  * Application Launcher
@@ -83,6 +85,10 @@ public final class Main {
 		 * UIManager.getLookAndFeelDefaults().put("Panel.background", //
 		 * java.awt.Color.decode("#EDECEB")); } catch (Exception e) { } } } }
 		 */
+
+		ReportManager.setReportHandler(new DefaultReportHandler(
+				Layout.DEFAULT.homeDir));
+		ReportManager.supervise();
 
 		// Startup speed matters big time! So in order to show the UI ASAP, use
 		// every bit of idle time to force the classloader into resolving bytecode
