@@ -240,6 +240,12 @@ class FullAppDescriptionBuilder extends AbstractPanelBuilder implements
 				doc.getBackendDocid(), doc.getDetails().getAppDetails()
 						.getVersionCode());
 		download.setEnabled(!ain.resolve().exists());
+		if (download.isEnabled()) {
+			download.setToolTipText(null);
+		}
+		else {
+			download.setToolTipText(Messages.getString(ID + ".alreadydownloaded"));
+		}
 	}
 
 	private void showLoading() {
