@@ -47,6 +47,7 @@ import de.onyxbits.raccoon.ptools.BridgeManager;
 import de.onyxbits.weave.LifecycleManager;
 import de.onyxbits.weave.swing.AbstractPanelBuilder;
 import de.onyxbits.weave.swing.ImageLoaderService;
+import de.onyxbits.weave.window.Focus;
 
 /**
  * The main interface for browsing Google Play
@@ -154,6 +155,7 @@ public class PlayStoreViewBuilder extends AbstractPanelBuilder implements
 
 		globals.get(PlayManager.class).addPlayListener(this);
 		globals.get(BridgeManager.class).addBridgeListener(this);
+		Focus.on(query);
 		return panel;
 	}
 
