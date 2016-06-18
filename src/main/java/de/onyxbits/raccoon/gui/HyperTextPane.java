@@ -46,7 +46,6 @@ public class HyperTextPane extends JEditorPane {
 	public HyperTextPane(String txt) {
 		super("text/html", txt);
 		setEditable(false);
-		setFocusable(true);
 	}
 
 	@Override
