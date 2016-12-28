@@ -44,7 +44,7 @@ class AppStoreListBuilder extends AbstractPanelBuilder implements
 	/**
 	 * Number of entries per result page.
 	 */
-	protected static final int PAGESIZE = 15;
+	protected static final int PAGESIZE = 20;
 
 	private JPanel catalog;
 	private boolean loading;
