@@ -90,7 +90,7 @@ class BriefAppDescriptionBuilder extends AbstractPanelBuilder implements
 
 		JPanel stars = new StarPanel(5,
 				doc.getAggregateRating().getStarRating() / 5);
-		DecimalFormat df = new DecimalFormat("#.##");
+		DecimalFormat df = new DecimalFormat("#.## \u2605");
 		stars.setToolTipText(df.format(doc.getAggregateRating().getStarRating()));
 
 		gbc.gridx = 0;
