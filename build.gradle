@@ -52,6 +52,7 @@ launch4j {
   outfile = 'Raccoon-' +version +'.exe'
   mainClassName = 'de.onyxbits.raccoon.Main'
   opt='-Dswing.defaultlaf=com.sun.java.swing.plaf.windows.WindowsLookAndFeel'
+  opt='-Djava.net.preferIPv4Stack=true'
   jar = "lib/${project.tasks.fatJar.archiveName}"
   icon= '../../icon.ico'
 }
