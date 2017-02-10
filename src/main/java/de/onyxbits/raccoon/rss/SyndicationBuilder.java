@@ -94,14 +94,14 @@ public class SyndicationBuilder extends AbstractPanelBuilder {
 	public void onResult(List<FeedItem> items) {
 		StringBuilder sb = new StringBuilder("<dl>");
 		for (FeedItem item : items) {
-			sb.append("<dt><a href=\"");
+			sb.append("<dt style=\"margin:3px;font-weight:700;\"><a href=\"");
 			sb.append(item.getLink());
 			sb.append("\">");
 			sb.append(item.getTitle());
 			sb.append("</a></dt>");
-			sb.append("<dd>");
+			sb.append("<dd style=\"margin:5px 15px 10px 15px;\">");
 			sb.append(item.getDescription());
-			sb.append("<p><div align=\"right\"><small><i>");
+			sb.append("<p><div style=\"text-align:right;\"><small><i>");
 			sb.append(item.getAuthor());
 			sb.append("</i></small></dd>");
 		}
