@@ -85,7 +85,7 @@ final class OverviewBuilder extends AbstractPanelBuilder implements
 			InfoBuilder plug = new InfoBuilder(Messages.getString(ID + ".plug.title"));
 			plugPanel = plug.build(globals);
 			plug.setInfo(MessageFormat.format(
-					Messages.getString(ID + ".plug.message"), Bookmarks.ORDER));
+					Messages.getString(ID + ".plug.message"), Bookmarks.FEATURELIST, Bookmarks.ORDER));
 			plugPanel.setBorder(border);
 		}
 		else {

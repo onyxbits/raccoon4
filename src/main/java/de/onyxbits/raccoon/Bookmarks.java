@@ -35,6 +35,8 @@ public final class Bookmarks {
 
 	public static final URI SHOUTBOXFEED = BASE.resolve("/feed/shoutbox");
 
-	public static final Object USB_DEBUGGING = BASE.resolve("/content/enable-usb-debugging");
+	public static final URI USB_DEBUGGING = BASE.resolve("/content/enable-usb-debugging");
+
+	public static final URI FEATURELIST = BASE.resolve("/premiumfeatures");
 
 }
