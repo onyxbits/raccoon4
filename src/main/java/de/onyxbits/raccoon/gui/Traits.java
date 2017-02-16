@@ -76,6 +76,10 @@ public class Traits {
 		}
 		return false;
 	}
+	
+	public boolean isMaxed() {
+		return isAvailable("4.0.x");
+	}
 
 	public String getChallenge() {
 		return challenge;

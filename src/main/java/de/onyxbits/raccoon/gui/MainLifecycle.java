@@ -142,6 +142,8 @@ public final class MainLifecycle implements Lifecycle, GlobalsFactory {
 		bridgeManager.addBridgeListener(ssa);
 		bridgeManager.addBridgeListener(pua);
 		ProfilesMenuBuilder pmb = new ProfilesMenuBuilder();
+		
+		wt.grants.setEnabled(!(globals.get(Traits.class).isMaxed()));
 
 		MenuBarBuilder mbb = new MenuBarBuilder()
 				.withLocalizer(Messages.getLocalizer())

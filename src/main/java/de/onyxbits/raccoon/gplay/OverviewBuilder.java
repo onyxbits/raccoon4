@@ -182,7 +182,7 @@ final class OverviewBuilder extends AbstractPanelBuilder implements
 				.get(VariableDao.class).getVar(VariableDao.CREATED, "0"));
 		// Two weeks should be a reasonable trial time.
 		if (now - created > 1000 * 60 * 60 * 24 * 7 * 2) {
-			if (!globals.get(Traits.class).isAvailable("4.0.x")) {
+			if (!globals.get(Traits.class).isMaxed()) {
 				return true;
 			}
 		}
