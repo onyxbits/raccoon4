@@ -51,7 +51,16 @@ public class Utils {
 
 	while (st.hasMoreTokens()) {
 	    String[] keyValue = st.nextToken().split("=");
-	    keyValueMap.put(keyValue[0], keyValue[1]);
+	    // Note to self: the original implementation did not check for array length.
+	    // Nowadays it is possible to get keys with empty values and therefore an
+	    // ArrayIndexOutOfBoundsException. Since we are only interested in "Auth=",
+	    // we can simply ignore everything that's not a k/v pair.
+	    if (keyValue.length==2) {
+	    	keyValueMap.put(keyValue[0], keyValue[1]);
+	    }
+	    else {
+	    	//System.err.println("Utils.paseResponse: "+response);
+	    }
 	}
 
 	return keyValueMap;

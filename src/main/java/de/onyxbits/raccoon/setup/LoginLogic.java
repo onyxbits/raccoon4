@@ -104,6 +104,7 @@ public class LoginLogic extends WizardBuilder {
 				return;
 			}
 			status.setText(err.getLocalizedMessage());
+			throw(new RuntimeException(err));
 		}
 	}
 
