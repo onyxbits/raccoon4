@@ -18,6 +18,7 @@ package de.onyxbits.raccoon.ptools;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.ConnectException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -84,6 +85,9 @@ public class BridgeManager {
 					backend.wait();
 				}
 			}
+		}
+		catch (ConnectException e) {
+			// Don't care
 		}
 		catch (Exception e) {
 			e.printStackTrace();
