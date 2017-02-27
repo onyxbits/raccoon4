@@ -34,7 +34,16 @@ public class AppIconNode extends AppNode {
 		icon.getParentFile().mkdirs();
 		apkParser = new ApkParser(apk);
 		ApkMeta meta = apkParser.getApkMeta();
-		FileUtils.writeByteArrayToFile(icon, apkParser.getFileData(meta.getIcon()));
+		if (meta.getIcon()==null) {
+			apkParser.close();
+			throw new IOException("No icon in APK");
+		}
+		byte[] data = apkParser.getFileData(meta.getIcon());
+		if (data == null) {
+			apkParser.close();
+			throw new IOException("No icon in APK");
+		}
+		FileUtils.writeByteArrayToFile(icon, data);
 		apkParser.close();
 	}
 }

@@ -19,6 +19,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.sql.SQLException;
@@ -76,8 +77,6 @@ class AppDownloadWorker implements TransferWorker, ActionListener, Runnable {
 	private File iconFile;
 	private File mainFile;
 	private File patchFile;
-
-	
 
 	private int fileCount;
 
@@ -191,7 +190,12 @@ class AppDownloadWorker implements TransferWorker, ActionListener, Runnable {
 	public void onComplete() throws Exception {
 		AppIconNode ain = new AppIconNode(layout, packageName, versionCode);
 		iconFile = ain.resolve();
-		ain.extractFrom(apkFile);
+		try {
+			ain.extractFrom(apkFile);
+		}
+		catch (IOException e) {
+			// This is (probably) ok. Not all APKs contain icons.
+		}
 		download = AndroidAppDao.analyze(apkFile);
 		if (data.hasMainExpansion()) {
 			download.setMainVersion(data.getMainFileVersion());
