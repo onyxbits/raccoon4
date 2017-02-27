@@ -161,7 +161,7 @@ public final class TransferPeerBuilder extends AbstractPanelBuilder implements
 		gbc.anchor = GridBagConstraints.CENTER;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.weightx = 1;
-		gbc.insets.bottom = 0;
+		//gbc.insets.bottom = 0;
 		ret.add(progressBar, gbc);
 
 		gbc.gridy = 2;
@@ -170,6 +170,7 @@ public final class TransferPeerBuilder extends AbstractPanelBuilder implements
 		gbc.insets.left = 10;
 		gbc.weightx = 0;
 		gbc.fill = GridBagConstraints.NONE;
+		gbc.anchor = GridBagConstraints.EAST;
 		ret.add(cancel, gbc);
 
 		gbc.gridy = 2;
@@ -179,6 +180,7 @@ public final class TransferPeerBuilder extends AbstractPanelBuilder implements
 		gbc.insets.right = 5;
 		gbc.weightx = 0;
 		gbc.fill = GridBagConstraints.NONE;
+		gbc.anchor = GridBagConstraints.EAST;
 		if (viewListener != null) {
 			ret.add(view, gbc);
 			view.addActionListener(viewListener);
