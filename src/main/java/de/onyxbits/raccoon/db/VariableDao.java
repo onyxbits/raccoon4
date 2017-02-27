@@ -28,7 +28,7 @@ public final class VariableDao extends DataAccessObject {
 	 * KEY: the alias of the {@link PlayProfile} to use by default.
 	 */
 	public static final String PLAYPROFILE = "playprofile";
-	
+
 	/**
 	 * KEY: when the database was created
 	 */
@@ -97,11 +97,13 @@ public final class VariableDao extends DataAccessObject {
 			st.setString(1, key);
 			st.execute();
 			st.close();
-			st = c
-					.prepareStatement("INSERT INTO variables (name,value) VALUES (?, ?)");
-			st.setString(1, key);
-			st.setString(2, val);
-			st.execute();
+			if (val != null) {
+				st = c
+						.prepareStatement("INSERT INTO variables (name,value) VALUES (?, ?)");
+				st.setString(1, key);
+				st.setString(2, val);
+				st.execute();
+			}
 		}
 		catch (Exception e) {
 			// e.printStackTrace();

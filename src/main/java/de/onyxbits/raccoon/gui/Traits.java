@@ -67,8 +67,17 @@ public class Traits {
 	 * @return true if available, false otherwise.
 	 */
 	public boolean isAvailable(String id) {
-		String tmp = variables.getVar(kgrants, "");
-		String[] grants = interpret(tmp, challenge);
+		try {
+			long start = Long.parseLong(interpret(variables.getVar("kt", null),
+					challenge)[0]);
+			if (System.currentTimeMillis() < start + 1000 * 60 * 60 * 24 * 14) {
+				return true;
+			}
+		}
+		catch (Exception e) {
+			// doesn't matter
+		}
+		String[] grants = interpret(variables.getVar(kgrants, ""), challenge);
 		for (String grant : grants) {
 			if (grant.equals(id)) {
 				return true;
@@ -76,9 +85,15 @@ public class Traits {
 		}
 		return false;
 	}
-	
+
 	public boolean isMaxed() {
-		return isAvailable("4.0.x");
+		String[] grants = interpret(variables.getVar(kgrants, ""), challenge);
+		for (String grant : grants) {
+			if ("4.0.x".equals(grant)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public String getChallenge() {
@@ -87,9 +102,16 @@ public class Traits {
 
 	public boolean grant(String s) {
 		String[] tmp = interpret(s, challenge);
+		String t = variables.getVar("kt", null);
 		for (String a : tmp) {
 			if ("valid".equals(a)) {
 				variables.setVar(kgrants, s);
+				variables.setVar("kt", null);
+				return true;
+			}
+			if ("trial".equals(a) && t == null) {
+				variables.setVar("kt",
+						smoke(System.currentTimeMillis() + "", challenge));
 				return true;
 			}
 		}
