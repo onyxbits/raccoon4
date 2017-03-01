@@ -87,13 +87,11 @@ public class Traits {
 	}
 
 	public boolean isMaxed() {
-		String[] grants = interpret(variables.getVar(kgrants, ""), challenge);
-		for (String grant : grants) {
-			if ("4.0.x".equals(grant)) {
-				return true;
-			}
-		}
-		return false;
+		return isAvailable("4.0.x");
+	}
+	
+	public boolean isTrial() {
+		return isAvailable("trial");
 	}
 
 	public String getChallenge() {
