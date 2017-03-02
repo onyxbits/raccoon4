@@ -41,6 +41,10 @@ import javax.swing.border.EmptyBorder;
 
 import com.akdeniz.googleplaycrawler.GooglePlay.DocV2;
 
+import de.onyxbits.raccoon.db.DatabaseManager;
+import de.onyxbits.raccoon.db.VariableDao;
+import de.onyxbits.raccoon.db.VariableEvent;
+import de.onyxbits.raccoon.db.VariableListener;
 import de.onyxbits.raccoon.gui.Traits;
 import de.onyxbits.raccoon.ptools.BridgeListener;
 import de.onyxbits.raccoon.ptools.BridgeManager;
@@ -56,7 +60,7 @@ import de.onyxbits.weave.window.Focus;
  * 
  */
 public class PlayStoreViewBuilder extends AbstractPanelBuilder implements
-		PlayListener, BridgeListener, ActionListener {
+		PlayListener, BridgeListener, ActionListener, VariableListener {
 
 	public static final String ID = PlayStoreViewBuilder.class.getSimpleName();
 
@@ -155,6 +159,8 @@ public class PlayStoreViewBuilder extends AbstractPanelBuilder implements
 
 		globals.get(PlayManager.class).addPlayListener(this);
 		globals.get(BridgeManager.class).addBridgeListener(this);
+		globals.get(DatabaseManager.class).get(VariableDao.class)
+				.addVariableListener(this);
 		Focus.on(query);
 		return panel;
 	}
@@ -236,17 +242,17 @@ public class PlayStoreViewBuilder extends AbstractPanelBuilder implements
 		overview();
 	}
 
-	@Override
-	public void onProfileActivated(PlayManager pm) {
-		overview();
-	}
-
 	/**
 	 * Show the overview panel.
 	 */
 	private void overview() {
 		CardLayout l = (CardLayout) sidebar.getLayout();
 		l.show(sidebar, WELCOME);
+	}
+
+	@Override
+	public void onVariableModified(VariableEvent event) {
+		overview();
 	}
 
 }

@@ -99,8 +99,4 @@ class AppStoreListBuilder extends AbstractPanelBuilder implements
 	public void onAppView(DocV2 app, boolean brief) {
 	}
 
-	@Override
-	public void onProfileActivated(PlayManager playManager) {
-	}
-
 }

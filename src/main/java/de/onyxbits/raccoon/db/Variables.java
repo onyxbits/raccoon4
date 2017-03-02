@@ -15,36 +15,23 @@
  */
 package de.onyxbits.raccoon.db;
 
-import java.util.EventObject;
+import de.onyxbits.raccoon.gplay.PlayProfile;
 
-public class VariableEvent extends EventObject {
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
-	/**
-	 * The current value of the variable. Null if the variable was unset
-	 */
-	public final String newValue;
+/**
+ * Name constants for the "variables" table.
+ * 
+ * @author patrick
+ * 
+ */
+public interface Variables {
 
 	/**
-	 * The previous value of the variable. Null if the variable wasn't set before.
+	 * The alias of the {@link PlayProfile} to use by default.
 	 */
-	public final String oldValue;
+	public static final String PLAYPROFILE = "playprofile";
 
 	/**
-	 * Name of the variable that was changed.
+	 * When the database was created
 	 */
-	public final String name;
-
-	public VariableEvent(Object source, String name, String oldValue,
-			String newValue) {
-		super(source);
-		this.oldValue = oldValue;
-		this.newValue = newValue;
-		this.name = name;
-	}
-
+	public static final String CREATED = "created";
 }

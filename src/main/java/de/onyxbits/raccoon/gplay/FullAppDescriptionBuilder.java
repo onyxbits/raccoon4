@@ -348,10 +348,6 @@ class FullAppDescriptionBuilder extends AbstractPanelBuilder implements
 	}
 
 	@Override
-	public void onProfileActivated(PlayManager playManager) {
-	}
-
-	@Override
 	public void hyperlinkUpdate(HyperlinkEvent e) {
 		if (e.getEventType() == EventType.ACTIVATED) {
 			if (ALLAPPS.equals(e.getDescription())) {

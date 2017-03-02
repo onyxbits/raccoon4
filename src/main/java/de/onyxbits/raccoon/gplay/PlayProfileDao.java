@@ -24,8 +24,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.onyxbits.raccoon.db.DataAccessObject;
+import de.onyxbits.raccoon.db.VariableDao;
+import de.onyxbits.raccoon.db.Variables;
 
-public class PlayProfileDao extends DataAccessObject {
+public class PlayProfileDao extends DataAccessObject implements Variables {
 
 	/**
 	 * Table version
@@ -52,6 +54,13 @@ public class PlayProfileDao extends DataAccessObject {
 		st.close();
 	}
 
+	/**
+	 * Get a Profile by alias
+	 * 
+	 * @param alias
+	 *          the alias name of the profile
+	 * @return the profile or null if none exists by the given alias.
+	 */
 	public PlayProfile get(String alias) {
 		List<PlayProfile> profiles = list();
 		for (PlayProfile profile : profiles) {
@@ -60,6 +69,16 @@ public class PlayProfileDao extends DataAccessObject {
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * Get the default profile
+	 * 
+	 * @return the profile that should be used by default or null if none is
+	 *         configured.
+	 */
+	public PlayProfile get() {
+		return get(manager.get(VariableDao.class).getVar(PLAYPROFILE, null));
 	}
 
 	/**

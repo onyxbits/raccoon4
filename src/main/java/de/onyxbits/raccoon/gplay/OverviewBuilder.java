@@ -21,7 +21,6 @@ import java.awt.GridLayout;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.MessageFormat;
-import java.util.List;
 
 import javax.swing.Box;
 import javax.swing.JComponent;
@@ -32,11 +31,12 @@ import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 import javax.swing.event.HyperlinkEvent.EventType;
 
-import com.akdeniz.googleplaycrawler.GooglePlay.DocV2;
-
 import de.onyxbits.raccoon.Bookmarks;
 import de.onyxbits.raccoon.db.DatabaseManager;
 import de.onyxbits.raccoon.db.VariableDao;
+import de.onyxbits.raccoon.db.VariableEvent;
+import de.onyxbits.raccoon.db.VariableListener;
+import de.onyxbits.raccoon.db.Variables;
 import de.onyxbits.raccoon.gui.TitleStrip;
 import de.onyxbits.raccoon.gui.Traits;
 import de.onyxbits.raccoon.ptools.BridgeListener;
@@ -51,7 +51,7 @@ import de.onyxbits.weave.swing.BrowseAction;
 import de.onyxbits.weave.util.Version;
 
 final class OverviewBuilder extends AbstractPanelBuilder implements
-		BridgeListener, PlayListener, HyperlinkListener {
+		BridgeListener, HyperlinkListener, VariableListener, Variables {
 
 	private static final String ID = OverviewBuilder.class.getSimpleName();
 	private static final String INSTALL = "install://platformtools";
@@ -85,7 +85,8 @@ final class OverviewBuilder extends AbstractPanelBuilder implements
 			InfoBuilder plug = new InfoBuilder(Messages.getString(ID + ".plug.title"));
 			plugPanel = plug.build(globals);
 			plug.setInfo(MessageFormat.format(
-					Messages.getString(ID + ".plug.message"), Bookmarks.FEATURELIST, Bookmarks.ORDER));
+					Messages.getString(ID + ".plug.message"), Bookmarks.FEATURELIST,
+					Bookmarks.ORDER));
 			plugPanel.setBorder(border);
 		}
 		else {
@@ -117,11 +118,17 @@ final class OverviewBuilder extends AbstractPanelBuilder implements
 		gbc.weighty = 1;
 		ret.add(shouts.build(globals), gbc);
 
-		PlayManager pm = globals.get(PlayManager.class);
-		setTitle(pm);
-		pm.addPlayListener(this);
+		DatabaseManager dbm = globals.get(DatabaseManager.class);
+		VariableDao vdao = dbm.get(VariableDao.class);
+		PlayProfileDao pdao = dbm.get(PlayProfileDao.class);
+		PlayProfile pp = pdao.get();
+		if (pp != null) {
+			titleStrip.setTitle(MessageFormat.format(
+					Messages.getString(ID + ".welcome"), pp.getAlias()));
+		}
 
 		globals.get(BridgeManager.class).addBridgeListener(this);
+		vdao.addVariableListener(this);
 		new VersionWorker(this).execute();
 		return ret;
 	}
@@ -179,7 +186,7 @@ final class OverviewBuilder extends AbstractPanelBuilder implements
 	private boolean showPlug() {
 		long now = System.currentTimeMillis();
 		long created = Long.parseLong(globals.get(DatabaseManager.class)
-				.get(VariableDao.class).getVar(VariableDao.CREATED, "0"));
+				.get(VariableDao.class).getVar(CREATED, "0"));
 		// Two weeks should be a reasonable trial time.
 		if (now - created > 1000 * 60 * 60 * 24 * 7 * 2) {
 			if (!globals.get(Traits.class).isMaxed()) {
@@ -187,31 +194,6 @@ final class OverviewBuilder extends AbstractPanelBuilder implements
 			}
 		}
 		return false;
-	}
-
-	@Override
-	public void onProfileActivated(PlayManager pm) {
-		setTitle(pm);
-	}
-
-	private void setTitle(PlayManager pm) {
-		PlayProfile pp = pm.getActiveProfile();
-		if (pp != null) {
-			titleStrip.setTitle(MessageFormat.format(
-					Messages.getString(ID + ".welcome"), pp.getAlias()));
-		}
-	}
-
-	@Override
-	public void onAppSearch() {
-	}
-
-	@Override
-	public void onAppSearchResult(List<DocV2> apps, boolean append) {
-	}
-
-	@Override
-	public void onAppView(DocV2 app, boolean brief) {
 	}
 
 	@Override
@@ -231,6 +213,18 @@ final class OverviewBuilder extends AbstractPanelBuilder implements
 				catch (Exception e1) {
 					e1.printStackTrace();
 				}
+			}
+		}
+	}
+
+	@Override
+	public void onVariableModified(VariableEvent event) {
+		if ("playprofile".equals(event.name)) {
+			PlayProfile pp = globals.get(DatabaseManager.class)
+					.get(PlayProfileDao.class).get(event.newValue);
+			if (pp != null) {
+				titleStrip.setTitle(MessageFormat.format(
+						Messages.getString(ID + ".welcome"), pp.getAlias()));
 			}
 		}
 	}

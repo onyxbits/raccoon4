@@ -197,9 +197,4 @@ public class ManualDownloadBuilder extends AbstractPanelBuilder implements
 			paid.setSelected(app.getOffer(0).getCheckoutFlowRequired());
 		}
 	}
-
-	@Override
-	public void onProfileActivated(PlayManager playManager) {
-	}
-
 }

@@ -22,19 +22,8 @@ import java.sql.SQLException;
 
 import javax.swing.event.EventListenerList;
 
-import de.onyxbits.raccoon.gplay.PlayProfile;
 
 public final class VariableDao extends DataAccessObject {
-
-	/**
-	 * KEY: the alias of the {@link PlayProfile} to use by default.
-	 */
-	public static final String PLAYPROFILE = "playprofile";
-
-	/**
-	 * KEY: when the database was created
-	 */
-	public static final String CREATED = "created";
 
 	/**
 	 * Table version

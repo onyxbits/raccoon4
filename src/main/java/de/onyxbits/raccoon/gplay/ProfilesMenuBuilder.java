@@ -28,9 +28,11 @@ import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JSeparator;
 import javax.swing.JTextField;
 
-import com.akdeniz.googleplaycrawler.GooglePlay.DocV2;
 
 import de.onyxbits.raccoon.db.DatabaseManager;
+import de.onyxbits.raccoon.db.VariableDao;
+import de.onyxbits.raccoon.db.VariableEvent;
+import de.onyxbits.raccoon.db.VariableListener;
 import de.onyxbits.raccoon.gui.Traits;
 import de.onyxbits.raccoon.setup.WizardLifecycle;
 import de.onyxbits.weave.Globals;
@@ -45,7 +47,7 @@ import de.onyxbits.weave.swing.NoAction;
  * @author patrick
  * 
  */
-public class ProfilesMenuBuilder implements PlayListener, ActionListener {
+public class ProfilesMenuBuilder implements ActionListener, VariableListener {
 
 	public static final String ID = ProfilesMenuBuilder.class.getSimpleName();
 
@@ -67,14 +69,9 @@ public class ProfilesMenuBuilder implements PlayListener, ActionListener {
 		delete.addActionListener(this);
 
 		load();
-		globals.get(PlayManager.class).addPlayListener(this);
+		globals.get(DatabaseManager.class).get(VariableDao.class)
+				.addVariableListener(this);
 		return menu;
-	}
-
-	@Override
-	public void onProfileActivated(PlayManager pm) {
-		menu.removeAll();
-		load();
 	}
 
 	private void load() {
@@ -133,14 +130,8 @@ public class ProfilesMenuBuilder implements PlayListener, ActionListener {
 	}
 
 	@Override
-	public void onAppSearch() {
-	}
-
-	@Override
-	public void onAppSearchResult(List<DocV2> apps, boolean append) {
-	}
-
-	@Override
-	public void onAppView(DocV2 app, boolean brief) {
+	public void onVariableModified(VariableEvent event) {
+		menu.removeAll();
+		load();
 	}
 }

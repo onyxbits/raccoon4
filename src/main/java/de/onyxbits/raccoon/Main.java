@@ -25,6 +25,7 @@ import de.onyxbits.raccoon.appmgr.MyAppsViewBuilder;
 import de.onyxbits.raccoon.cli.Router;
 import de.onyxbits.raccoon.db.DatabaseManager;
 import de.onyxbits.raccoon.db.VariableDao;
+import de.onyxbits.raccoon.db.Variables;
 import de.onyxbits.raccoon.gplay.ImportBuilder;
 import de.onyxbits.raccoon.gplay.ManualDownloadBuilder;
 import de.onyxbits.raccoon.gplay.PlayManager;
@@ -48,7 +49,7 @@ import de.onyxbits.weave.diag.ReportManager;
  * @author patrick
  * 
  */
-public final class Main {
+public final class Main implements Variables {
 
 	public static long now = System.currentTimeMillis();
 
@@ -109,8 +110,7 @@ public final class Main {
 			System.exit(1);
 		}
 
-		String alias = database.get(VariableDao.class).getVar(
-				VariableDao.PLAYPROFILE, null);
+		String alias = database.get(VariableDao.class).getVar(PLAYPROFILE, null);
 		PlayManager playManager = new PlayManager(database);
 		playManager.selectProfile(alias);
 
@@ -122,7 +122,7 @@ public final class Main {
 					playManager, null));
 			EventQueue.invokeLater(lifecycle);
 			lifecycle.waitForState(LifecycleManager.FINISHED);
-			database.get(VariableDao.class).setVar(VariableDao.CREATED,
+			database.get(VariableDao.class).setVar(CREATED,
 					"" + System.currentTimeMillis());
 			if (playManager.getActiveProfile() == null) {
 				// User closed the setup wizard -> quit

@@ -52,11 +52,4 @@ public interface PlayListener {
 	 */
 	public void onAppView(DocV2 app, boolean brief);
 
-	/**
-	 * Called when another profile becomes the active one.
-	 * 
-	 * @param playManager
-	 *          reference to the manager.
-	 */
-	public void onProfileActivated(PlayManager playManager);
 }

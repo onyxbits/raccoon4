@@ -36,6 +36,7 @@ import com.akdeniz.googleplaycrawler.Utils;
 
 import de.onyxbits.raccoon.db.DatabaseManager;
 import de.onyxbits.raccoon.db.VariableDao;
+import de.onyxbits.raccoon.db.Variables;
 
 /**
  * Core glue, tying everything else together
@@ -43,7 +44,7 @@ import de.onyxbits.raccoon.db.VariableDao;
  * @author patrick
  * 
  */
-public class PlayManager {
+public class PlayManager implements Variables {
 
 	private ArrayList<PlayListener> listeners;
 	private String appQuery;
@@ -96,11 +97,8 @@ public class PlayManager {
 	public void selectProfile(String alias) {
 		active = databaseManager.get(PlayProfileDao.class).get(alias);
 		if (active != null) {
-			databaseManager.get(VariableDao.class).setVar(
-					VariableDao.PLAYPROFILE, active.getAlias());
-		}
-		for (PlayListener listener : listeners) {
-			listener.onProfileActivated(this);
+			databaseManager.get(VariableDao.class).setVar(PLAYPROFILE,
+					active.getAlias());
 		}
 	}
 

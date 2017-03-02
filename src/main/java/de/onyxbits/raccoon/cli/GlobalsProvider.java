@@ -18,6 +18,7 @@ package de.onyxbits.raccoon.cli;
 import de.onyxbits.raccoon.Main;
 import de.onyxbits.raccoon.db.DatabaseManager;
 import de.onyxbits.raccoon.db.VariableDao;
+import de.onyxbits.raccoon.db.Variables;
 import de.onyxbits.raccoon.gplay.PlayManager;
 import de.onyxbits.raccoon.gui.Traits;
 import de.onyxbits.raccoon.ptools.BridgeManager;
@@ -33,7 +34,7 @@ import de.onyxbits.weave.util.Version;
  * @author patrick
  * 
  */
-final class GlobalsProvider implements GlobalsFactory {
+final class GlobalsProvider implements GlobalsFactory, Variables {
 
 	/**
 	 * System property name
@@ -106,9 +107,9 @@ final class GlobalsProvider implements GlobalsFactory {
 			DatabaseManager dbm = globals.get(DatabaseManager.class);
 			PlayManager ret = new PlayManager(dbm);
 			String alias = dbm.get(VariableDao.class).getVar(
-					VariableDao.PLAYPROFILE,
+					PLAYPROFILE,
 					System.getProperty(PLAYPROFILESYSPROP, dbm.get(VariableDao.class)
-							.getVar(VariableDao.PLAYPROFILE, null)));
+							.getVar(PLAYPROFILE, null)));
 			if (alias == null) {
 				Router.fail("play.profile");
 			}
