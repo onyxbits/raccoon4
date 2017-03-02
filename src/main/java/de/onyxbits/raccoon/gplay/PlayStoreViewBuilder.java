@@ -195,9 +195,6 @@ public class PlayStoreViewBuilder extends AbstractPanelBuilder implements
 					SwingConstants.CENTER), NORESULTS);
 			serp.add(listLogicScroll, RESULTS);
 
-			if (globals.get(Traits.class).isAvailable(ID)) {
-				globals.get(PlayManager.class).selectProfile(null);
-			}
 		}
 		busy.setIcon(loader);
 		overview();

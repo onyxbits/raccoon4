@@ -27,7 +27,8 @@ import javax.swing.JPanel;
 
 import de.onyxbits.raccoon.Bookmarks;
 import de.onyxbits.raccoon.db.DatabaseManager;
-import de.onyxbits.raccoon.gplay.PlayManager;
+import de.onyxbits.raccoon.db.VariableDao;
+import de.onyxbits.raccoon.db.Variables;
 import de.onyxbits.raccoon.gplay.PlayProfile;
 import de.onyxbits.raccoon.gplay.PlayProfileDao;
 import de.onyxbits.raccoon.gui.ButtonBarBuilder;
@@ -64,26 +65,22 @@ public class WizardLifecycle implements ActionListener, Lifecycle {
 	private WizardBuilder[] builders;
 	private WizardBuilder active;
 	private URI helpurl;
-	private String alias;
 
 	private DatabaseManager databaseManager;
-
-	private PlayManager playManager;
+	private String edit;
 
 	/**
 	 * Add or edit a {@link PlayProfileDao}
 	 * 
 	 * @param dbm
 	 *          database connection
-	 * @param pm
-	 *          manager to put the result in
 	 * @param edit
-	 *          the alias of the profile to edit or null to start from scratch.
+	 *          alias of the profile to edit or null to create a profile from
+	 *          scratch.
 	 */
-	public WizardLifecycle(DatabaseManager dbm, PlayManager pm, String alias) {
+	public WizardLifecycle(DatabaseManager dbm, String edit) {
 		this.databaseManager = dbm;
-		this.playManager = pm;
-		this.alias = alias;
+		this.edit = edit;
 	}
 
 	@Override
@@ -94,7 +91,7 @@ public class WizardLifecycle implements ActionListener, Lifecycle {
 				.put(new ActionLocalizer("de/onyxbits/raccoon/setup/messages", null));
 		PlayProfile pp = new PlayProfile();
 
-		PlayProfile existing = databaseManager.get(PlayProfileDao.class).get(alias);
+		PlayProfile existing = databaseManager.get(PlayProfileDao.class).get(edit);
 		if (existing != null) {
 			pp.setAlias(existing.getAlias());
 			pp.setUser(existing.getUser());
@@ -177,7 +174,8 @@ public class WizardLifecycle implements ActionListener, Lifecycle {
 		PlayProfile pp = globals.get(PlayProfile.class);
 		try {
 			databaseManager.get(PlayProfileDao.class).update(pp);
-			playManager.selectProfile(pp.getAlias());
+			databaseManager.get(VariableDao.class).setVar(Variables.PLAYPROFILE,
+					pp.getAlias());
 		}
 		catch (SQLException e) {
 			e.printStackTrace();

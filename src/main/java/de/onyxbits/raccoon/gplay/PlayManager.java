@@ -35,7 +35,6 @@ import com.akdeniz.googleplaycrawler.GooglePlayAPI;
 import com.akdeniz.googleplaycrawler.Utils;
 
 import de.onyxbits.raccoon.db.DatabaseManager;
-import de.onyxbits.raccoon.db.VariableDao;
 import de.onyxbits.raccoon.db.Variables;
 
 /**
@@ -49,7 +48,6 @@ public class PlayManager implements Variables {
 	private ArrayList<PlayListener> listeners;
 	private String appQuery;
 	private int appOffset;
-	private PlayProfile active;
 	private DatabaseManager databaseManager;
 	private SearchAppWorker currentAppSearch;
 
@@ -85,30 +83,6 @@ public class PlayManager implements Variables {
 				appOffset, AppStoreListBuilder.PAGESIZE);
 		appOffset += AppStoreListBuilder.PAGESIZE;
 		currentAppSearch.execute();
-	}
-
-	/**
-	 * Select the active profile, persist selection and notify listeners.
-	 * 
-	 * @param alias
-	 *          profile identifier. If null or not found, set no profile to be the
-	 *          active one.
-	 */
-	public void selectProfile(String alias) {
-		active = databaseManager.get(PlayProfileDao.class).get(alias);
-		if (active != null) {
-			databaseManager.get(VariableDao.class).setVar(PLAYPROFILE,
-					active.getAlias());
-		}
-	}
-
-	/**
-	 * Query the currently active profile
-	 * 
-	 * @return active profile. may be null.
-	 */
-	public PlayProfile getActiveProfile() {
-		return active;
 	}
 
 	/**
@@ -153,6 +127,7 @@ public class PlayManager implements Variables {
 	 * @return a connection according to the active profile settings.
 	 */
 	public GooglePlayAPI createConnection() {
+		PlayProfile active = databaseManager.get(PlayProfileDao.class).get();
 		if (active == null) {
 			// Semi error state.
 			return new GooglePlayAPI();

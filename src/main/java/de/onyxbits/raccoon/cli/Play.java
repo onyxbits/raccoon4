@@ -25,7 +25,11 @@ import java.util.Vector;
 import com.akdeniz.googleplaycrawler.GooglePlay.BulkDetailsResponse;
 import com.akdeniz.googleplaycrawler.GooglePlayAPI;
 
+import de.onyxbits.raccoon.db.DatabaseManager;
+import de.onyxbits.raccoon.db.VariableDao;
+import de.onyxbits.raccoon.db.Variables;
 import de.onyxbits.raccoon.gplay.PlayManager;
+import de.onyxbits.raccoon.gplay.PlayProfileDao;
 import de.onyxbits.weave.Globals;
 
 /**
@@ -34,7 +38,25 @@ import de.onyxbits.weave.Globals;
  * @author patrick
  * 
  */
-class Play {
+class Play implements Variables {
+
+	/**
+	 * System property name
+	 */
+	public static final String PLAYPROFILESYSPROP = "raccoon.playprofile";
+
+	private static GooglePlayAPI createConnection() {
+		Globals globals = GlobalsProvider.getGlobals();
+		DatabaseManager dbm = globals.get(DatabaseManager.class);
+		String alias = dbm.get(VariableDao.class).getVar(
+				PLAYPROFILE,
+				System.getProperty(PLAYPROFILESYSPROP, dbm.get(VariableDao.class)
+						.getVar(PLAYPROFILE, null)));
+		if (alias == null) {
+			Router.fail("play.profile");
+		}
+		return PlayManager.createConnection(dbm.get(PlayProfileDao.class).get());
+	}
 
 	/**
 	 * Perform a details query, print the raw results to stdout
@@ -43,9 +65,7 @@ class Play {
 	 *          packagename
 	 */
 	public static void details(String name) {
-		Globals globals = GlobalsProvider.getGlobals();
-		PlayManager playManager = globals.get(PlayManager.class);
-		GooglePlayAPI api = playManager.createConnection();
+		GooglePlayAPI api = createConnection();
 		try {
 			System.out.println(api.details(name));
 		}
@@ -61,9 +81,7 @@ class Play {
 	 *          file to read packagenames from
 	 */
 	public static void details(File input) {
-		Globals globals = GlobalsProvider.getGlobals();
-		PlayManager playManager = globals.get(PlayManager.class);
-		GooglePlayAPI api = playManager.createConnection();
+		GooglePlayAPI api = createConnection();
 		File parent = input.getParentFile();
 		Vector<String> tmp = new Vector<String>();
 		readPackages(input, tmp);
@@ -99,9 +117,7 @@ class Play {
 		File parent = input.getParentFile();
 		readPackages(input, tmp);
 
-		Globals globals = GlobalsProvider.getGlobals();
-		PlayManager playManager = globals.get(PlayManager.class);
-		GooglePlayAPI api = playManager.createConnection();
+		GooglePlayAPI api = createConnection();
 		BulkDetailsResponse res = null;
 		try {
 			res = api.bulkDetails(tmp);

@@ -28,7 +28,7 @@ import de.onyxbits.raccoon.db.VariableDao;
 import de.onyxbits.raccoon.db.Variables;
 import de.onyxbits.raccoon.gplay.ImportBuilder;
 import de.onyxbits.raccoon.gplay.ManualDownloadBuilder;
-import de.onyxbits.raccoon.gplay.PlayManager;
+import de.onyxbits.raccoon.gplay.PlayProfileDao;
 import de.onyxbits.raccoon.gui.GrantBuilder;
 import de.onyxbits.raccoon.gui.MainLifecycle;
 import de.onyxbits.raccoon.gui.UnavailableBuilder;
@@ -110,21 +110,16 @@ public final class Main implements Variables {
 			System.exit(1);
 		}
 
-		String alias = database.get(VariableDao.class).getVar(PLAYPROFILE, null);
-		PlayManager playManager = new PlayManager(database);
-		playManager.selectProfile(alias);
-
 		LifecycleManager lifecycle = null;
 
 		// Bring up the Setup Wizard (if needed)
-		if (alias == null) {
-			lifecycle = new LifecycleManager(new WizardLifecycle(database,
-					playManager, null));
+		if (database.get(PlayProfileDao.class).get() == null) {
+			lifecycle = new LifecycleManager(new WizardLifecycle(database, null));
 			EventQueue.invokeLater(lifecycle);
 			lifecycle.waitForState(LifecycleManager.FINISHED);
 			database.get(VariableDao.class).setVar(CREATED,
 					"" + System.currentTimeMillis());
-			if (playManager.getActiveProfile() == null) {
+			if (database.get(PlayProfileDao.class).get() == null) {
 				// User closed the setup wizard -> quit
 				database.shutdown();
 				return;
@@ -133,7 +128,7 @@ public final class Main implements Variables {
 
 		// Bring up the Main UI.
 		lifecycle = new LifecycleManager(new MainLifecycle(database, serverManager,
-				bridgeManager, playManager));
+				bridgeManager));
 		EventQueue.invokeLater(lifecycle);
 		preload = de.onyxbits.raccoon.gui.Messages.BUNDLE_NAME;
 		preload = de.onyxbits.raccoon.gplay.Messages.BUNDLE_NAME;

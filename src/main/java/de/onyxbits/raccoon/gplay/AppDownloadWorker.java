@@ -91,7 +91,8 @@ class AppDownloadWorker implements TransferWorker, ActionListener, Runnable {
 		control.withChannel(Messages.getString(ID + ".channel"));
 		globals.get(ImageLoaderService.class).request(control,
 				DocUtil.getAppIconUrl(doc));
-		profile = globals.get(PlayManager.class).getActiveProfile();
+		profile = globals.get(DatabaseManager.class).get(PlayProfileDao.class)
+				.get();
 		paid = doc.getOffer(0).getCheckoutFlowRequired();
 	}
 

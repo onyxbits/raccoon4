@@ -13,6 +13,7 @@ import de.onyxbits.raccoon.appmgr.GroupEditorBuilder;
 import de.onyxbits.raccoon.appmgr.MyAppsViewBuilder;
 import de.onyxbits.raccoon.db.DatabaseManager;
 import de.onyxbits.raccoon.db.VariableDao;
+import de.onyxbits.raccoon.gplay.PlayManager;
 import de.onyxbits.raccoon.gplay.PlayStoreViewBuilder;
 import de.onyxbits.raccoon.gplay.ImportBuilder;
 import de.onyxbits.raccoon.gplay.ManualDownloadBuilder;
@@ -114,6 +115,10 @@ public final class MainLifecycle implements Lifecycle, GlobalsFactory {
 			catch (Exception e) {
 				return new Version(0, 0, 0);
 			}
+		}
+		
+		if (requested.equals(PlayManager.class)) {
+			return new PlayManager(globals.get(DatabaseManager.class));
 		}
 
 		// Things with no external dependencies.

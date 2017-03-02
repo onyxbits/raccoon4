@@ -19,6 +19,8 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
 
+import de.onyxbits.raccoon.db.DatabaseManager;
+import de.onyxbits.weave.Globals;
 
 /**
  * An action for changing the active {@link PlayProfile}
@@ -32,22 +34,20 @@ class ProfileAction extends AbstractAction {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private String alias;
-	private PlayManager playManager;
 
-	public ProfileAction(PlayManager pm, String alias) {
-		this.playManager = pm;
-		this.alias = alias;
-		putValue(NAME, alias);
-		PlayProfile active = pm.getActiveProfile();
-		if (active != null) {
-			putValue(SELECTED_KEY, alias.equals(active.getAlias()));
-		}
+	private Globals globals;
+	private PlayProfile profile;
+
+	public ProfileAction(Globals globals, PlayProfile profile) {
+		this.globals = globals;
+		this.profile = profile;
+		putValue(NAME, profile.getAlias());
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		playManager.selectProfile(alias);
+		globals.get(DatabaseManager.class).get(PlayProfileDao.class)
+				.set(profile.getAlias());
 	}
 
 }

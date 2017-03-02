@@ -82,6 +82,16 @@ public class PlayProfileDao extends DataAccessObject implements Variables {
 	}
 
 	/**
+	 * Make a profile the default one
+	 * 
+	 * @param alias
+	 *          identifier of the profile.
+	 */
+	public void set(String alias) {
+		manager.get(VariableDao.class).setVar(PLAYPROFILE, alias);
+	}
+
+	/**
 	 * List available profiles
 	 * 
 	 * @return profiles listed alphabetically by alias.

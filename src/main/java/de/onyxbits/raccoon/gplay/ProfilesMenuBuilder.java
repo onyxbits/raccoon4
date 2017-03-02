@@ -28,7 +28,6 @@ import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JSeparator;
 import javax.swing.JTextField;
 
-
 import de.onyxbits.raccoon.db.DatabaseManager;
 import de.onyxbits.raccoon.db.VariableDao;
 import de.onyxbits.raccoon.db.VariableEvent;
@@ -75,16 +74,20 @@ public class ProfilesMenuBuilder implements ActionListener, VariableListener {
 	}
 
 	private void load() {
-		List<PlayProfile> profiles = globals.get(DatabaseManager.class)
-				.get(PlayProfileDao.class).list();
-		PlayManager pm = globals.get(PlayManager.class);
+		PlayProfileDao dao = globals.get(DatabaseManager.class).get(
+				PlayProfileDao.class);
+		List<PlayProfile> profiles = dao.list();
+		PlayProfile def = dao.get();
 		ButtonGroup bg = new ButtonGroup();
 
 		for (PlayProfile profile : profiles) {
-			ProfileAction pa = new ProfileAction(pm, profile.getAlias());
+			ProfileAction pa = new ProfileAction(globals, profile);
 			JRadioButtonMenuItem item = new JRadioButtonMenuItem(pa);
 			bg.add(item);
 			menu.add(item);
+			if (def.getAlias().equals(profile.getAlias())) {
+				item.setSelected(true);
+			}
 		}
 		menu.add(new JSeparator());
 		menu.add(add);
@@ -98,11 +101,10 @@ public class ProfilesMenuBuilder implements ActionListener, VariableListener {
 	public void actionPerformed(ActionEvent e) {
 		Object src = e.getSource();
 		DatabaseManager dbm = globals.get(DatabaseManager.class);
-		PlayManager pm = globals.get(PlayManager.class);
 
 		if (src == add) {
 			if (globals.get(Traits.class).isAvailable("4.0.x")) {
-				new LifecycleManager(new WizardLifecycle(dbm, pm, null)).run();
+				new LifecycleManager(new WizardLifecycle(dbm, null)).run();
 			}
 			else {
 				globals.get(LifecycleManager.class).sendBusMessage(
@@ -112,8 +114,8 @@ public class ProfilesMenuBuilder implements ActionListener, VariableListener {
 		}
 
 		if (src == edit) {
-			new LifecycleManager(new WizardLifecycle(dbm, pm, pm.getActiveProfile()
-					.getAlias())).run();
+			String edit = dbm.get(PlayProfileDao.class).get().getAlias();
+			new LifecycleManager(new WizardLifecycle(dbm, edit)).run();
 		}
 
 		if (src == delete) {
@@ -123,8 +125,8 @@ public class ProfilesMenuBuilder implements ActionListener, VariableListener {
 					Messages.getString(ID + ".delete.title"), JOptionPane.YES_NO_OPTION);
 			if (choice == JOptionPane.YES_OPTION) {
 				PlayProfileDao dao = dbm.get(PlayProfileDao.class);
-				dao.delete(pm.getActiveProfile().getAlias());
-				pm.selectProfile(dao.list().get(0).getAlias());
+				dao.delete(dao.get().getAlias());
+				dao.set(dao.list().get(0).getAlias());
 			}
 		}
 	}
