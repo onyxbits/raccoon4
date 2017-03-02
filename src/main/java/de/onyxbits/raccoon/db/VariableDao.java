@@ -20,6 +20,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import javax.swing.event.EventListenerList;
+
 import de.onyxbits.raccoon.gplay.PlayProfile;
 
 public final class VariableDao extends DataAccessObject {
@@ -38,6 +40,8 @@ public final class VariableDao extends DataAccessObject {
 	 * Table version
 	 */
 	protected static final int VERSION = 1;
+
+	private EventListenerList listenerList;
 
 	@Override
 	protected void upgradeFrom(int oldVersion, Connection c) throws SQLException {
@@ -92,20 +96,24 @@ public final class VariableDao extends DataAccessObject {
 		Connection c = manager.connect();
 		PreparedStatement st = null;
 		ResultSet res = null;
+		String old = getVar(key, null);
 		try {
-			if (val==null){
-			st = c.prepareStatement("DELETE FROM variables WHERE name = ?");
-			st.setString(1, key);
-			st.execute();
-			st.close();}
+			if (val == null) {
+				st = c.prepareStatement("DELETE FROM variables WHERE name = ?");
+				st.setString(1, key);
+				st.execute();
+				st.close();
+			}
 			else {
-				//st = c
-				//		.prepareStatement("INSERT INTO variables (name,value) VALUES (?, ?)");
-				st = c.prepareStatement("MERGE INTO variables USING (VALUES (?, ?)) AS vals(x,y) ON variables.name = vals.x WHEN MATCHED THEN UPDATE SET variables.value=vals.y WHEN NOT MATCHED THEN INSERT VALUES vals.x , vals.y");
+				// st = c
+				// .prepareStatement("INSERT INTO variables (name,value) VALUES (?, ?)");
+				st = c
+						.prepareStatement("MERGE INTO variables USING (VALUES (?, ?)) AS vals(x,y) ON variables.name = vals.x WHEN MATCHED THEN UPDATE SET variables.value=vals.y WHEN NOT MATCHED THEN INSERT VALUES vals.x , vals.y");
 				st.setString(1, key);
 				st.setString(2, val);
 				st.execute();
 			}
+			fireOnVariableModified(new VariableEvent(this, key, old, val));
 		}
 		catch (Exception e) {
 			// e.printStackTrace();
@@ -120,6 +128,29 @@ public final class VariableDao extends DataAccessObject {
 				}
 			}
 			catch (Exception e) {
+			}
+		}
+	}
+
+	public void addVariableListener(VariableListener l) {
+		if (listenerList == null) {
+			listenerList = new EventListenerList();
+		}
+		listenerList.add(VariableListener.class, l);
+	}
+
+	public void removeVariableListener(VariableListener l) {
+		if (listenerList != null) {
+			listenerList.remove(VariableListener.class, l);
+		}
+	}
+
+	private void fireOnVariableModified(VariableEvent e) {
+		if (listenerList != null) {
+			VariableListener[] listeners = listenerList
+					.getListeners(VariableListener.class);
+			for (VariableListener listener : listeners) {
+				listener.onVariableModified(e);
 			}
 		}
 	}
