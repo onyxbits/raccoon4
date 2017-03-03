@@ -191,8 +191,29 @@ public class PlayProfileDao extends DataAccessObject implements Variables {
 	}
 
 	public void update(PlayProfile profile) throws SQLException {
-		delete(profile.getAlias());
-		add(profile);
+		Connection c = manager.connect();
+		PreparedStatement st = null;
+		try {
+			st = c
+					.prepareStatement("UPDATE playprofiles SET user = ?, token = ?, agent = ?, proxyaddress = ?, proxyport = ?, proxyuser = ?, proxypass = ?, gsfid = ? WHERE alias = ?");
+
+			st.setString(1, profile.getUser());
+			st.setString(2, profile.getToken());
+			st.setString(3, profile.getAgent());
+			st.setString(4, profile.getProxyAddress());
+			st.setInt(5, profile.getProxyPort());
+			st.setString(6, profile.getProxyUser());
+			st.setString(7, profile.getProxyPassword());
+			st.setString(8, profile.getGsfId());
+			st.setString(9, profile.getAlias());
+			st.execute();
+		}
+		finally {
+			manager.disconnect(c);
+			if (st != null) {
+				st.close();
+			}
+		}
 	}
 
 }
