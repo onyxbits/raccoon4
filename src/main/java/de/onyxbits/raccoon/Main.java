@@ -28,7 +28,6 @@ import de.onyxbits.raccoon.db.VariableDao;
 import de.onyxbits.raccoon.db.Variables;
 import de.onyxbits.raccoon.gplay.ImportBuilder;
 import de.onyxbits.raccoon.gplay.ManualDownloadBuilder;
-import de.onyxbits.raccoon.gplay.PlayProfileDao;
 import de.onyxbits.raccoon.gui.GrantBuilder;
 import de.onyxbits.raccoon.gui.MainLifecycle;
 import de.onyxbits.raccoon.gui.UnavailableBuilder;
@@ -36,7 +35,6 @@ import de.onyxbits.raccoon.net.ServerManager;
 import de.onyxbits.raccoon.ptools.BridgeManager;
 import de.onyxbits.raccoon.qr.QrToolBuilder;
 import de.onyxbits.raccoon.qr.ShareToolBuilder;
-import de.onyxbits.raccoon.setup.WizardLifecycle;
 import de.onyxbits.raccoon.transfer.TransferViewBuilder;
 import de.onyxbits.raccoon.vfs.Layout;
 import de.onyxbits.weave.LifecycleManager;
@@ -75,17 +73,6 @@ public final class Main implements Variables {
 	 * @throws ClassNotFoundException
 	 */
 	private static void startGui() throws Exception {
-		// TBD: Should we really force a LAF? This costs us a good 100 ms startup
-		// time and some people prefer platform LAF.
-		/*
-		 * if (System.getProperty("swing.defaultlaf") == null) { // Unless the user
-		 * specifically wants something else, try forcing the // Nimbus L&F for
-		 * (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) { //
-		 * System.err.println(info.getName()); if ("Nimbus".equals(info.getName()))
-		 * { try { UIManager.setLookAndFeel(info.getClassName()); //
-		 * UIManager.getLookAndFeelDefaults().put("Panel.background", //
-		 * java.awt.Color.decode("#EDECEB")); } catch (Exception e) { } } } }
-		 */
 
 		ReportManager.setReportHandler(new DefaultReportHandler(
 				Layout.DEFAULT.homeDir));
