@@ -112,18 +112,6 @@ public final class Main implements Variables {
 
 		LifecycleManager lifecycle = null;
 
-		// Bring up the Setup Wizard (if needed)
-		if (database.get(PlayProfileDao.class).get() == null) {
-			lifecycle = new LifecycleManager(new WizardLifecycle(database, null));
-			EventQueue.invokeLater(lifecycle);
-			lifecycle.waitForState(LifecycleManager.FINISHED);
-			if (database.get(PlayProfileDao.class).get() == null) {
-				// User closed the setup wizard -> quit
-				database.shutdown();
-				return;
-			}
-		}
-
 		// Bring up the Main UI.
 		lifecycle = new LifecycleManager(new MainLifecycle(database, serverManager,
 				bridgeManager));

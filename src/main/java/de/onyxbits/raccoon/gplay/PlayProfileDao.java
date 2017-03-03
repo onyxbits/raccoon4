@@ -89,15 +89,19 @@ public class PlayProfileDao extends DataAccessObject implements Variables {
 	 * Make a profile the default one
 	 * 
 	 * @param alias
-	 *          identifier of the profile.
+	 *          identifier of the profile. If null or no profile by that alias
+	 *          exists, the default is set to null.
 	 */
 	public void set(String alias) {
 		PlayProfile pp = get(alias);
 		if (pp != null) {
 			manager.get(VariableDao.class).setVar(PLAYPROFILE, alias);
-			firePlayProfileEvent(new PlayProfileEvent(this, pp,
-					PlayProfileEvent.ACTIVATED));
 		}
+		else {
+			manager.get(VariableDao.class).setVar(PLAYPROFILE, null);
+		}
+		firePlayProfileEvent(new PlayProfileEvent(this, pp,
+				PlayProfileEvent.ACTIVATED));
 	}
 
 	/**
@@ -232,6 +236,19 @@ public class PlayProfileDao extends DataAccessObject implements Variables {
 				st.close();
 			}
 		}
+	}
+
+	/**
+	 * Add a listener to the listener list and immediately send it an activation
+	 * event with the default profile.
+	 * 
+	 * @param listener
+	 *          the listener to subscribe.
+	 */
+	public void subscribe(PlayProfileListener listener) {
+		addPlayProfileListener(listener);
+		listener.onPlayProfileChange(new PlayProfileEvent(this, get(),
+				PlayProfileEvent.ACTIVATED));
 	}
 
 	public void addPlayProfileListener(PlayProfileListener listener) {

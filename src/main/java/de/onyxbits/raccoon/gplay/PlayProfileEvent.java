@@ -24,10 +24,25 @@ public class PlayProfileEvent extends EventObject {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public static final int CREATED = 0;
-	public static final int DESTROYED = 1;
-	public static final int MODIFIED = 2;
-	public static final int ACTIVATED = 3;
+	/**
+	 * Profile got created
+	 */
+	public static final int CREATED = 1;
+
+	/**
+	 * Profile got destroyed
+	 */
+	public static final int DESTROYED = 2;
+
+	/**
+	 * Profile was modified
+	 */
+	public static final int MODIFIED = 4;
+
+	/**
+	 * Profile was set as the default profile
+	 */
+	public static final int ACTIVATED = 8;
 
 	/**
 	 * The profile in question
@@ -35,7 +50,7 @@ public class PlayProfileEvent extends EventObject {
 	public final PlayProfile profile;
 
 	/**
-	 * Event type (CREATED, DESTROYED, MODIFIED or ACTIVATED)
+	 * Event type bitmask (CREATED, DESTROYED, MODIFIED or ACTIVATED)
 	 */
 	public final int type;
 
@@ -43,6 +58,38 @@ public class PlayProfileEvent extends EventObject {
 		super(source);
 		this.profile = profile;
 		this.type = type;
+		if (!((type & ACTIVATED) == ACTIVATED) && profile == null) {
+			throw new NullPointerException();
+		}
+	}
+
+	/**
+	 * Check if this event is relevant for how to connect to Play
+	 * 
+	 * @return true if type contains ACTIVATED
+	 */
+	public boolean isConnection() {
+		return (type & ACTIVATED) == ACTIVATED;
+	}
+
+	public boolean isActivation() {
+		return (type & ACTIVATED) == ACTIVATED && (profile != null);
+	}
+
+	public boolean isDeActivation() {
+		return (type & ACTIVATED) == ACTIVATED && (profile == null);
+	}
+
+	public boolean isModification() {
+		return (type & MODIFIED) == MODIFIED;
+	}
+
+	public boolean isDestruction() {
+		return (type & DESTROYED) == DESTROYED;
+	}
+
+	public boolean isCreation() {
+		return (type & CREATED) == CREATED;
 	}
 
 }

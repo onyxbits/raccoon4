@@ -14,6 +14,7 @@ import de.onyxbits.raccoon.appmgr.MyAppsViewBuilder;
 import de.onyxbits.raccoon.db.DatabaseManager;
 import de.onyxbits.raccoon.db.VariableDao;
 import de.onyxbits.raccoon.gplay.PlayManager;
+import de.onyxbits.raccoon.gplay.PlayProfileDao;
 import de.onyxbits.raccoon.gplay.PlayStoreViewBuilder;
 import de.onyxbits.raccoon.gplay.ImportBuilder;
 import de.onyxbits.raccoon.gplay.ManualDownloadBuilder;
@@ -116,7 +117,7 @@ public final class MainLifecycle implements Lifecycle, GlobalsFactory {
 				return new Version(0, 0, 0);
 			}
 		}
-		
+
 		if (requested.equals(PlayManager.class)) {
 			return new PlayManager(globals.get(DatabaseManager.class));
 		}
@@ -143,6 +144,12 @@ public final class MainLifecycle implements Lifecycle, GlobalsFactory {
 		WindowTogglers wt = globals.get(WindowTogglers.class);
 		PushUrlAction pua = new PushUrlAction(globals);
 		ScreenshotAction ssa = new ScreenshotAction(globals);
+		UpdateAppAction uaa = new UpdateAppAction(globals);
+		PlayProfileDao dao = globals.get(DatabaseManager.class).get(
+				PlayProfileDao.class);
+		dao.subscribe(uaa);
+		dao.subscribe(wt);
+
 		BridgeManager bridgeManager = globals.get(BridgeManager.class);
 		bridgeManager.addBridgeListener(ssa);
 		bridgeManager.addBridgeListener(pua);
@@ -158,8 +165,7 @@ public final class MainLifecycle implements Lifecycle, GlobalsFactory {
 				.addSeparator("filemenu/---1")
 				.addItem("filemenu/quit", new QuitAction(globals))
 				.add("marketmenu/profiles", pmb.assemble(globals))
-				.addItem("marketmenu/update", new UpdateAppAction(globals))
-				.addSeparator("marketmenu/---1")
+				.addItem("marketmenu/update", uaa).addSeparator("marketmenu/---1")
 				.addCheckbox("marketmenu/manualdownload", wt.manualdownload)
 				.addCheckbox("marketmenu/importurls", wt.marketimport)
 				.addItem("devicemenu/pushurl", pua)
@@ -171,10 +177,12 @@ public final class MainLifecycle implements Lifecycle, GlobalsFactory {
 				.addSeparator("helpmenu/---1")
 				.addCheckbox("helpmenu/grants", wt.grants);
 
-		return new WindowBuilder(
+		Window ret = new WindowBuilder(
 				new PlayStoreViewBuilder().withBorder(new EmptyBorder(10, 10, 10, 10)))
 				.withTitle(Messages.getString("MainLifecycle.title")).withMenu(mbb)
 				.withSize(1200, 768).withIcons("/icons/appicon.png").build(globals);
+		ret.addWindowListener(new PostWindowSetup(globals));
+		return ret;
 	}
 
 	@Override

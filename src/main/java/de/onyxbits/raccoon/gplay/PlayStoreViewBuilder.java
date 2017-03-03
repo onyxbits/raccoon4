@@ -59,7 +59,8 @@ import de.onyxbits.weave.window.Focus;
  * 
  */
 public class PlayStoreViewBuilder extends AbstractPanelBuilder implements
-		PlayListener, BridgeListener, ActionListener, VariableListener {
+		PlayListener, BridgeListener, ActionListener, VariableListener,
+		PlayProfileListener {
 
 	public static final String ID = PlayStoreViewBuilder.class.getSimpleName();
 
@@ -160,6 +161,9 @@ public class PlayStoreViewBuilder extends AbstractPanelBuilder implements
 		globals.get(BridgeManager.class).addBridgeListener(this);
 		globals.get(DatabaseManager.class).get(VariableDao.class)
 				.addVariableListener(this);
+		globals.get(DatabaseManager.class).get(PlayProfileDao.class)
+				.subscribe(this);
+
 		Focus.on(query);
 		return panel;
 	}
@@ -249,6 +253,16 @@ public class PlayStoreViewBuilder extends AbstractPanelBuilder implements
 	@Override
 	public void onVariableModified(VariableEvent event) {
 		overview();
+	}
+
+	@Override
+	public void onPlayProfileChange(PlayProfileEvent event) {
+		overview();
+		if (event.isConnection()) {
+			boolean a = event.isActivation();
+			query.setEnabled(a);
+			search.setEnabled(a);
+		}
 	}
 
 }

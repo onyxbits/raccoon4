@@ -216,9 +216,14 @@ final class OverviewBuilder extends AbstractPanelBuilder implements
 
 	@Override
 	public void onPlayProfileChange(PlayProfileEvent event) {
-		if (event.type == PlayProfileEvent.ACTIVATED) {
-			titleStrip.setTitle(MessageFormat.format(
-					Messages.getString(ID + ".welcome"), event.profile.getAlias()));
+		if (event.isConnection()) {
+			if (event.isActivation()) {
+				titleStrip.setTitle(MessageFormat.format(
+						Messages.getString(ID + ".welcome"), event.profile.getAlias()));
+			}
+			else {
+				titleStrip.setTitle("");
+			}
 		}
 	}
 

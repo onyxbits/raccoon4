@@ -64,32 +64,9 @@ public class ProfilesMenuBuilder implements ActionListener, PlayProfileListener 
 		edit.addActionListener(this);
 		delete.addActionListener(this);
 
-		load();
 		globals.get(DatabaseManager.class).get(PlayProfileDao.class)
-				.addPlayProfileListener(this);
+				.subscribe(this);
 		return menu;
-	}
-
-	private void load() {
-		PlayProfileDao dao = globals.get(DatabaseManager.class).get(
-				PlayProfileDao.class);
-		List<PlayProfile> profiles = dao.list();
-		PlayProfile def = dao.get();
-		ButtonGroup bg = new ButtonGroup();
-
-		for (PlayProfile profile : profiles) {
-			ProfileAction pa = new ProfileAction(globals, profile);
-			JRadioButtonMenuItem item = new JRadioButtonMenuItem(pa);
-			bg.add(item);
-			menu.add(item);
-			item.setSelected(def!=null && def.getAlias().equals(profile.getAlias()));
-		}
-		menu.add(new JSeparator());
-		menu.add(add);
-		menu.add(edit);
-		menu.add(delete);
-
-		delete.setEnabled(profiles.size() > 1);
 	}
 
 	@Override
@@ -121,14 +98,40 @@ public class ProfilesMenuBuilder implements ActionListener, PlayProfileListener 
 			if (choice == JOptionPane.YES_OPTION) {
 				PlayProfileDao dao = dbm.get(PlayProfileDao.class);
 				dao.delete(dao.get().getAlias());
-				dao.set(dao.list().get(0).getAlias());
+				List<PlayProfile> ppl = dao.list();
+				if (ppl.size() == 0) {
+					dao.set(null);
+				}
+				else {
+					dao.set(ppl.get(0).getAlias());
+				}
 			}
 		}
 	}
 
 	@Override
 	public void onPlayProfileChange(PlayProfileEvent event) {
+		if (event.isConnection()) {
+			boolean a = event.isActivation();
+			edit.setEnabled(a);
+			delete.setEnabled(a);
+		}
 		menu.removeAll();
-		load();
+		PlayProfileDao dao = (PlayProfileDao) event.getSource();
+		List<PlayProfile> profiles = dao.list();
+		PlayProfile def = dao.get();
+		ButtonGroup bg = new ButtonGroup();
+
+		for (PlayProfile profile : profiles) {
+			ProfileAction pa = new ProfileAction(globals, profile);
+			JRadioButtonMenuItem item = new JRadioButtonMenuItem(pa);
+			bg.add(item);
+			menu.add(item);
+			item.setSelected(def != null && def.getAlias().equals(profile.getAlias()));
+		}
+		menu.add(new JSeparator());
+		menu.add(add);
+		menu.add(edit);
+		menu.add(delete);
 	}
 }

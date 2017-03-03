@@ -28,7 +28,8 @@ import de.onyxbits.weave.Globals;
  * @author patrick
  * 
  */
-public class UpdateAppAction extends AbstractAction {
+public class UpdateAppAction extends AbstractAction implements
+		PlayProfileListener {
 
 	/**
 	 * 
@@ -44,6 +45,13 @@ public class UpdateAppAction extends AbstractAction {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		new UpdateAppWorker(globals).execute();
+	}
+
+	@Override
+	public void onPlayProfileChange(PlayProfileEvent event) {
+		if (event.isConnection()) {
+			setEnabled(event.isActivation());
+		}
 	}
 
 }

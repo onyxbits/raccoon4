@@ -24,6 +24,8 @@ import javax.swing.KeyStroke;
 import de.onyxbits.raccoon.appmgr.MyAppsViewBuilder;
 import de.onyxbits.raccoon.gplay.ImportBuilder;
 import de.onyxbits.raccoon.gplay.ManualDownloadBuilder;
+import de.onyxbits.raccoon.gplay.PlayProfileEvent;
+import de.onyxbits.raccoon.gplay.PlayProfileListener;
 import de.onyxbits.raccoon.qr.QrToolBuilder;
 import de.onyxbits.raccoon.qr.ShareToolBuilder;
 import de.onyxbits.raccoon.transfer.TransferViewBuilder;
@@ -36,7 +38,7 @@ import de.onyxbits.weave.swing.WindowToggleAction;
  * @author patrick
  * 
  */
-public final class WindowTogglers {
+public final class WindowTogglers implements PlayProfileListener {
 
 	public final WindowToggleAction myApps;
 	public final WindowToggleAction transfers;
@@ -62,6 +64,15 @@ public final class WindowTogglers {
 				KeyStroke.getKeyStroke(KeyEvent.VK_F7, 0));
 		transfers.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(
 				KeyEvent.VK_T, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+	}
+
+	@Override
+	public void onPlayProfileChange(PlayProfileEvent event) {
+		if (event.isConnection()) {
+			boolean a = event.isActivation();
+			marketimport.setEnabled(a);
+			manualdownload.setEnabled(a);
+		}
 	}
 
 }

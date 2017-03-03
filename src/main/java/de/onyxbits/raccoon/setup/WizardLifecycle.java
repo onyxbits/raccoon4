@@ -27,8 +27,6 @@ import javax.swing.JPanel;
 
 import de.onyxbits.raccoon.Bookmarks;
 import de.onyxbits.raccoon.db.DatabaseManager;
-import de.onyxbits.raccoon.db.VariableDao;
-import de.onyxbits.raccoon.db.Variables;
 import de.onyxbits.raccoon.gplay.PlayProfile;
 import de.onyxbits.raccoon.gplay.PlayProfileDao;
 import de.onyxbits.raccoon.gui.ButtonBarBuilder;
@@ -137,9 +135,11 @@ public class WizardLifecycle implements ActionListener, Lifecycle {
 				.withHelp(al.localize(new BrowseAction(helpurl), "helpbutton"))
 				.withButtons(new ButtonBarBuilder().add(previous).add(next));
 
-		return new WindowBuilder(db).withIcons("/icons/appicon.png")
+		Window ret = new WindowBuilder(db).withIcons("/icons/appicon.png")
 				.withFixedSize().withTitle(Messages.getString("WizardLifecycle.title"))
 				.build(globals);
+		ret.setAlwaysOnTop(true);
+		return ret;
 	}
 
 	@Override
