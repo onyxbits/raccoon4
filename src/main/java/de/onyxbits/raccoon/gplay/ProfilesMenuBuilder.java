@@ -29,9 +29,6 @@ import javax.swing.JSeparator;
 import javax.swing.JTextField;
 
 import de.onyxbits.raccoon.db.DatabaseManager;
-import de.onyxbits.raccoon.db.VariableDao;
-import de.onyxbits.raccoon.db.VariableEvent;
-import de.onyxbits.raccoon.db.VariableListener;
 import de.onyxbits.raccoon.gui.Traits;
 import de.onyxbits.raccoon.setup.WizardLifecycle;
 import de.onyxbits.weave.Globals;
@@ -46,7 +43,7 @@ import de.onyxbits.weave.swing.NoAction;
  * @author patrick
  * 
  */
-public class ProfilesMenuBuilder implements ActionListener, VariableListener {
+public class ProfilesMenuBuilder implements ActionListener, PlayProfileListener {
 
 	public static final String ID = ProfilesMenuBuilder.class.getSimpleName();
 
@@ -68,8 +65,8 @@ public class ProfilesMenuBuilder implements ActionListener, VariableListener {
 		delete.addActionListener(this);
 
 		load();
-		globals.get(DatabaseManager.class).get(VariableDao.class)
-				.addVariableListener(this);
+		globals.get(DatabaseManager.class).get(PlayProfileDao.class)
+				.addPlayProfileListener(this);
 		return menu;
 	}
 
@@ -85,9 +82,7 @@ public class ProfilesMenuBuilder implements ActionListener, VariableListener {
 			JRadioButtonMenuItem item = new JRadioButtonMenuItem(pa);
 			bg.add(item);
 			menu.add(item);
-			if (def.getAlias().equals(profile.getAlias())) {
-				item.setSelected(true);
-			}
+			item.setSelected(def!=null && def.getAlias().equals(profile.getAlias()));
 		}
 		menu.add(new JSeparator());
 		menu.add(add);
@@ -132,7 +127,7 @@ public class ProfilesMenuBuilder implements ActionListener, VariableListener {
 	}
 
 	@Override
-	public void onVariableModified(VariableEvent event) {
+	public void onPlayProfileChange(PlayProfileEvent event) {
 		menu.removeAll();
 		load();
 	}

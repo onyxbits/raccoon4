@@ -23,6 +23,8 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.event.EventListenerList;
+
 import de.onyxbits.raccoon.db.DataAccessObject;
 import de.onyxbits.raccoon.db.VariableDao;
 import de.onyxbits.raccoon.db.Variables;
@@ -33,6 +35,8 @@ public class PlayProfileDao extends DataAccessObject implements Variables {
 	 * Table version
 	 */
 	protected static final int VERSION = 1;
+
+	private EventListenerList eventListeners;
 
 	@Override
 	protected void upgradeFrom(int oldVersion, Connection c) throws SQLException {
@@ -88,7 +92,12 @@ public class PlayProfileDao extends DataAccessObject implements Variables {
 	 *          identifier of the profile.
 	 */
 	public void set(String alias) {
-		manager.get(VariableDao.class).setVar(PLAYPROFILE, alias);
+		PlayProfile pp = get(alias);
+		if (pp != null) {
+			manager.get(VariableDao.class).setVar(PLAYPROFILE, alias);
+			firePlayProfileEvent(new PlayProfileEvent(this, pp,
+					PlayProfileEvent.ACTIVATED));
+		}
 	}
 
 	/**
@@ -157,6 +166,8 @@ public class PlayProfileDao extends DataAccessObject implements Variables {
 			st.setString(8, profile.getProxyPassword());
 			st.setString(9, profile.getGsfId());
 			st.execute();
+			firePlayProfileEvent(new PlayProfileEvent(this, profile,
+					PlayProfileEvent.CREATED));
 		}
 		finally {
 			manager.disconnect(c);
@@ -170,9 +181,14 @@ public class PlayProfileDao extends DataAccessObject implements Variables {
 		Connection c = manager.connect();
 		PreparedStatement st = null;
 		try {
+			PlayProfile tmp = get(alias);
 			st = c.prepareStatement("DELETE FROM playprofiles WHERE alias = ?");
 			st.setString(1, alias);
 			st.execute();
+			if (tmp != null) {
+				firePlayProfileEvent(new PlayProfileEvent(this, tmp,
+						PlayProfileEvent.DESTROYED));
+			}
 		}
 		catch (SQLException e) {
 			e.printStackTrace();
@@ -207,11 +223,36 @@ public class PlayProfileDao extends DataAccessObject implements Variables {
 			st.setString(8, profile.getGsfId());
 			st.setString(9, profile.getAlias());
 			st.execute();
+			firePlayProfileEvent(new PlayProfileEvent(this, profile,
+					PlayProfileEvent.MODIFIED));
 		}
 		finally {
 			manager.disconnect(c);
 			if (st != null) {
 				st.close();
+			}
+		}
+	}
+
+	public void addPlayProfileListener(PlayProfileListener listener) {
+		if (eventListeners == null) {
+			eventListeners = new EventListenerList();
+		}
+		eventListeners.add(PlayProfileListener.class, listener);
+	}
+
+	public void removePlayProfileListener(PlayProfileListener listener) {
+		if (eventListeners != null) {
+			eventListeners.remove(PlayProfileListener.class, listener);
+		}
+	}
+
+	private void firePlayProfileEvent(PlayProfileEvent event) {
+		if (eventListeners != null) {
+			PlayProfileListener[] listeners = eventListeners
+					.getListeners(PlayProfileListener.class);
+			for (PlayProfileListener listener : listeners) {
+				listener.onPlayProfileChange(event);
 			}
 		}
 	}

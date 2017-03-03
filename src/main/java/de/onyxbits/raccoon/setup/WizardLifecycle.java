@@ -173,9 +173,14 @@ public class WizardLifecycle implements ActionListener, Lifecycle {
 	protected void onFinish(Globals globals) {
 		PlayProfile pp = globals.get(PlayProfile.class);
 		try {
-			databaseManager.get(PlayProfileDao.class).update(pp);
-			databaseManager.get(VariableDao.class).setVar(Variables.PLAYPROFILE,
-					pp.getAlias());
+			PlayProfileDao dao = databaseManager.get(PlayProfileDao.class);
+			if (dao.get(pp.getAlias()) == null) {
+				dao.add(pp);
+			}
+			else {
+				dao.update(pp);
+			}
+			dao.set(pp.getAlias());
 		}
 		catch (SQLException e) {
 			e.printStackTrace();

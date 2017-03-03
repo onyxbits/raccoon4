@@ -45,7 +45,6 @@ import de.onyxbits.raccoon.db.DatabaseManager;
 import de.onyxbits.raccoon.db.VariableDao;
 import de.onyxbits.raccoon.db.VariableEvent;
 import de.onyxbits.raccoon.db.VariableListener;
-import de.onyxbits.raccoon.gui.Traits;
 import de.onyxbits.raccoon.ptools.BridgeListener;
 import de.onyxbits.raccoon.ptools.BridgeManager;
 import de.onyxbits.weave.LifecycleManager;

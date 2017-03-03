@@ -34,8 +34,6 @@ import javax.swing.event.HyperlinkEvent.EventType;
 import de.onyxbits.raccoon.Bookmarks;
 import de.onyxbits.raccoon.db.DatabaseManager;
 import de.onyxbits.raccoon.db.VariableDao;
-import de.onyxbits.raccoon.db.VariableEvent;
-import de.onyxbits.raccoon.db.VariableListener;
 import de.onyxbits.raccoon.db.Variables;
 import de.onyxbits.raccoon.gui.TitleStrip;
 import de.onyxbits.raccoon.gui.Traits;
@@ -51,7 +49,7 @@ import de.onyxbits.weave.swing.BrowseAction;
 import de.onyxbits.weave.util.Version;
 
 final class OverviewBuilder extends AbstractPanelBuilder implements
-		BridgeListener, HyperlinkListener, VariableListener, Variables {
+		BridgeListener, HyperlinkListener, PlayProfileListener, Variables {
 
 	private static final String ID = OverviewBuilder.class.getSimpleName();
 	private static final String INSTALL = "install://platformtools";
@@ -119,16 +117,15 @@ final class OverviewBuilder extends AbstractPanelBuilder implements
 		ret.add(shouts.build(globals), gbc);
 
 		DatabaseManager dbm = globals.get(DatabaseManager.class);
-		VariableDao vdao = dbm.get(VariableDao.class);
-		PlayProfileDao pdao = dbm.get(PlayProfileDao.class);
-		PlayProfile pp = pdao.get();
+		PlayProfileDao dao = dbm.get(PlayProfileDao.class);
+		PlayProfile pp = dao.get();
 		if (pp != null) {
 			titleStrip.setTitle(MessageFormat.format(
 					Messages.getString(ID + ".welcome"), pp.getAlias()));
 		}
 
 		globals.get(BridgeManager.class).addBridgeListener(this);
-		vdao.addVariableListener(this);
+		dao.addPlayProfileListener(this);
 		new VersionWorker(this).execute();
 		return ret;
 	}
@@ -218,14 +215,10 @@ final class OverviewBuilder extends AbstractPanelBuilder implements
 	}
 
 	@Override
-	public void onVariableModified(VariableEvent event) {
-		if ("playprofile".equals(event.name)) {
-			PlayProfile pp = globals.get(DatabaseManager.class)
-					.get(PlayProfileDao.class).get(event.newValue);
-			if (pp != null) {
-				titleStrip.setTitle(MessageFormat.format(
-						Messages.getString(ID + ".welcome"), pp.getAlias()));
-			}
+	public void onPlayProfileChange(PlayProfileEvent event) {
+		if (event.type == PlayProfileEvent.ACTIVATED) {
+			titleStrip.setTitle(MessageFormat.format(
+					Messages.getString(ID + ".welcome"), event.profile.getAlias()));
 		}
 	}
 
