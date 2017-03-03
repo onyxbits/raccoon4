@@ -117,8 +117,6 @@ public final class Main implements Variables {
 			lifecycle = new LifecycleManager(new WizardLifecycle(database, null));
 			EventQueue.invokeLater(lifecycle);
 			lifecycle.waitForState(LifecycleManager.FINISHED);
-			database.get(VariableDao.class).setVar(CREATED,
-					"" + System.currentTimeMillis());
 			if (database.get(PlayProfileDao.class).get() == null) {
 				// User closed the setup wizard -> quit
 				database.shutdown();

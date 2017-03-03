@@ -22,8 +22,7 @@ import java.sql.SQLException;
 
 import javax.swing.event.EventListenerList;
 
-
-public final class VariableDao extends DataAccessObject {
+public final class VariableDao extends DataAccessObject implements Variables {
 
 	/**
 	 * Table version
@@ -49,6 +48,11 @@ public final class VariableDao extends DataAccessObject {
 	private static void v1(Connection c) throws SQLException {
 		PreparedStatement st = c
 				.prepareStatement("CREATE TABLE variables (name VARCHAR(255), value VARCHAR(2048))");
+		st.execute();
+		st = c
+				.prepareStatement("INSERT INTO variables (name, value) VALUES (?, ?)");
+		st.setString(1, CREATED);
+		st.setString(2, "" + System.currentTimeMillis());
 		st.execute();
 	}
 
