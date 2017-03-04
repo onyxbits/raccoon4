@@ -30,7 +30,6 @@ import de.onyxbits.raccoon.gplay.ImportBuilder;
 import de.onyxbits.raccoon.gplay.ManualDownloadBuilder;
 import de.onyxbits.raccoon.gui.GrantBuilder;
 import de.onyxbits.raccoon.gui.MainLifecycle;
-import de.onyxbits.raccoon.gui.UnavailableBuilder;
 import de.onyxbits.raccoon.net.ServerManager;
 import de.onyxbits.raccoon.ptools.BridgeManager;
 import de.onyxbits.raccoon.qr.QrToolBuilder;
@@ -119,7 +118,6 @@ public final class Main implements Variables {
 		preload = de.onyxbits.raccoon.ptools.Messages.BUNDLE_NAME;
 		preload = de.onyxbits.raccoon.qr.Messages.BUNDLE_NAME;
 		preload = QrToolBuilder.ID;
-		preload = UnavailableBuilder.ID;
 		preload = ImportBuilder.ID;
 		preload = ShareToolBuilder.ID;
 		preload = MyAppsViewBuilder.ID;

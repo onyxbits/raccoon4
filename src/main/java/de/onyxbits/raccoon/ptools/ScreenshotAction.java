@@ -49,11 +49,10 @@ public class ScreenshotAction extends BridgeAction {
 	public void actionPerformed(ActionEvent e) {
 		if (globals.get(Traits.class).isAvailable("4.0.x")) {
 			globals.get(TransferManager.class).schedule(globals,
-					new ScreenshotWorker(globals),TransferManager.USB);
+					new ScreenshotWorker(globals), TransferManager.USB);
 		}
 		else {
-			globals.get(LifecycleManager.class).sendBusMessage(
-					new JTextField(Messages.getString(getClass().getSimpleName() + ".about")));
+			globals.get(LifecycleManager.class).sendBusMessage(new JTextField());
 		}
 	}
 }

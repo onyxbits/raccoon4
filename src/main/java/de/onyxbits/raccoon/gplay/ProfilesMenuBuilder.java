@@ -79,9 +79,7 @@ public class ProfilesMenuBuilder implements ActionListener, PlayProfileListener 
 				new LifecycleManager(new WizardLifecycle(dbm, null)).run();
 			}
 			else {
-				globals.get(LifecycleManager.class).sendBusMessage(
-						new JTextField(Messages.getString(getClass().getSimpleName()
-								+ ".about")));
+				globals.get(LifecycleManager.class).sendBusMessage(new JTextField());
 			}
 		}
 

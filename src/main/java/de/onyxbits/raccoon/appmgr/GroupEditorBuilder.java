@@ -107,8 +107,7 @@ public class GroupEditorBuilder extends AbstractPanelBuilder implements
 				addGroup();
 			}
 			else {
-				globals.get(LifecycleManager.class).sendBusMessage(
-						new JTextField(Messages.getString(ID + ".locked")));
+				globals.get(LifecycleManager.class).sendBusMessage(new JTextField());
 			}
 		}
 		if (src == edit) {

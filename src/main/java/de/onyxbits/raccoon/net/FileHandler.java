@@ -96,8 +96,7 @@ class FileHandler extends AbstractHandler {
 		Object obj = getServer().getAttribute(Traits.class.getName());
 		if (obj instanceof Traits) {
 			if (!((Traits) obj).isAvailable("4.0.x")) {
-				lm.sendBusMessage(new JTextField(Messages.getString(getClass()
-						.getSimpleName() + ".about")));
+				lm.sendBusMessage(new JTextField());
 				baseRequest.setHandled(true);
 				return;
 			}

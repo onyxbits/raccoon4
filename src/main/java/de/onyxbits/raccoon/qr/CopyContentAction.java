@@ -54,9 +54,7 @@ public class CopyContentAction extends AbstractAction {
 			Toolkit.getDefaultToolkit().getSystemClipboard().setContents(s, null);
 		}
 		else {
-			globals.get(LifecycleManager.class).sendBusMessage(
-					new JTextField(Messages.getString(getClass().getSimpleName()
-							+ ".about")));
+			globals.get(LifecycleManager.class).sendBusMessage(new JTextField());
 		}
 	}
 

@@ -69,10 +69,7 @@ public final class MainLifecycle implements Lifecycle, GlobalsFactory {
 					TransferManager.LAN);
 		}
 		if (message instanceof JTextComponent) {
-			globals.get(UnavailableBuilder.class).setAbout(
-					((JTextComponent) message).getText());
-			globals.get(LifecycleManager.class).getWindow(UnavailableBuilder.ID)
-					.setVisible(true);
+			globals.get(LifecycleManager.class).getWindow(GrantBuilder.ID).setVisible(true);
 		}
 
 		globals.get(BusMultiplexer.class).broadcast(globals, message);
@@ -224,10 +221,6 @@ public final class MainLifecycle implements Lifecycle, GlobalsFactory {
 
 		if (id.equals(ShareToolBuilder.ID)) {
 			builder = globals.get(ShareToolBuilder.class);
-		}
-
-		if (id.equals(UnavailableBuilder.ID)) {
-			builder = globals.get(UnavailableBuilder.class);
 		}
 
 		Window ret = new WindowBuilder(builder).withFixedSize().withOwner(primary)

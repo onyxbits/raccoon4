@@ -76,13 +76,11 @@ public class InstallAction extends BridgeAction {
 		if (globals.get(Traits.class).isAvailable("4.0.x")) {
 			for (AndroidApp app : apps) {
 				globals.get(TransferManager.class).schedule(globals,
-						new InstallWorker(globals, app),TransferManager.USB);
+						new InstallWorker(globals, app), TransferManager.USB);
 			}
 		}
 		else {
-			globals.get(LifecycleManager.class).sendBusMessage(
-					new JTextField(Messages.getString(getClass().getSimpleName()
-							+ ".about")));
+			globals.get(LifecycleManager.class).sendBusMessage(new JTextField());
 		}
 	}
 

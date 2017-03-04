@@ -274,9 +274,7 @@ public class DetailsViewBuilder extends AbstractPanelBuilder implements
 				doExtract(true);
 			}
 			else {
-				globals.get(LifecycleManager.class).sendBusMessage(
-						new JTextField(Messages.getString(getClass().getSimpleName()
-								+ ".about")));
+				globals.get(LifecycleManager.class).sendBusMessage(new JTextField());
 			}
 
 		}

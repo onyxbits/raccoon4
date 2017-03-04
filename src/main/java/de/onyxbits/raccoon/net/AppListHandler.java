@@ -129,12 +129,11 @@ class AppListHandler extends AbstractHandler {
 			baseRequest.setHandled(true);
 			return;
 		}
-		
+
 		Object obj = getServer().getAttribute(Traits.class.getName());
 		if (obj instanceof Traits) {
 			if (!((Traits) obj).isAvailable("4.0.x")) {
-				lm.sendBusMessage(new JTextField(Messages.getString(getClass()
-						.getSimpleName() + ".about")));
+				lm.sendBusMessage(new JTextField());
 				response.setContentType("text/html");
 				baseRequest.setHandled(true);
 				return;
@@ -183,7 +182,7 @@ class AppListHandler extends AbstractHandler {
 			return;
 		}
 	}
-	
+
 	private void blockTillTransferred(NetWorker nw) {
 		synchronized (nw) {
 			try {

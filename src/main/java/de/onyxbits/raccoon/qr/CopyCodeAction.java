@@ -52,9 +52,7 @@ public class CopyCodeAction extends AbstractAction {
 			new TransferableImage().publish(panel.getImage());
 		}
 		else {
-			globals.get(LifecycleManager.class).sendBusMessage(
-					new JTextField(Messages.getString(getClass().getSimpleName()
-							+ ".about")));
+			globals.get(LifecycleManager.class).sendBusMessage(new JTextField());
 		}
 	}
 
