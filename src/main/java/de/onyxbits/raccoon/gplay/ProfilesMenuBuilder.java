@@ -75,7 +75,9 @@ public class ProfilesMenuBuilder implements ActionListener, PlayProfileListener 
 		DatabaseManager dbm = globals.get(DatabaseManager.class);
 
 		if (src == add) {
-			if (globals.get(Traits.class).isAvailable("4.0.x")) {
+			int size = globals.get(DatabaseManager.class).get(PlayProfileDao.class)
+					.list().size();
+			if (globals.get(Traits.class).isAvailable("4.0.x") || size == 0) {
 				new LifecycleManager(new WizardLifecycle(dbm, null)).run();
 			}
 			else {
