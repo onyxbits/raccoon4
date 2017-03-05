@@ -125,23 +125,6 @@ public final class DatabaseManager {
 	}
 
 	/**
-	 * Check if a DAO is compatible with the database files.
-	 * 
-	 * @param daoclass
-	 *          the DAO to check
-	 * @return true if the DAO can be used with the database, false otherwise.
-	 */
-	public <T extends DataAccessObject> boolean isCompatible(Class<T> daoclass) {
-		try {
-			get(daoclass);
-		}
-		catch (Exception e) {
-			return false;
-		}
-		return true;
-	}
-
-	/**
 	 * Initialize the manager. After initializing the manager, call isCompatible()
 	 * on the DAO with the highest version number to ensure that the user is not
 	 * trying to run an older version of the application with a database that
