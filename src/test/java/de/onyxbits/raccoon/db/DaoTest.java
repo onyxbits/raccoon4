@@ -31,7 +31,6 @@ public abstract class DaoTest {
 		File f = Files.createTempDirectory("raccoontest").toFile();
 		System.err.println(f);
 		dbm = new DatabaseManager(f);
-		dbm.startup();
 	}
 
 	@After

@@ -83,15 +83,13 @@ final class GlobalsProvider implements GlobalsFactory, Variables {
 		}
 
 		if (requested.equals(DatabaseManager.class)) {
-			DatabaseManager ret = new DatabaseManager(Layout.DEFAULT.databaseDir);
 			try {
-				ret.startup();
+				return new DatabaseManager(Layout.DEFAULT.databaseDir);
 			}
 			catch (Exception e) {
 				Router.fail("db.inuse");
 				return null;
 			}
-			return ret;
 		}
 
 		// Things with no external dependencies.

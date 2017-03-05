@@ -84,7 +84,6 @@ public final class Main implements Variables {
 		DatabaseManager database = new DatabaseManager(Layout.DEFAULT.databaseDir);
 		ServerManager serverManager = new ServerManager(Layout.DEFAULT);
 		BridgeManager bridgeManager = new BridgeManager(Layout.DEFAULT);
-		database.startup();
 		System.err.println("Time to DB: " + (System.currentTimeMillis() - now));
 
 		LifecycleManager lifecycle = null;

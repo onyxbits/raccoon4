@@ -50,12 +50,14 @@ public final class DatabaseManager {
 	private HashMap<String, Integer> daoversions;
 
 	/**
-	 * Create a new manager
+	 * Create a new manager.
 	 * 
 	 * @param databaseDir
 	 *          directory to keep the files in.
+	 * @throws SQLException
+	 *           if the DAO table cannot be initialized.
 	 */
-	public DatabaseManager(File databaseDir) {
+	public DatabaseManager(File databaseDir) throws SQLException {
 		pool = new Stack<Connection>();
 		listeners = new ArrayList<EntityListener>();
 		props = new HsqlProperties();
@@ -64,12 +66,38 @@ public final class DatabaseManager {
 				new File(databaseDir, DBNAME).getAbsolutePath());
 		daos = new HashMap<Class<?>, Object>();
 		daoversions = new HashMap<String, Integer>();
+
+		Connection c = new JDBCConnection(props);
+		Statement st = null;
+		ResultSet res = null;
+		try {
+			// Load the DAO version table
+			st = c.createStatement();
+			st.execute("CREATE TABLE IF NOT EXISTS versions (dao VARCHAR(255), version INT)");
+			st.close();
+
+			st = c.createStatement();
+			st.execute("SELECT dao, version FROM versions");
+			res = st.getResultSet();
+			while (res.next()) {
+				daoversions.put(res.getString(1), res.getInt(2));
+			}
+		}
+		finally {
+			if (res != null) {
+				res.close();
+			}
+			if (st != null) {
+				st.close();
+			}
+			pool.push(c);
+		}
 	}
 
 	/**
 	 * Lookup a DAO by class. Tables are automatically created/updated if
-	 * necessary. Trying to access a table that is newer than the dao will result
-	 * in an {@link IllegalStateException}.
+	 * necessary. Trying to access a table from a database file that is newer than
+	 * it's dao will result in an {@link IllegalStateException}.
 	 * 
 	 * @param daoclass
 	 *          class of the database object to get
@@ -122,43 +150,6 @@ public final class DatabaseManager {
 			daos.put(daoclass, ret);
 		}
 		return ret;
-	}
-
-	/**
-	 * Initialize the manager. After initializing the manager, call isCompatible()
-	 * on the DAO with the highest version number to ensure that the user is not
-	 * trying to run an older version of the application with a database that
-	 * belongs to a newer version.
-	 * 
-	 * @throws SQLException
-	 */
-	public void startup() throws Exception {
-		// Speedhack: The pool is empty, don't bother going through connect().
-		Connection c = new JDBCConnection(props);
-		Statement st = null;
-		ResultSet res = null;
-		try {
-			// Load the DAO version table
-			st = c.createStatement();
-			st.execute("CREATE TABLE IF NOT EXISTS versions (dao VARCHAR(255), version INT)");
-			st.close();
-
-			st = c.createStatement();
-			st.execute("SELECT dao, version FROM versions");
-			res = st.getResultSet();
-			while (res.next()) {
-				daoversions.put(res.getString(1), res.getInt(2));
-			}
-		}
-		finally {
-			if (res != null) {
-				res.close();
-			}
-			if (st != null) {
-				st.close();
-			}
-			disconnect(c);
-		}
 	}
 
 	/**
