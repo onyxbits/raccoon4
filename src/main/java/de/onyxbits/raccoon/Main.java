@@ -18,13 +18,11 @@ package de.onyxbits.raccoon;
 import java.awt.EventQueue;
 import java.sql.SQLException;
 
-import javax.swing.JOptionPane;
 
 import de.onyxbits.raccoon.appmgr.DetailsViewBuilder;
 import de.onyxbits.raccoon.appmgr.MyAppsViewBuilder;
 import de.onyxbits.raccoon.cli.Router;
 import de.onyxbits.raccoon.db.DatabaseManager;
-import de.onyxbits.raccoon.db.VariableDao;
 import de.onyxbits.raccoon.db.Variables;
 import de.onyxbits.raccoon.gplay.ImportBuilder;
 import de.onyxbits.raccoon.gplay.ManualDownloadBuilder;
@@ -88,13 +86,6 @@ public final class Main implements Variables {
 		BridgeManager bridgeManager = new BridgeManager(Layout.DEFAULT);
 		database.startup();
 		System.err.println("Time to DB: " + (System.currentTimeMillis() - now));
-
-		if (!database.isCompatible(VariableDao.class)) {
-			JOptionPane.showMessageDialog(null,
-					"Application is older than the database! Can't launch!",
-					"Version conflict detected!", JOptionPane.ERROR_MESSAGE);
-			System.exit(1);
-		}
 
 		LifecycleManager lifecycle = null;
 

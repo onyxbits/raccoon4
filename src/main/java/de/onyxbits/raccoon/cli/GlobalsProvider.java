@@ -86,9 +86,6 @@ final class GlobalsProvider implements GlobalsFactory, Variables {
 			DatabaseManager ret = new DatabaseManager(Layout.DEFAULT.databaseDir);
 			try {
 				ret.startup();
-				if (!ret.isCompatible(VariableDao.class)) {
-					Router.fail("db.incompatible");
-				}
 			}
 			catch (Exception e) {
 				Router.fail("db.inuse");
