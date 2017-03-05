@@ -46,8 +46,6 @@ import de.onyxbits.weave.diag.ReportManager;
  */
 public final class Main implements Variables {
 
-	public static long now = System.currentTimeMillis();
-
 	/*
 	 * Start the application.
 	 * 
@@ -84,7 +82,7 @@ public final class Main implements Variables {
 		DatabaseManager database = new DatabaseManager(Layout.DEFAULT.databaseDir);
 		ServerManager serverManager = new ServerManager(Layout.DEFAULT);
 		BridgeManager bridgeManager = new BridgeManager(Layout.DEFAULT);
-		System.err.println("Time to DB: " + (System.currentTimeMillis() - now));
+		
 
 		LifecycleManager lifecycle = null;
 
@@ -97,7 +95,6 @@ public final class Main implements Variables {
 
 		// Required post GUI initialization.
 		lifecycle.waitForState(LifecycleManager.RUNNING);
-		System.err.println("Time to UI: " + (System.currentTimeMillis() - now));
 
 		bridgeManager.startup();
 		serverManager.startup(lifecycle);
