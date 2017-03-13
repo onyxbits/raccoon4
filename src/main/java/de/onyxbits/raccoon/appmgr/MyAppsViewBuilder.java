@@ -246,7 +246,6 @@ public class MyAppsViewBuilder extends AbstractPanelBuilder implements
 
 	@Override
 	public void onDataSetChange(DatasetEvent event) {
-		System.err.println(event.op);
 		reloadList();
 		reloadGroups();
 	}
