@@ -17,8 +17,20 @@ package de.onyxbits.raccoon.db;
 
 import java.util.EventListener;
 
-public interface VariableListener extends EventListener {
+/**
+ * Receive notifications from {@link DataAccessObject}S
+ * 
+ * @author patrick
+ * 
+ */
+public interface DatasetListener extends EventListener {
 
-	public void onVariableModified(VariableEvent event);
+	/**
+	 * Called when a DAO needs to communicate a change in the dataset.
+	 * 
+	 * @param event
+	 *          details.
+	 */
+	public void onDataSetChange(DatasetEvent event);
 
 }

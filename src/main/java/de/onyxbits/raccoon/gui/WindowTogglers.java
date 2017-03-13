@@ -22,10 +22,11 @@ import javax.swing.Action;
 import javax.swing.KeyStroke;
 
 import de.onyxbits.raccoon.appmgr.MyAppsViewBuilder;
+import de.onyxbits.raccoon.db.DatasetEvent;
+import de.onyxbits.raccoon.db.DatasetListener;
 import de.onyxbits.raccoon.gplay.ImportBuilder;
 import de.onyxbits.raccoon.gplay.ManualDownloadBuilder;
 import de.onyxbits.raccoon.gplay.PlayProfileEvent;
-import de.onyxbits.raccoon.gplay.PlayProfileListener;
 import de.onyxbits.raccoon.qr.QrToolBuilder;
 import de.onyxbits.raccoon.qr.ShareToolBuilder;
 import de.onyxbits.raccoon.transfer.TransferViewBuilder;
@@ -38,7 +39,7 @@ import de.onyxbits.weave.swing.WindowToggleAction;
  * @author patrick
  * 
  */
-public final class WindowTogglers implements PlayProfileListener {
+public final class WindowTogglers implements DatasetListener {
 
 	public final WindowToggleAction myApps;
 	public final WindowToggleAction transfers;
@@ -67,12 +68,14 @@ public final class WindowTogglers implements PlayProfileListener {
 	}
 
 	@Override
-	public void onPlayProfileChange(PlayProfileEvent event) {
-		if (event.isConnection()) {
-			boolean a = event.isActivation();
-			marketimport.setEnabled(a);
-			manualdownload.setEnabled(a);
+	public void onDataSetChange(DatasetEvent event) {
+		if (event instanceof PlayProfileEvent) {
+			PlayProfileEvent ppe = (PlayProfileEvent) event;
+			if (ppe.isConnection()) {
+				boolean a = ppe.isActivation();
+				marketimport.setEnabled(a);
+				manualdownload.setEnabled(a);
+			}
 		}
 	}
-
 }

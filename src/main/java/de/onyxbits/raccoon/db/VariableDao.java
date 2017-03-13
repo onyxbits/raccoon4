@@ -20,16 +20,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import javax.swing.event.EventListenerList;
-
 public final class VariableDao extends DataAccessObject implements Variables {
 
 	/**
 	 * Table version
 	 */
 	protected static final int VERSION = 1;
-
-	private EventListenerList listenerList;
 
 	@Override
 	protected void upgradeFrom(int oldVersion, Connection c) throws SQLException {
@@ -106,7 +102,7 @@ public final class VariableDao extends DataAccessObject implements Variables {
 				st.setString(2, val);
 				st.execute();
 			}
-			fireOnVariableModified(new VariableEvent(this, key, old, val));
+			fireOnDataSetChangeEvent(new VariableEvent(this, key, old, val));
 		}
 		catch (Exception e) {
 			// e.printStackTrace();
@@ -121,29 +117,6 @@ public final class VariableDao extends DataAccessObject implements Variables {
 				}
 			}
 			catch (Exception e) {
-			}
-		}
-	}
-
-	public void addVariableListener(VariableListener l) {
-		if (listenerList == null) {
-			listenerList = new EventListenerList();
-		}
-		listenerList.add(VariableListener.class, l);
-	}
-
-	public void removeVariableListener(VariableListener l) {
-		if (listenerList != null) {
-			listenerList.remove(VariableListener.class, l);
-		}
-	}
-
-	private void fireOnVariableModified(VariableEvent e) {
-		if (listenerList != null) {
-			VariableListener[] listeners = listenerList
-					.getListeners(VariableListener.class);
-			for (VariableListener listener : listeners) {
-				listener.onVariableModified(e);
 			}
 		}
 	}

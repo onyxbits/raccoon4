@@ -17,7 +17,9 @@ package de.onyxbits.raccoon.gplay;
 
 import java.util.EventObject;
 
-public class PlayProfileEvent extends EventObject {
+import de.onyxbits.raccoon.db.DatasetEvent;
+
+public class PlayProfileEvent extends DatasetEvent {
 
 	/**
 	 * 
@@ -54,7 +56,7 @@ public class PlayProfileEvent extends EventObject {
 	 */
 	public final int type;
 
-	public PlayProfileEvent(Object source, PlayProfile profile, int type) {
+	public PlayProfileEvent(PlayProfileDao source, PlayProfile profile, int type) {
 		super(source);
 		this.profile = profile;
 		this.type = type;

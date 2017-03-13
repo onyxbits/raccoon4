@@ -41,10 +41,12 @@ import javax.swing.border.EmptyBorder;
 
 import com.akdeniz.googleplaycrawler.GooglePlay.DocV2;
 
+import de.onyxbits.raccoon.db.DatasetEvent;
+import de.onyxbits.raccoon.db.DatasetListener;
+import de.onyxbits.raccoon.db.DatasetListenerProxy;
 import de.onyxbits.raccoon.db.DatabaseManager;
 import de.onyxbits.raccoon.db.VariableDao;
 import de.onyxbits.raccoon.db.VariableEvent;
-import de.onyxbits.raccoon.db.VariableListener;
 import de.onyxbits.raccoon.ptools.BridgeListener;
 import de.onyxbits.raccoon.ptools.BridgeManager;
 import de.onyxbits.weave.LifecycleManager;
@@ -59,8 +61,7 @@ import de.onyxbits.weave.window.Focus;
  * 
  */
 public class PlayStoreViewBuilder extends AbstractPanelBuilder implements
-		PlayListener, BridgeListener, ActionListener, VariableListener,
-		PlayProfileListener {
+		PlayListener, BridgeListener, ActionListener, DatasetListener {
 
 	public static final String ID = PlayStoreViewBuilder.class.getSimpleName();
 
@@ -160,9 +161,9 @@ public class PlayStoreViewBuilder extends AbstractPanelBuilder implements
 		globals.get(PlayManager.class).addPlayListener(this);
 		globals.get(BridgeManager.class).addBridgeListener(this);
 		globals.get(DatabaseManager.class).get(VariableDao.class)
-				.addVariableListener(this);
+				.addDataSetListener(new DatasetListenerProxy(this));
 		globals.get(DatabaseManager.class).get(PlayProfileDao.class)
-				.subscribe(this);
+				.subscribe(new DatasetListenerProxy(this));
 
 		Focus.on(query);
 		return panel;
@@ -251,17 +252,19 @@ public class PlayStoreViewBuilder extends AbstractPanelBuilder implements
 	}
 
 	@Override
-	public void onVariableModified(VariableEvent event) {
-		overview();
-	}
+	public void onDataSetChange(DatasetEvent event) {
 
-	@Override
-	public void onPlayProfileChange(PlayProfileEvent event) {
-		overview();
-		if (event.isConnection()) {
-			boolean a = event.isActivation();
-			query.setEnabled(a);
-			search.setEnabled(a);
+		if (event instanceof VariableEvent) {
+			overview();
+		}
+
+		if (event instanceof PlayProfileEvent) {
+			PlayProfileEvent ppe = (PlayProfileEvent) event;
+			if (ppe.isConnection()) {
+				boolean a = ppe.isActivation();
+				query.setEnabled(a);
+				search.setEnabled(a);
+			}
 		}
 	}
 

@@ -13,19 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.onyxbits.raccoon.gplay;
+package de.onyxbits.raccoon.db;
 
+import java.util.EventObject;
 
-import de.onyxbits.raccoon.db.DatasetListener;
-
-public interface PlayProfileListener extends DatasetListener {
+/**
+ * Contains details on which dataset changed and how it did change. DOAs that
+ * provide more than CRUD operations should subclass and give high level details
+ * on what happened.
+ * 
+ * @author patrick
+ * 
+ */
+public class DatasetEvent extends EventObject {
 
 	/**
-	 * Called when a profile is added, deleted, modified or set as the default
-	 * profile.
 	 * 
-	 * @param event
-	 *          details.
 	 */
-	public void onSPlayProfileChange(PlayProfileEvent event);
+	private static final long serialVersionUID = 1L;
+
+	public DatasetEvent(DataAccessObject source) {
+		super(source);
+	}
+
 }

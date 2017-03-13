@@ -18,6 +18,8 @@ package de.onyxbits.raccoon.db;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+import javax.swing.event.EventListenerList;
+
 /**
  * Superclass for data access objects. All DAOs are versioned by their simple
  * name, so the simple name must be unique (we use the simple name instead of
@@ -33,6 +35,7 @@ import java.sql.SQLException;
 public abstract class DataAccessObject {
 
 	protected DatabaseManager manager;
+	private EventListenerList listenerList;
 
 	/**
 	 * Set the owning manager.
@@ -68,4 +71,38 @@ public abstract class DataAccessObject {
 	 * @return a number >=1.
 	 */
 	protected abstract int getVersion();
+
+	/**
+	 * Subscribe a listener
+	 * @param listener the listener to subscribe
+	 */
+	public void addDataSetListener(DatasetListener listener) {
+		if (listenerList == null) {
+			listenerList = new EventListenerList();
+		}
+		listenerList.add(DatasetListener.class, listener);
+	}
+
+	/**
+	 * Unsubscribe a listener
+	 * @param listener the listener to unsubscibe.
+	 */
+	public void removeDataSetListener(DatasetListener listener) {
+		if (listenerList != null) {
+			listenerList.remove(DatasetListener.class, listener);
+		}
+	}
+
+	/**
+	 * Notify listeners. This is done on the calling thread! Use 
+	 * @param event the event to fire.
+	 */
+	protected void fireOnDataSetChangeEvent(DatasetEvent event) {
+		if (listenerList != null) {
+			DatasetListener[] listeners = listenerList.getListeners(DatasetListener.class);
+			for (DatasetListener listener : listeners) {
+				listener.onDataSetChange(event);
+			}
+		}
+	}
 }

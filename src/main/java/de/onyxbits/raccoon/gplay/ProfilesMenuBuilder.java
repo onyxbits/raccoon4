@@ -28,6 +28,9 @@ import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JSeparator;
 import javax.swing.JTextField;
 
+import de.onyxbits.raccoon.db.DatasetEvent;
+import de.onyxbits.raccoon.db.DatasetListener;
+import de.onyxbits.raccoon.db.DatasetListenerProxy;
 import de.onyxbits.raccoon.db.DatabaseManager;
 import de.onyxbits.raccoon.gui.Traits;
 import de.onyxbits.raccoon.setup.WizardLifecycle;
@@ -43,7 +46,7 @@ import de.onyxbits.weave.swing.NoAction;
  * @author patrick
  * 
  */
-public class ProfilesMenuBuilder implements ActionListener, PlayProfileListener {
+public class ProfilesMenuBuilder implements ActionListener, DatasetListener {
 
 	public static final String ID = ProfilesMenuBuilder.class.getSimpleName();
 
@@ -65,7 +68,7 @@ public class ProfilesMenuBuilder implements ActionListener, PlayProfileListener 
 		delete.addActionListener(this);
 
 		globals.get(DatabaseManager.class).get(PlayProfileDao.class)
-				.subscribe(this);
+				.subscribe(new DatasetListenerProxy(this));
 		return menu;
 	}
 
@@ -110,28 +113,33 @@ public class ProfilesMenuBuilder implements ActionListener, PlayProfileListener 
 	}
 
 	@Override
-	public void onPlayProfileChange(PlayProfileEvent event) {
-		if (event.isConnection()) {
-			boolean a = event.isActivation();
-			edit.setEnabled(a);
-			delete.setEnabled(a);
-		}
-		menu.removeAll();
-		PlayProfileDao dao = (PlayProfileDao) event.getSource();
-		List<PlayProfile> profiles = dao.list();
-		PlayProfile def = dao.get();
-		ButtonGroup bg = new ButtonGroup();
+	public void onDataSetChange(DatasetEvent event) {
+		if (event instanceof PlayProfileEvent) {
+			PlayProfileEvent ppe = (PlayProfileEvent) event;
+			if (ppe.isConnection()) {
+				boolean a = ppe.isActivation();
+				edit.setEnabled(a);
+				delete.setEnabled(a);
+			}
+			menu.removeAll();
+			PlayProfileDao dao = (PlayProfileDao) event.getSource();
+			List<PlayProfile> profiles = dao.list();
+			PlayProfile def = dao.get();
+			ButtonGroup bg = new ButtonGroup();
 
-		for (PlayProfile profile : profiles) {
-			ProfileAction pa = new ProfileAction(globals, profile);
-			JRadioButtonMenuItem item = new JRadioButtonMenuItem(pa);
-			bg.add(item);
-			menu.add(item);
-			item.setSelected(def != null && def.getAlias().equals(profile.getAlias()));
+			for (PlayProfile profile : profiles) {
+				ProfileAction pa = new ProfileAction(globals, profile);
+				JRadioButtonMenuItem item = new JRadioButtonMenuItem(pa);
+				bg.add(item);
+				menu.add(item);
+				item.setSelected(def != null
+						&& def.getAlias().equals(profile.getAlias()));
+			}
+			menu.add(new JSeparator());
+			menu.add(add);
+			menu.add(edit);
+			menu.add(delete);
 		}
-		menu.add(new JSeparator());
-		menu.add(add);
-		menu.add(edit);
-		menu.add(delete);
 	}
+
 }

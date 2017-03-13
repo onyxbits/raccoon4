@@ -19,6 +19,8 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
 
+import de.onyxbits.raccoon.db.DatasetEvent;
+import de.onyxbits.raccoon.db.DatasetListener;
 import de.onyxbits.weave.Globals;
 
 /**
@@ -28,8 +30,7 @@ import de.onyxbits.weave.Globals;
  * @author patrick
  * 
  */
-public class UpdateAppAction extends AbstractAction implements
-		PlayProfileListener {
+public class UpdateAppAction extends AbstractAction implements DatasetListener {
 
 	/**
 	 * 
@@ -48,9 +49,12 @@ public class UpdateAppAction extends AbstractAction implements
 	}
 
 	@Override
-	public void onPlayProfileChange(PlayProfileEvent event) {
-		if (event.isConnection()) {
-			setEnabled(event.isActivation());
+	public void onDataSetChange(DatasetEvent event) {
+		if (event instanceof PlayProfileEvent) {
+			PlayProfileEvent ppe = (PlayProfileEvent) event;
+			if (ppe.isConnection()) {
+				setEnabled(ppe.isActivation());
+			}
 		}
 	}
 

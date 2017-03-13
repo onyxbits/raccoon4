@@ -23,9 +23,8 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.event.EventListenerList;
-
 import de.onyxbits.raccoon.db.DataAccessObject;
+import de.onyxbits.raccoon.db.DatasetListener;
 import de.onyxbits.raccoon.db.VariableDao;
 import de.onyxbits.raccoon.db.Variables;
 
@@ -35,8 +34,6 @@ public class PlayProfileDao extends DataAccessObject implements Variables {
 	 * Table version
 	 */
 	protected static final int VERSION = 1;
-
-	private EventListenerList eventListeners;
 
 	@Override
 	protected void upgradeFrom(int oldVersion, Connection c) throws SQLException {
@@ -100,7 +97,7 @@ public class PlayProfileDao extends DataAccessObject implements Variables {
 		else {
 			manager.get(VariableDao.class).setVar(PLAYPROFILE, null);
 		}
-		firePlayProfileEvent(new PlayProfileEvent(this, pp,
+		fireOnDataSetChangeEvent(new PlayProfileEvent(this, pp,
 				PlayProfileEvent.ACTIVATED));
 	}
 
@@ -170,7 +167,7 @@ public class PlayProfileDao extends DataAccessObject implements Variables {
 			st.setString(8, profile.getProxyPassword());
 			st.setString(9, profile.getGsfId());
 			st.execute();
-			firePlayProfileEvent(new PlayProfileEvent(this, profile,
+			fireOnDataSetChangeEvent(new PlayProfileEvent(this, profile,
 					PlayProfileEvent.CREATED));
 		}
 		finally {
@@ -190,7 +187,7 @@ public class PlayProfileDao extends DataAccessObject implements Variables {
 			st.setString(1, alias);
 			st.execute();
 			if (tmp != null) {
-				firePlayProfileEvent(new PlayProfileEvent(this, tmp,
+				fireOnDataSetChangeEvent(new PlayProfileEvent(this, tmp,
 						PlayProfileEvent.DESTROYED));
 			}
 		}
@@ -227,7 +224,7 @@ public class PlayProfileDao extends DataAccessObject implements Variables {
 			st.setString(8, profile.getGsfId());
 			st.setString(9, profile.getAlias());
 			st.execute();
-			firePlayProfileEvent(new PlayProfileEvent(this, profile,
+			fireOnDataSetChangeEvent(new PlayProfileEvent(this, profile,
 					PlayProfileEvent.MODIFIED));
 		}
 		finally {
@@ -245,33 +242,10 @@ public class PlayProfileDao extends DataAccessObject implements Variables {
 	 * @param listener
 	 *          the listener to subscribe.
 	 */
-	public void subscribe(PlayProfileListener listener) {
-		addPlayProfileListener(listener);
-		listener.onPlayProfileChange(new PlayProfileEvent(this, get(),
+	public void subscribe(DatasetListener listener) {
+		addDataSetListener(listener);
+		fireOnDataSetChangeEvent(new PlayProfileEvent(this, get(),
 				PlayProfileEvent.ACTIVATED));
-	}
-
-	public void addPlayProfileListener(PlayProfileListener listener) {
-		if (eventListeners == null) {
-			eventListeners = new EventListenerList();
-		}
-		eventListeners.add(PlayProfileListener.class, listener);
-	}
-
-	public void removePlayProfileListener(PlayProfileListener listener) {
-		if (eventListeners != null) {
-			eventListeners.remove(PlayProfileListener.class, listener);
-		}
-	}
-
-	private void firePlayProfileEvent(PlayProfileEvent event) {
-		if (eventListeners != null) {
-			PlayProfileListener[] listeners = eventListeners
-					.getListeners(PlayProfileListener.class);
-			for (PlayProfileListener listener : listeners) {
-				listener.onPlayProfileChange(event);
-			}
-		}
 	}
 
 }

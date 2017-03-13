@@ -32,6 +32,9 @@ import javax.swing.event.HyperlinkListener;
 import javax.swing.event.HyperlinkEvent.EventType;
 
 import de.onyxbits.raccoon.Bookmarks;
+import de.onyxbits.raccoon.db.DatasetEvent;
+import de.onyxbits.raccoon.db.DatasetListener;
+import de.onyxbits.raccoon.db.DatasetListenerProxy;
 import de.onyxbits.raccoon.db.DatabaseManager;
 import de.onyxbits.raccoon.db.VariableDao;
 import de.onyxbits.raccoon.db.Variables;
@@ -49,7 +52,7 @@ import de.onyxbits.weave.swing.BrowseAction;
 import de.onyxbits.weave.util.Version;
 
 final class OverviewBuilder extends AbstractPanelBuilder implements
-		BridgeListener, HyperlinkListener, PlayProfileListener, Variables {
+		BridgeListener, HyperlinkListener, DatasetListener, Variables {
 
 	private static final String ID = OverviewBuilder.class.getSimpleName();
 	private static final String INSTALL = "install://platformtools";
@@ -125,7 +128,7 @@ final class OverviewBuilder extends AbstractPanelBuilder implements
 		}
 
 		globals.get(BridgeManager.class).addBridgeListener(this);
-		dao.addPlayProfileListener(this);
+		dao.addDataSetListener(new DatasetListenerProxy(this));
 		new VersionWorker(this).execute();
 		return ret;
 	}
@@ -215,14 +218,17 @@ final class OverviewBuilder extends AbstractPanelBuilder implements
 	}
 
 	@Override
-	public void onPlayProfileChange(PlayProfileEvent event) {
-		if (event.isConnection()) {
-			if (event.isActivation()) {
-				titleStrip.setTitle(MessageFormat.format(
-						Messages.getString(ID + ".welcome"), event.profile.getAlias()));
-			}
-			else {
-				titleStrip.setTitle("");
+	public void onDataSetChange(DatasetEvent event) {
+		if (event instanceof PlayProfileEvent) {
+			PlayProfileEvent ppe = (PlayProfileEvent) event;
+			if (ppe.isConnection()) {
+				if (ppe.isActivation()) {
+					titleStrip.setTitle(MessageFormat.format(
+							Messages.getString(ID + ".welcome"), ppe.profile.getAlias()));
+				}
+				else {
+					titleStrip.setTitle("");
+				}
 			}
 		}
 	}
