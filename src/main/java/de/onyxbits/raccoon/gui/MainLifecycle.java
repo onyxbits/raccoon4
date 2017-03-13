@@ -12,6 +12,7 @@ import de.onyxbits.raccoon.appmgr.DetailsViewBuilder;
 import de.onyxbits.raccoon.appmgr.GroupEditorBuilder;
 import de.onyxbits.raccoon.appmgr.MyAppsViewBuilder;
 import de.onyxbits.raccoon.db.DatabaseManager;
+import de.onyxbits.raccoon.db.DatasetListenerProxy;
 import de.onyxbits.raccoon.db.VariableDao;
 import de.onyxbits.raccoon.gplay.PlayManager;
 import de.onyxbits.raccoon.gplay.PlayProfileDao;
@@ -69,7 +70,8 @@ public final class MainLifecycle implements Lifecycle, GlobalsFactory {
 					TransferManager.LAN);
 		}
 		if (message instanceof JTextComponent) {
-			globals.get(LifecycleManager.class).getWindow(GrantBuilder.ID).setVisible(true);
+			globals.get(LifecycleManager.class).getWindow(GrantBuilder.ID)
+					.setVisible(true);
 		}
 
 		globals.get(BusMultiplexer.class).broadcast(globals, message);
@@ -144,8 +146,8 @@ public final class MainLifecycle implements Lifecycle, GlobalsFactory {
 		UpdateAppAction uaa = new UpdateAppAction(globals);
 		PlayProfileDao dao = globals.get(DatabaseManager.class).get(
 				PlayProfileDao.class);
-		dao.subscribe(uaa);
-		dao.subscribe(wt);
+		dao.subscribe(new DatasetListenerProxy(uaa));
+		dao.subscribe(new DatasetListenerProxy(wt));
 
 		BridgeManager bridgeManager = globals.get(BridgeManager.class);
 		bridgeManager.addBridgeListener(ssa);
@@ -157,12 +159,14 @@ public final class MainLifecycle implements Lifecycle, GlobalsFactory {
 		MenuBarBuilder mbb = new MenuBarBuilder()
 				.withLocalizer(Messages.getLocalizer())
 				.withMenus("filemenu", "marketmenu", "devicemenu", "viewmenu",
-						"helpmenu").addItem("filemenu/share", wt.share)
+						"helpmenu")
+				.addItem("filemenu/share", wt.share)
 				.addItem("filemenu/importapps", new ImportAppAction(globals))
 				.addSeparator("filemenu/---1")
 				.addItem("filemenu/quit", new QuitAction(globals))
 				.add("marketmenu/profiles", pmb.assemble(globals))
-				.addItem("marketmenu/update", uaa).addSeparator("marketmenu/---1")
+				.addItem("marketmenu/update", uaa)
+				.addSeparator("marketmenu/---1")
 				.addCheckbox("marketmenu/manualdownload", wt.manualdownload)
 				.addCheckbox("marketmenu/importurls", wt.marketimport)
 				.addItem("devicemenu/pushurl", pua)
@@ -171,7 +175,8 @@ public final class MainLifecycle implements Lifecycle, GlobalsFactory {
 				.addCheckbox("viewmenu/qrtool", wt.qrtool)
 				.addCheckbox("viewmenu/transfers", wt.transfers)
 				.addItem("helpmenu/handbook", new BrowseAction(Bookmarks.HANDBOOK))
-				.addItem("helpmenu/featurelist",new BrowseAction(Bookmarks.FEATURELIST))
+				.addItem("helpmenu/featurelist",
+						new BrowseAction(Bookmarks.FEATURELIST))
 				.addSeparator("helpmenu/---1")
 				.addCheckbox("helpmenu/grants", wt.grants);
 
