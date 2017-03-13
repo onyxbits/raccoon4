@@ -22,9 +22,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.sql.SQLException;
-
-import javax.swing.SwingUtilities;
 
 import com.akdeniz.googleplaycrawler.DownloadData;
 import com.akdeniz.googleplaycrawler.GooglePlay.DocV2;
@@ -51,7 +48,7 @@ import de.onyxbits.weave.swing.ImageLoaderService;
  * @author patrick
  * 
  */
-class AppDownloadWorker implements TransferWorker, ActionListener, Runnable {
+class AppDownloadWorker implements TransferWorker, ActionListener {
 
 	public static final String ID = AppDownloadWorker.class.getSimpleName();
 
@@ -204,7 +201,9 @@ class AppDownloadWorker implements TransferWorker, ActionListener, Runnable {
 		if (data.hasPatchExpansion()) {
 			download.setPatchVersion(data.getPatchFileVersion());
 		}
-		SwingUtilities.invokeAndWait(this);
+		DatabaseManager dbm = globals.get(DatabaseManager.class);
+		dbm.get(AndroidAppDao.class).saveOrUpdate(download);
+		dbm.get(PlayAppOwnerDao.class).own(download, profile);
 	}
 
 	@Override
@@ -232,18 +231,6 @@ class AppDownloadWorker implements TransferWorker, ActionListener, Runnable {
 		}
 		catch (Exception e) {
 		}
-	}
-
-	@Override
-	public void run() {
-		DatabaseManager dbm = globals.get(DatabaseManager.class);
-		try {
-			dbm.get(AndroidAppDao.class).saveOrUpdate(download);
-			dbm.get(PlayAppOwnerDao.class).own(download, profile);
-		}
-		catch (SQLException e) {
-		}
-		dbm.fireEntityInvalidated(AndroidApp.class, PlayAppOwner.class);
 	}
 
 	@Override

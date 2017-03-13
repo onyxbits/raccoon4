@@ -129,7 +129,6 @@ public class GroupEditorBuilder extends AbstractPanelBuilder implements
 					ag.setName(str);
 					DatabaseManager dbm = globals.get(DatabaseManager.class);
 					dbm.get(AppGroupDao.class).update(ag);
-					dbm.fireEntityInvalidated(AppGroup.class);
 				}
 			}
 			catch (Exception e) {
@@ -150,7 +149,6 @@ public class GroupEditorBuilder extends AbstractPanelBuilder implements
 			try {
 				DatabaseManager dbm = globals.get(DatabaseManager.class);
 				dbm.get(AppGroupDao.class).delete(list.getSelectedValue());
-				dbm.fireEntityInvalidated(AppGroup.class);
 			}
 			catch (SQLException e) {
 				e.printStackTrace();
@@ -173,7 +171,6 @@ public class GroupEditorBuilder extends AbstractPanelBuilder implements
 				ag.setName(str);
 				DatabaseManager dbm = globals.get(DatabaseManager.class);
 				dbm.get(AppGroupDao.class).insert(ag);
-				dbm.fireEntityInvalidated(AppGroup.class);
 			}
 			catch (Exception e) {
 				// There already is a group by this name. No need to tell the user that

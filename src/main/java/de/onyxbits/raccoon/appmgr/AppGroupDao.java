@@ -23,6 +23,7 @@ import java.sql.Statement;
 import java.util.Vector;
 
 import de.onyxbits.raccoon.db.DataAccessObject;
+import de.onyxbits.raccoon.db.DatasetEvent;
 
 public class AppGroupDao extends DataAccessObject {
 
@@ -65,6 +66,7 @@ public class AppGroupDao extends DataAccessObject {
 			res = st.getGeneratedKeys();
 			res.next();
 			group.setGroupId(res.getLong(1));
+			fireOnDataSetChangeEvent(new DatasetEvent(this, DatasetEvent.CREATION));
 		}
 		finally {
 			manager.disconnect(c);
@@ -86,6 +88,7 @@ public class AppGroupDao extends DataAccessObject {
 			st.setString(1, group.getName());
 			st.setLong(2, group.getGroupId());
 			st.executeUpdate();
+			fireOnDataSetChangeEvent(new DatasetEvent(this, DatasetEvent.MODIFICATION));
 		}
 		finally {
 			manager.disconnect(c);
@@ -102,6 +105,7 @@ public class AppGroupDao extends DataAccessObject {
 			st = c.prepareStatement("DELETE FROM appgroups WHERE gid=?");
 			st.setLong(1, group.getGroupId());
 			st.executeUpdate();
+			fireOnDataSetChangeEvent(new DatasetEvent(this, DatasetEvent.DELETION));
 		}
 		finally {
 			manager.disconnect(c);

@@ -40,7 +40,9 @@ import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 
 import de.onyxbits.raccoon.db.DatabaseManager;
-import de.onyxbits.raccoon.db.EntityListener;
+import de.onyxbits.raccoon.db.DatasetEvent;
+import de.onyxbits.raccoon.db.DatasetListener;
+import de.onyxbits.raccoon.db.DatasetListenerProxy;
 import de.onyxbits.raccoon.gui.ButtonBarBuilder;
 import de.onyxbits.raccoon.gui.TitleStrip;
 import de.onyxbits.raccoon.net.ServerManager;
@@ -58,7 +60,7 @@ import de.onyxbits.weave.swing.WindowToggleAction;
  * 
  */
 public class MyAppsViewBuilder extends AbstractPanelBuilder implements
-		CaretListener, ActionListener, EntityListener {
+		CaretListener, ActionListener, DatasetListener {
 
 	public static final String ID = MyAppsViewBuilder.class.getSimpleName();
 
@@ -188,7 +190,10 @@ public class MyAppsViewBuilder extends AbstractPanelBuilder implements
 		reloadGroups();
 		reloadList();
 
-		globals.get(DatabaseManager.class).addEntityListener(this);
+		globals.get(DatabaseManager.class).get(AndroidAppDao.class)
+				.addDataSetListener(new DatasetListenerProxy(this));
+		globals.get(DatabaseManager.class).get(AppGroupDao.class)
+				.addDataSetListener(new DatasetListenerProxy(this));
 		return ret;
 	}
 
@@ -240,7 +245,8 @@ public class MyAppsViewBuilder extends AbstractPanelBuilder implements
 	}
 
 	@Override
-	public void onInvalidated(Class<?>... entities) {
+	public void onDataSetChange(DatasetEvent event) {
+		System.err.println(event.op);
 		reloadList();
 		reloadGroups();
 	}

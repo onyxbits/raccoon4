@@ -44,7 +44,6 @@ public final class DatabaseManager {
 	public static final String DBNAME = "raccoondb_4";
 
 	private Stack<Connection> pool;
-	private List<EntityListener> listeners;
 	private HsqlProperties props;
 	private HashMap<Class<?>, Object> daos;
 	private HashMap<String, Integer> daoversions;
@@ -59,7 +58,6 @@ public final class DatabaseManager {
 	 */
 	public DatabaseManager(File databaseDir) throws SQLException {
 		pool = new Stack<Connection>();
-		listeners = new ArrayList<EntityListener>();
 		props = new HsqlProperties();
 		props.setProperty("connection_type", "file:");
 		props.setProperty("database",
@@ -248,30 +246,6 @@ public final class DatabaseManager {
 		}
 		catch (SQLException e) {
 			// Don't care.
-		}
-	}
-
-	public void addEntityListener(EntityListener listener) {
-		if (listener != null && !listeners.contains(listener)) {
-			listeners.add(listener);
-		}
-	}
-
-	public void removeEntityListener(EntityListener listener) {
-		listeners.remove(listener);
-	}
-
-	/**
-	 * Notify all listeners that a table has changed and they should reload all
-	 * entity instances they might be holding. This method must be called on the
-	 * EDT.
-	 * 
-	 * @param entities
-	 *          the entities that should be reloaded.
-	 */
-	public void fireEntityInvalidated(Class<?>... entities) {
-		for (EntityListener listener : listeners) {
-			listener.onInvalidated(entities);
 		}
 	}
 }

@@ -25,7 +25,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import javax.swing.SwingUtilities;
 
 import de.onyxbits.raccoon.appmgr.AndroidApp;
 import de.onyxbits.raccoon.appmgr.AndroidAppDao;
@@ -55,7 +54,7 @@ import de.onyxbits.weave.swing.ImageLoaderService;
  * @author patrick
  * 
  */
-public class ImportAppWorker implements TransferWorker, Runnable, ActionListener {
+public class ImportAppWorker implements TransferWorker, ActionListener {
 
 	private TransferPeerBuilder control;
 	private File source;
@@ -119,7 +118,6 @@ public class ImportAppWorker implements TransferWorker, Runnable, ActionListener
 	public void onComplete() throws Exception {
 		DatabaseManager dbm = globals.get(DatabaseManager.class);
 		dbm.get(AndroidAppDao.class).saveOrUpdate(transferred);
-		SwingUtilities.invokeLater(this);
 		closeStreams();
 	}
 
@@ -160,12 +158,6 @@ public class ImportAppWorker implements TransferWorker, Runnable, ActionListener
 		globals.get(ImageLoaderService.class).request(control,
 				iconDest.toURI().toString());
 		totalBytes = Math.max(1, source.length());
-	}
-
-	@Override
-	public void run() {
-		DatabaseManager dbm = globals.get(DatabaseManager.class);
-		dbm.fireEntityInvalidated(AndroidApp.class);
 	}
 
 	private void closeStreams() {

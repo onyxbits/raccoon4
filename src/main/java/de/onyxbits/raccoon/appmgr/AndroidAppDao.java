@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Locale;
 
 import de.onyxbits.raccoon.db.DataAccessObject;
+import de.onyxbits.raccoon.db.DatasetEvent;
 
 import net.dongliu.apk.parser.ApkParser;
 import net.dongliu.apk.parser.bean.ApkMeta;
@@ -47,7 +48,6 @@ public final class AndroidAppDao extends DataAccessObject {
 			}
 		}
 	}
-
 
 	@Override
 	protected int getVersion() {
@@ -117,6 +117,8 @@ public final class AndroidAppDao extends DataAccessObject {
 				}
 			}
 			c.commit();
+			fireOnDataSetChangeEvent(new DatasetEvent(this, DatasetEvent.CREATION
+					| DatasetEvent.MODIFICATION));
 		}
 		catch (SQLException e) {
 			c.rollback();
@@ -147,6 +149,7 @@ public final class AndroidAppDao extends DataAccessObject {
 				st.execute();
 			}
 			c.commit();
+			fireOnDataSetChangeEvent(new DatasetEvent(this, DatasetEvent.DELETION));
 		}
 		catch (SQLException e) {
 			c.rollback();

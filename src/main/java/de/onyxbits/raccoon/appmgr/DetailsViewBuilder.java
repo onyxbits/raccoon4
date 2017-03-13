@@ -42,7 +42,9 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 
 import de.onyxbits.raccoon.db.DatabaseManager;
-import de.onyxbits.raccoon.db.EntityListener;
+import de.onyxbits.raccoon.db.DatasetEvent;
+import de.onyxbits.raccoon.db.DatasetListener;
+import de.onyxbits.raccoon.db.DatasetListenerProxy;
 import de.onyxbits.raccoon.gui.ButtonBarBuilder;
 import de.onyxbits.raccoon.gui.PermissionModel;
 import de.onyxbits.raccoon.gui.TitleStrip;
@@ -69,7 +71,7 @@ import de.onyxbits.weave.swing.ImageLoaderService;
  * 
  */
 public class DetailsViewBuilder extends AbstractPanelBuilder implements
-		ImageLoaderListener, ActionListener, EntityListener {
+		ImageLoaderListener, ActionListener, DatasetListener {
 
 	/**
 	 * ID for referencing this builder.
@@ -203,7 +205,10 @@ public class DetailsViewBuilder extends AbstractPanelBuilder implements
 
 		loaderService = new ImageLoaderService();
 
-		globals.get(DatabaseManager.class).addEntityListener(this);
+		globals.get(DatabaseManager.class).get(AppGroupDao.class)
+				.addDataSetListener(new DatasetListenerProxy(this));
+		globals.get(DatabaseManager.class).get(AndroidAppDao.class)
+				.addDataSetListener(new DatasetListenerProxy(this));
 		return ret;
 	}
 
@@ -327,7 +332,7 @@ public class DetailsViewBuilder extends AbstractPanelBuilder implements
 	}
 
 	@Override
-	public void onInvalidated(Class<?>... entities) {
+	public void onDataSetChange(DatasetEvent event) {
 		if (current != null) {
 			AppInstallerNode ain = new AppInstallerNode(globals.get(Layout.class),
 					current.getPackageName(), current.getVersionCode());

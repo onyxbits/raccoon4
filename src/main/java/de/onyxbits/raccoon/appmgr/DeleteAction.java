@@ -82,9 +82,6 @@ class DeleteAction extends AbstractAction {
 			catch (Exception exp) {
 				exp.printStackTrace();
 			}
-
-			globals.get(DatabaseManager.class)
-					.fireEntityInvalidated(AndroidApp.class);
 		}
 	}
 
