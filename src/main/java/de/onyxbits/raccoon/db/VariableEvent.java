@@ -15,7 +15,6 @@
  */
 package de.onyxbits.raccoon.db;
 
-
 public class VariableEvent extends DatasetEvent {
 
 	/**
@@ -38,9 +37,9 @@ public class VariableEvent extends DatasetEvent {
 	 */
 	public final String name;
 
-	public VariableEvent(VariableDao source, String name, String oldValue,
-			String newValue) {
-		super(source);
+	public VariableEvent(VariableDao source, int op, String name,
+			String oldValue, String newValue) {
+		super(source, op);
 		this.oldValue = oldValue;
 		this.newValue = newValue;
 		this.name = name;

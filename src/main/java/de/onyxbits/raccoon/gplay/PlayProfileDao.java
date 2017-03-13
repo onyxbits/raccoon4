@@ -97,8 +97,8 @@ public class PlayProfileDao extends DataAccessObject implements Variables {
 		else {
 			manager.get(VariableDao.class).setVar(PLAYPROFILE, null);
 		}
-		fireOnDataSetChangeEvent(new PlayProfileEvent(this, pp,
-				PlayProfileEvent.ACTIVATED));
+		fireOnDataSetChangeEvent(new PlayProfileEvent(this,
+				PlayProfileEvent.ACTIVATED, pp));
 	}
 
 	/**
@@ -167,8 +167,8 @@ public class PlayProfileDao extends DataAccessObject implements Variables {
 			st.setString(8, profile.getProxyPassword());
 			st.setString(9, profile.getGsfId());
 			st.execute();
-			fireOnDataSetChangeEvent(new PlayProfileEvent(this, profile,
-					PlayProfileEvent.CREATED));
+			fireOnDataSetChangeEvent(new PlayProfileEvent(this,
+					PlayProfileEvent.CREATION, profile));
 		}
 		finally {
 			manager.disconnect(c);
@@ -187,8 +187,8 @@ public class PlayProfileDao extends DataAccessObject implements Variables {
 			st.setString(1, alias);
 			st.execute();
 			if (tmp != null) {
-				fireOnDataSetChangeEvent(new PlayProfileEvent(this, tmp,
-						PlayProfileEvent.DESTROYED));
+				fireOnDataSetChangeEvent(new PlayProfileEvent(this,
+						PlayProfileEvent.DELETION, tmp));
 			}
 		}
 		catch (SQLException e) {
@@ -224,8 +224,8 @@ public class PlayProfileDao extends DataAccessObject implements Variables {
 			st.setString(8, profile.getGsfId());
 			st.setString(9, profile.getAlias());
 			st.execute();
-			fireOnDataSetChangeEvent(new PlayProfileEvent(this, profile,
-					PlayProfileEvent.MODIFIED));
+			fireOnDataSetChangeEvent(new PlayProfileEvent(this,
+					PlayProfileEvent.MODIFICATION, profile));
 		}
 		finally {
 			manager.disconnect(c);
@@ -244,8 +244,7 @@ public class PlayProfileDao extends DataAccessObject implements Variables {
 	 */
 	public void subscribe(DatasetListener listener) {
 		addDataSetListener(listener);
-		fireOnDataSetChangeEvent(new PlayProfileEvent(this, get(),
-				PlayProfileEvent.ACTIVATED));
+		fireOnDataSetChangeEvent(new PlayProfileEvent(this,
+				PlayProfileEvent.ACTIVATED, get()));
 	}
-
 }

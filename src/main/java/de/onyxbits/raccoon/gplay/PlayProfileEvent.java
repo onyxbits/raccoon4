@@ -15,8 +15,6 @@
  */
 package de.onyxbits.raccoon.gplay;
 
-import java.util.EventObject;
-
 import de.onyxbits.raccoon.db.DatasetEvent;
 
 public class PlayProfileEvent extends DatasetEvent {
@@ -27,40 +25,19 @@ public class PlayProfileEvent extends DatasetEvent {
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * Profile got created
-	 */
-	public static final int CREATED = 1;
-
-	/**
-	 * Profile got destroyed
-	 */
-	public static final int DESTROYED = 2;
-
-	/**
-	 * Profile was modified
-	 */
-	public static final int MODIFIED = 4;
-
-	/**
 	 * Profile was set as the default profile
 	 */
-	public static final int ACTIVATED = 8;
+	public static final int ACTIVATED = 256;
 
 	/**
 	 * The profile in question
 	 */
 	public final PlayProfile profile;
 
-	/**
-	 * Event type bitmask (CREATED, DESTROYED, MODIFIED or ACTIVATED)
-	 */
-	public final int type;
-
-	public PlayProfileEvent(PlayProfileDao source, PlayProfile profile, int type) {
-		super(source);
+	public PlayProfileEvent(PlayProfileDao source, int op, PlayProfile profile) {
+		super(source, op);
 		this.profile = profile;
-		this.type = type;
-		if (!((type & ACTIVATED) == ACTIVATED) && profile == null) {
+		if (!((op & ACTIVATED) == ACTIVATED) && profile == null) {
 			throw new NullPointerException();
 		}
 	}
@@ -71,27 +48,15 @@ public class PlayProfileEvent extends DatasetEvent {
 	 * @return true if type contains ACTIVATED
 	 */
 	public boolean isConnection() {
-		return (type & ACTIVATED) == ACTIVATED;
+		return (op & ACTIVATED) == ACTIVATED;
 	}
 
 	public boolean isActivation() {
-		return (type & ACTIVATED) == ACTIVATED && (profile != null);
+		return (op & ACTIVATED) == ACTIVATED && (profile != null);
 	}
 
 	public boolean isDeActivation() {
-		return (type & ACTIVATED) == ACTIVATED && (profile == null);
-	}
-
-	public boolean isModification() {
-		return (type & MODIFIED) == MODIFIED;
-	}
-
-	public boolean isDestruction() {
-		return (type & DESTROYED) == DESTROYED;
-	}
-
-	public boolean isCreation() {
-		return (type & CREATED) == CREATED;
+		return (op & ACTIVATED) == ACTIVATED && (profile == null);
 	}
 
 }

@@ -19,8 +19,8 @@ import java.util.EventObject;
 
 /**
  * Contains details on which dataset changed and how it did change. DOAs that
- * provide more than CRUD operations should subclass and give high level details
- * on what happened.
+ * provide more than CRUD operations should subclass this and give high level
+ * details on what happened.
  * 
  * @author patrick
  * 
@@ -32,8 +32,54 @@ public class DatasetEvent extends EventObject {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public DatasetEvent(DataAccessObject source) {
+	/**
+	 * Something was inserted into the dataset
+	 */
+	public static final int CREATION = 1;
+
+	/**
+	 * Something got deleted from the dataset
+	 */
+	public static final int DELETION = 2;
+
+	/**
+	 * The dataset was modified
+	 */
+	public static final int MODIFICATION = 4;
+
+	/**
+	 * DAO specific ops must use numbers larger than this.
+	 */
+	public static final int CUSTOM_OP = 256;
+
+	/**
+	 * Bitfield, giving details of the operation that took place.
+	 */
+	public final int op;
+
+	/**
+	 * Create a new event object
+	 * 
+	 * @param source
+	 *          the DAO that is responsible for this event.
+	 * @param op
+	 *          the database operation
+	 */
+	public DatasetEvent(DataAccessObject source, int op) {
 		super(source);
+		this.op = op;
+	}
+
+	public boolean isModification() {
+		return (op & MODIFICATION) == MODIFICATION;
+	}
+
+	public boolean isDeletion() {
+		return (op & DELETION) == DELETION;
+	}
+
+	public boolean isCreation() {
+		return (op & CREATION) == CREATION;
 	}
 
 }
