@@ -29,58 +29,68 @@ import java.net.Socket;
  */
 class PushStream extends OutputStream {
 
-	private int left;
-	private int addHeader;
-	private DataOutputStream output;
+	private OutputStream output;
+	private final byte[] DATA = "DATA".getBytes();
 
 	public PushStream(Device device, Socket socket, String remote)
 			throws IOException {
 		InputStream input = socket.getInputStream();
-		output = new DataOutputStream(socket.getOutputStream());
+		output = socket.getOutputStream();
 
 		ProtocolSupport.send("host:transport:" + device.serial, input, output);
 		ProtocolSupport.send("sync:", input, output);
-		output.writeBytes("SEND");
-		output.writeInt(Integer.reverseBytes(remote.length()));
-		output.writeBytes(remote);
+		writeBytes("SEND");
+		writeInt(Integer.reverseBytes(remote.length()));
+		writeBytes(remote);
 		output.flush();
 	}
 
 	public PushStream(DataOutputStream out) {
-		this.output=out;
+		this.output = out;
 	}
 
 	@Override
 	public void write(byte b[], int off, int len) throws IOException {
-		addHeader = len - off;
-		super.write(b, off, len);
+		for (int i = 0; i < DATA.length; i++) {
+			output.write((byte) DATA[i]);
+		}
+		writeInt(Integer.reverseBytes(len - off));
+		output.write(b, off, len);
 	}
 
 	@Override
 	public void write(int b) throws IOException {
-		if (left == 0) {
-			// Oh dear. Someone is wasting resources!
-			addHeader = 1;
+		for (int i = 0; i < DATA.length; i++) {
+			output.write((byte) DATA[i]);
 		}
-		if (addHeader > 0) {
-			output.writeBytes("DATA");
-			output.writeInt(Integer.reverseBytes(addHeader));
-			left = addHeader;
-			addHeader = 0;
-		}
+		writeInt(Integer.reverseBytes(1));
 		output.write(b);
-		left--;
 	}
 
 	@Override
 	public void close() throws IOException {
 		if (output != null) {
-			output.writeBytes("DONE");
+			writeBytes("DONE");
 			// timestamp
-			output.writeInt(Integer.reverseBytes(0));
+			writeInt(Integer.reverseBytes(0));
 			output.flush();
 			output.close();
 			output = null;
 		}
+	}
+
+	private final void writeInt(int v) throws IOException {
+		output.write((v >>> 24) & 0xFF);
+		output.write((v >>> 16) & 0xFF);
+		output.write((v >>> 8) & 0xFF);
+		output.write((v >>> 0) & 0xFF);
+	}
+
+	private final void writeBytes(String s) throws IOException {
+		int len = s.length();
+		for (int i = 0; i < len; i++) {
+			output.write((byte) s.charAt(i));
+		}
+
 	}
 }
