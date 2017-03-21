@@ -29,6 +29,8 @@ import javax.swing.JPanel;
 import de.onyxbits.raccoon.gui.Traits;
 import de.onyxbits.raccoon.net.ServerManager;
 import de.onyxbits.raccoon.ptools.BridgeManager;
+import de.onyxbits.raccoon.repo.AndroidApp;
+import de.onyxbits.raccoon.repo.AppGroup;
 import de.onyxbits.weave.swing.AbstractPanelBuilder;
 
 /**

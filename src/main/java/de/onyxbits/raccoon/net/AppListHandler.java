@@ -33,12 +33,12 @@ import org.apache.commons.io.IOUtils;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 
-import de.onyxbits.raccoon.appmgr.AndroidApp;
 import de.onyxbits.raccoon.gui.Traits;
-import de.onyxbits.raccoon.vfs.AppExpansionMainNode;
-import de.onyxbits.raccoon.vfs.AppExpansionPatchNode;
-import de.onyxbits.raccoon.vfs.AppInstallerNode;
-import de.onyxbits.raccoon.vfs.Layout;
+import de.onyxbits.raccoon.repo.AndroidApp;
+import de.onyxbits.raccoon.repo.AppExpansionMainNode;
+import de.onyxbits.raccoon.repo.AppExpansionPatchNode;
+import de.onyxbits.raccoon.repo.AppInstallerNode;
+import de.onyxbits.raccoon.repo.Layout;
 import de.onyxbits.weave.LifecycleManager;
 
 /**

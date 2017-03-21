@@ -23,14 +23,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import de.onyxbits.raccoon.appmgr.AndroidApp;
+import de.onyxbits.raccoon.repo.AndroidApp;
+import de.onyxbits.raccoon.repo.AppExpansionMainNode;
+import de.onyxbits.raccoon.repo.AppExpansionPatchNode;
+import de.onyxbits.raccoon.repo.AppIconNode;
+import de.onyxbits.raccoon.repo.AppInstallerNode;
+import de.onyxbits.raccoon.repo.Layout;
 import de.onyxbits.raccoon.transfer.TransferPeerBuilder;
 import de.onyxbits.raccoon.transfer.TransferWorker;
-import de.onyxbits.raccoon.vfs.AppExpansionMainNode;
-import de.onyxbits.raccoon.vfs.AppExpansionPatchNode;
-import de.onyxbits.raccoon.vfs.AppIconNode;
-import de.onyxbits.raccoon.vfs.AppInstallerNode;
-import de.onyxbits.raccoon.vfs.Layout;
 import de.onyxbits.weave.Globals;
 import de.onyxbits.weave.swing.ImageLoaderService;
 

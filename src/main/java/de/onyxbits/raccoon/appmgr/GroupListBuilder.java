@@ -30,6 +30,10 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import de.onyxbits.raccoon.db.DatabaseManager;
+import de.onyxbits.raccoon.repo.AndroidApp;
+import de.onyxbits.raccoon.repo.AndroidAppDao;
+import de.onyxbits.raccoon.repo.AppGroup;
+import de.onyxbits.raccoon.repo.AppGroupDao;
 import de.onyxbits.weave.swing.AbstractPanelBuilder;
 
 /**

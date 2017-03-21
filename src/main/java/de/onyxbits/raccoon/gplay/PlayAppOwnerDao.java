@@ -22,8 +22,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.onyxbits.raccoon.appmgr.AndroidApp;
 import de.onyxbits.raccoon.db.DataAccessObject;
+import de.onyxbits.raccoon.repo.AndroidApp;
 
 public class PlayAppOwnerDao extends DataAccessObject {
 

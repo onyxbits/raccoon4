@@ -13,28 +13,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.onyxbits.raccoon.gplay;
-
-import de.onyxbits.raccoon.repo.AndroidApp;
+package de.onyxbits.raccoon.repo;
 
 /**
- * For tracking what app was downloaded by which profile. This is a 1 to n
- * relationship. A given app can only be owned by one profile at a time, though
- * ownership may be transferred at will. Apps are not required to have owners.
- * 
- * Ownership is used for determining which profile should be used for pulling
- * updates.
+ * A class for organizing apps.
  * 
  * @author patrick
  * 
  */
-public class PlayAppOwner {
+public class AppGroup {
 
-	public final AndroidApp app;
-	public final PlayProfile profile;
+	private long groupId;
 
-	public PlayAppOwner(AndroidApp app, PlayProfile profile) {
-		this.app = app;
-		this.profile = profile;
+	private String name;
+
+	public long getGroupId() {
+		return groupId;
 	}
+
+	public void setGroupId(long id) {
+		this.groupId = id;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String toString() {
+		return name;
+	}
+
 }

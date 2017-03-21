@@ -24,12 +24,12 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.onyxbits.raccoon.appmgr.AndroidApp;
-import de.onyxbits.raccoon.vfs.AppExpansionMainNode;
-import de.onyxbits.raccoon.vfs.AppExpansionPatchNode;
-import de.onyxbits.raccoon.vfs.AppIconNode;
-import de.onyxbits.raccoon.vfs.AppInstallerNode;
-import de.onyxbits.raccoon.vfs.Layout;
+import de.onyxbits.raccoon.repo.AndroidApp;
+import de.onyxbits.raccoon.repo.AppExpansionMainNode;
+import de.onyxbits.raccoon.repo.AppExpansionPatchNode;
+import de.onyxbits.raccoon.repo.AppIconNode;
+import de.onyxbits.raccoon.repo.AppInstallerNode;
+import de.onyxbits.raccoon.repo.Layout;
 
 public class ImportTest {
 

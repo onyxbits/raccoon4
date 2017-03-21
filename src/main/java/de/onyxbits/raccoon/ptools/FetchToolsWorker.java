@@ -21,9 +21,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 
+import de.onyxbits.raccoon.repo.Layout;
 import de.onyxbits.raccoon.transfer.TransferPeerBuilder;
 import de.onyxbits.raccoon.transfer.TransferWorker;
-import de.onyxbits.raccoon.vfs.Layout;
 import de.onyxbits.weave.Globals;
 
 /**

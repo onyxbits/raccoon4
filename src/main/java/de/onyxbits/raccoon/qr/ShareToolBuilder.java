@@ -30,7 +30,7 @@ import javax.swing.border.TitledBorder;
 import de.onyxbits.raccoon.gui.TitleStrip;
 import de.onyxbits.raccoon.gui.Traits;
 import de.onyxbits.raccoon.net.ServerManager;
-import de.onyxbits.raccoon.vfs.Layout;
+import de.onyxbits.raccoon.repo.Layout;
 import de.onyxbits.weave.swing.AbstractPanelBuilder;
 
 /**

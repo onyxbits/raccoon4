@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Patrick Ahlbrecht
+ * Copyright 2017 Patrick Ahlbrecht
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,38 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.onyxbits.raccoon.appmgr;
+package de.onyxbits.raccoon.appimporter;
 
-/**
- * A class for organizing apps.
- * 
- * @author patrick
- * 
- */
-public class AppGroup {
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JProgressBar;
 
-	private long groupId;
+import de.onyxbits.weave.swing.AbstractPanelBuilder;
 
-	private String name;
+public class ImportAppBuilder extends AbstractPanelBuilder {
 
-	public long getGroupId() {
-		return groupId;
-	}
+	private JProgressBar progress;
+	private JButton scan;
+	private JButton imprt;
+	private JList list;
+	private JComboBox owner;
 
-	public void setGroupId(long id) {
-		this.groupId = id;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String toString() {
-		return name;
+	@Override
+	protected JPanel assemble() {
+		return null;
 	}
 
 }

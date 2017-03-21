@@ -27,8 +27,10 @@ import de.onyxbits.raccoon.db.DatabaseManager;
 import de.onyxbits.raccoon.gui.Traits;
 import de.onyxbits.raccoon.net.ServerManager;
 import de.onyxbits.raccoon.qr.QrPanel;
-import de.onyxbits.raccoon.vfs.AppIconNode;
-import de.onyxbits.raccoon.vfs.Layout;
+import de.onyxbits.raccoon.repo.AndroidApp;
+import de.onyxbits.raccoon.repo.AndroidAppDao;
+import de.onyxbits.raccoon.repo.AppIconNode;
+import de.onyxbits.raccoon.repo.Layout;
 import de.onyxbits.weave.Globals;
 
 /**

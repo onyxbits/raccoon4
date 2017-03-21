@@ -26,7 +26,7 @@ import java.util.List;
 
 import javax.swing.SwingUtilities;
 
-import de.onyxbits.raccoon.vfs.Layout;
+import de.onyxbits.raccoon.repo.Layout;
 
 /**
  * High level wrapper around the ADB functionality

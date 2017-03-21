@@ -1,4 +1,4 @@
-package de.onyxbits.raccoon.vfs;
+package de.onyxbits.raccoon.repo;
 
 import java.io.File;
 

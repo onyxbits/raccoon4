@@ -37,6 +37,8 @@ import de.onyxbits.raccoon.gui.ButtonBarBuilder;
 import de.onyxbits.raccoon.gui.DialogBuilder;
 import de.onyxbits.raccoon.gui.HyperTextPane;
 import de.onyxbits.raccoon.gui.Traits;
+import de.onyxbits.raccoon.repo.AppGroup;
+import de.onyxbits.raccoon.repo.AppGroupDao;
 import de.onyxbits.weave.LifecycleManager;
 import de.onyxbits.weave.swing.AbstractPanelBuilder;
 import de.onyxbits.weave.swing.ActionLocalizer;

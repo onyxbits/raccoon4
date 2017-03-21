@@ -1,4 +1,4 @@
-package de.onyxbits.raccoon.appmgr;
+package de.onyxbits.raccoon.repo;
 
 import java.util.List;
 

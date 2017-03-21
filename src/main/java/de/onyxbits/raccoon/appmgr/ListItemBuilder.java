@@ -30,6 +30,8 @@ import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import de.onyxbits.raccoon.repo.AndroidApp;
+import de.onyxbits.raccoon.repo.AppGroup;
 import de.onyxbits.weave.LifecycleManager;
 import de.onyxbits.weave.swing.AbstractPanelBuilder;
 

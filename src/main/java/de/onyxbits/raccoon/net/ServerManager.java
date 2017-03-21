@@ -32,8 +32,8 @@ import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 
-import de.onyxbits.raccoon.appmgr.AndroidApp;
-import de.onyxbits.raccoon.vfs.Layout;
+import de.onyxbits.raccoon.repo.AndroidApp;
+import de.onyxbits.raccoon.repo.Layout;
 import de.onyxbits.weave.Lifecycle;
 import de.onyxbits.weave.LifecycleManager;
 

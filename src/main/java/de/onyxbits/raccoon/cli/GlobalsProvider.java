@@ -21,7 +21,7 @@ import de.onyxbits.raccoon.db.VariableDao;
 import de.onyxbits.raccoon.db.Variables;
 import de.onyxbits.raccoon.gui.Traits;
 import de.onyxbits.raccoon.ptools.BridgeManager;
-import de.onyxbits.raccoon.vfs.Layout;
+import de.onyxbits.raccoon.repo.Layout;
 import de.onyxbits.weave.Globals;
 import de.onyxbits.weave.GlobalsFactory;
 import de.onyxbits.weave.util.Version;

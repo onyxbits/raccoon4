@@ -28,6 +28,7 @@ import javax.swing.JOptionPane;
 import de.onyxbits.raccoon.Bookmarks;
 import de.onyxbits.raccoon.gui.WindowTogglers;
 import de.onyxbits.raccoon.qr.QrToolBuilder;
+import de.onyxbits.raccoon.repo.AndroidApp;
 import de.onyxbits.weave.Globals;
 import de.onyxbits.weave.LifecycleManager;
 

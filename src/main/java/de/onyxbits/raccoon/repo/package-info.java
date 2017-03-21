@@ -3,4 +3,4 @@
  * @author patrick
  *
  */
-package de.onyxbits.raccoon.vfs;
+package de.onyxbits.raccoon.repo;

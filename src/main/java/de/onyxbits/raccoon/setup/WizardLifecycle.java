@@ -31,7 +31,7 @@ import de.onyxbits.raccoon.gplay.PlayProfile;
 import de.onyxbits.raccoon.gplay.PlayProfileDao;
 import de.onyxbits.raccoon.gui.ButtonBarBuilder;
 import de.onyxbits.raccoon.gui.DialogBuilder;
-import de.onyxbits.raccoon.vfs.Layout;
+import de.onyxbits.raccoon.repo.Layout;
 import de.onyxbits.weave.Globals;
 import de.onyxbits.weave.Lifecycle;
 import de.onyxbits.weave.LifecycleManager;

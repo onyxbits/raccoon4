@@ -23,10 +23,12 @@ import javax.swing.AbstractAction;
 import javax.swing.JOptionPane;
 
 import de.onyxbits.raccoon.db.DatabaseManager;
-import de.onyxbits.raccoon.vfs.AppExpansionMainNode;
-import de.onyxbits.raccoon.vfs.AppExpansionPatchNode;
-import de.onyxbits.raccoon.vfs.AppInstallerNode;
-import de.onyxbits.raccoon.vfs.Layout;
+import de.onyxbits.raccoon.repo.AndroidApp;
+import de.onyxbits.raccoon.repo.AndroidAppDao;
+import de.onyxbits.raccoon.repo.AppExpansionMainNode;
+import de.onyxbits.raccoon.repo.AppExpansionPatchNode;
+import de.onyxbits.raccoon.repo.AppInstallerNode;
+import de.onyxbits.raccoon.repo.Layout;
 import de.onyxbits.weave.Globals;
 import de.onyxbits.weave.LifecycleManager;
 
