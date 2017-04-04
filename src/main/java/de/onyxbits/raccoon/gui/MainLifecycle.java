@@ -8,6 +8,8 @@ import javax.swing.text.JTextComponent;
 
 import de.onyxbits.raccoon.Bookmarks;
 import de.onyxbits.raccoon.Main;
+import de.onyxbits.raccoon.appimporter.ImportAppAction;
+import de.onyxbits.raccoon.appimporter.ImportAppBuilder;
 import de.onyxbits.raccoon.appmgr.DetailsViewBuilder;
 import de.onyxbits.raccoon.appmgr.GroupEditorBuilder;
 import de.onyxbits.raccoon.appmgr.MyAppsViewBuilder;
@@ -138,6 +140,17 @@ public final class MainLifecycle implements Lifecycle, GlobalsFactory {
 		globals.setFactory(this);
 	}
 
+	/*
+	public Window onCreatePrimaryWindow(Globals globals) {
+	AbstractPanelBuilder	builder = globals.get(ImportAppBuilder.class);
+	Window ret = new WindowBuilder(builder).withFixedSize().withOwner(null)
+			.withCenter(null)
+			.withTitle(Messages.getString("MainLifecycle.title."))
+			.withIcons("/icons/appicon.png").build(globals);
+	CloseTool.bindTo(globals, ret);
+	return ret;
+	}*/
+	
 	@Override
 	public Window onCreatePrimaryWindow(Globals globals) {
 		WindowTogglers wt = globals.get(WindowTogglers.class);
@@ -227,6 +240,10 @@ public final class MainLifecycle implements Lifecycle, GlobalsFactory {
 
 		if (id.equals(ShareToolBuilder.ID)) {
 			builder = globals.get(ShareToolBuilder.class);
+		}
+
+		if (id.equals(ImportAppBuilder.ID)) {
+			builder = globals.get(ImportAppBuilder.class);
 		}
 
 		Window ret = new WindowBuilder(builder).withFixedSize().withOwner(primary)

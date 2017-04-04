@@ -93,7 +93,7 @@ public final class VariableDao extends DataAccessObject implements Variables {
 				st.execute();
 				st.close();
 				fireOnDataSetChangeEvent(new VariableEvent(this,
-						VariableEvent.DELETION, key, old, val));
+						VariableEvent.DELETE, key, old, val));
 			}
 			else {
 				// st = c
@@ -104,7 +104,7 @@ public final class VariableDao extends DataAccessObject implements Variables {
 				st.setString(2, val);
 				st.execute();
 				fireOnDataSetChangeEvent(new VariableEvent(this,
-						VariableEvent.MODIFICATION, key, old, val));
+						VariableEvent.UPDATE, key, old, val));
 			}
 		}
 		catch (Exception e) {

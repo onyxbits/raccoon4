@@ -25,9 +25,6 @@ import javax.swing.JOptionPane;
 import de.onyxbits.raccoon.db.DatabaseManager;
 import de.onyxbits.raccoon.repo.AndroidApp;
 import de.onyxbits.raccoon.repo.AndroidAppDao;
-import de.onyxbits.raccoon.repo.AppExpansionMainNode;
-import de.onyxbits.raccoon.repo.AppExpansionPatchNode;
-import de.onyxbits.raccoon.repo.AppInstallerNode;
 import de.onyxbits.raccoon.repo.Layout;
 import de.onyxbits.weave.Globals;
 import de.onyxbits.weave.LifecycleManager;
@@ -63,23 +60,8 @@ class DeleteAction extends AbstractAction {
 		if (choice == JOptionPane.YES_OPTION) {
 			try {
 				globals.get(DatabaseManager.class).get(AndroidAppDao.class)
-						.delete(apps.toArray(new AndroidApp[apps.size()]));
-				for (AndroidApp app : apps) {
-					AppInstallerNode ain = new AppInstallerNode(layout,
-							app.getPackageName(), app.getVersionCode());
-					ain.delete();
+						.delete(layout, apps.toArray(new AndroidApp[apps.size()]));
 
-					AppExpansionMainNode aemn = new AppExpansionMainNode(layout,
-							app.getPackageName(), app.getMainVersion());
-					if (aemn.resolve().exists()) {
-						aemn.resolve().delete();
-					}
-					AppExpansionPatchNode aepn = new AppExpansionPatchNode(layout,
-							app.getPackageName(), app.getPatchVersion());
-					if (aepn.resolve().exists()) {
-						aepn.resolve().delete();
-					}
-				}
 			}
 			catch (Exception exp) {
 				exp.printStackTrace();

@@ -24,6 +24,7 @@ import java.util.Vector;
 
 import de.onyxbits.raccoon.db.DataAccessObject;
 import de.onyxbits.raccoon.db.DatasetEvent;
+import de.onyxbits.raccoon.db.DatasetListener;
 
 public class AppGroupDao extends DataAccessObject {
 
@@ -40,7 +41,7 @@ public class AppGroupDao extends DataAccessObject {
 			}
 		}
 	}
-	
+
 	@Override
 	protected int getVersion() {
 		return 1;
@@ -66,7 +67,7 @@ public class AppGroupDao extends DataAccessObject {
 			res = st.getGeneratedKeys();
 			res.next();
 			group.setGroupId(res.getLong(1));
-			fireOnDataSetChangeEvent(new DatasetEvent(this, DatasetEvent.CREATION));
+			fireOnDataSetChangeEvent(new DatasetEvent(this, DatasetEvent.CREATE));
 		}
 		finally {
 			manager.disconnect(c);
@@ -88,7 +89,7 @@ public class AppGroupDao extends DataAccessObject {
 			st.setString(1, group.getName());
 			st.setLong(2, group.getGroupId());
 			st.executeUpdate();
-			fireOnDataSetChangeEvent(new DatasetEvent(this, DatasetEvent.MODIFICATION));
+			fireOnDataSetChangeEvent(new DatasetEvent(this, DatasetEvent.UPDATE));
 		}
 		finally {
 			manager.disconnect(c);
@@ -105,7 +106,7 @@ public class AppGroupDao extends DataAccessObject {
 			st = c.prepareStatement("DELETE FROM appgroups WHERE gid=?");
 			st.setLong(1, group.getGroupId());
 			st.executeUpdate();
-			fireOnDataSetChangeEvent(new DatasetEvent(this, DatasetEvent.DELETION));
+			fireOnDataSetChangeEvent(new DatasetEvent(this, DatasetEvent.DELETE));
 		}
 		finally {
 			manager.disconnect(c);
@@ -144,5 +145,10 @@ public class AppGroupDao extends DataAccessObject {
 		}
 
 		return ret;
+	}
+
+	public void subscribe(DatasetListener listener) {
+		addDataSetListener(listener);
+		fireOnDataSetChangeEvent(new DatasetEvent(this, DatasetEvent.READ));
 	}
 }

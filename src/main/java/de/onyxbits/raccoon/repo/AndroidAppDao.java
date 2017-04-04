@@ -17,7 +17,6 @@ package de.onyxbits.raccoon.repo;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -59,11 +58,12 @@ public final class AndroidAppDao extends DataAccessObject {
 	 * and versioncode, not app id), it will be deleted first.
 	 * 
 	 * @param app
-	 *          the app object
+	 *          the app object with the id filled in.
 	 * @return the submitted app with its auto assigned ID.
 	 * @throws SQLException
 	 */
 	public AndroidApp saveOrUpdate(AndroidApp app) throws SQLException {
+		// TODO: Rewrite this method to use MERGE statements!!!
 		PreparedStatement st = null;
 		Connection c = manager.connect();
 		ResultSet res = null;
@@ -117,27 +117,38 @@ public final class AndroidAppDao extends DataAccessObject {
 				}
 			}
 			c.commit();
-			fireOnDataSetChangeEvent(new DatasetEvent(this, DatasetEvent.CREATION
-					| DatasetEvent.MODIFICATION));
+			fireOnDataSetChangeEvent(new DatasetEvent(this, DatasetEvent.CREATE
+					| DatasetEvent.UPDATE));
 		}
 		catch (SQLException e) {
+			e.printStackTrace();
 			c.rollback();
 			throw e;
 		}
 		finally {
-			manager.disconnect(c);
 			if (st != null) {
 				st.close();
 			}
 			if (res != null) {
 				res.close();
 			}
+			c.setAutoCommit(true);
+			manager.disconnect(c);
 		}
 
 		return app;
 	}
 
-	public void delete(AndroidApp... apps) throws SQLException {
+	/**
+	 * Delete an app from the repository (both database and files).
+	 * 
+	 * @param layout
+	 *          for finding the files.
+	 * @param apps
+	 *          the apps to delete.
+	 * @throws SQLException
+	 */
+	public void delete(Layout layout, AndroidApp... apps) throws SQLException {
 		Connection c = manager.connect();
 		PreparedStatement st = null;
 
@@ -149,7 +160,44 @@ public final class AndroidAppDao extends DataAccessObject {
 				st.execute();
 			}
 			c.commit();
-			fireOnDataSetChangeEvent(new DatasetEvent(this, DatasetEvent.DELETION));
+			// Delete files.
+			for (AndroidApp app : apps) {
+				// An obb file may be shared between app versions. Do NOT delete an OBB,
+				// if it is still referenced by another APK.
+				st = c
+						.prepareStatement("SELECT * FROM androidapps WHERE packagename = ? AND mainversion = ?");
+				st.setString(1, app.getPackageName());
+				st.setInt(2, app.getMainVersion());
+				st.execute();
+				ResultSet res = st.getResultSet();
+				boolean keep = res.next();
+				res.close();
+				if (!keep && app.getMainVersion() > 0) {
+					AppExpansionMainNode aemn = new AppExpansionMainNode(layout,
+							app.getPackageName(), app.getMainVersion());
+					if (aemn.resolve().exists()) {
+						aemn.resolve().delete();
+					}
+					AppExpansionPatchNode aepn = new AppExpansionPatchNode(layout,
+							app.getPackageName(), app.getPatchVersion());
+					if (aepn.resolve().exists()) {
+						aepn.resolve().delete();
+					}
+				}
+
+				AppInstallerNode ain = new AppInstallerNode(layout,
+						app.getPackageName(), app.getVersionCode());
+				File apk = ain.resolve();
+				File icon = ain.toIcon().resolve();
+				File folder = apk.getParentFile();
+
+				apk.delete();
+				icon.delete();
+				if (folder.list().length == 0) {
+					folder.delete();
+				}
+			}
+			fireOnDataSetChangeEvent(new DatasetEvent(this, DatasetEvent.DELETE));
 		}
 		catch (SQLException e) {
 			c.rollback();
@@ -158,6 +206,7 @@ public final class AndroidAppDao extends DataAccessObject {
 		finally {
 			if (st != null)
 				st.close();
+			c.setAutoCommit(true);
 			manager.disconnect(c);
 		}
 	}
@@ -174,17 +223,23 @@ public final class AndroidAppDao extends DataAccessObject {
 	public boolean isStored(AndroidApp app) throws SQLException {
 		Connection c = manager.connect();
 		PreparedStatement st = null;
+		ResultSet res = null;
 
 		try {
 			st = c
-					.prepareStatement("SELECT aid FROM androidapps WHERE packagename = ? AND versioncode = ?");
+					.prepareStatement("SELECT * FROM androidapps WHERE packagename = ? AND versioncode = ?");
 			st.setString(1, app.getPackageName());
 			st.setInt(2, app.getVersionCode());
-			return st.execute();
+			st.execute();
+			res = st.getResultSet();
+			return res.next();
 		}
 		finally {
 			if (st != null)
 				st.close();
+			if (res != null) {
+				res.close();
+			}
 			manager.disconnect(c);
 		}
 	}
@@ -312,7 +367,7 @@ public final class AndroidAppDao extends DataAccessObject {
 				apkParser.close();
 				fis.close();
 			}
-			catch (IOException e1) {
+			catch (Exception e1) {
 			}
 			return null;
 		}

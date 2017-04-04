@@ -24,6 +24,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.onyxbits.raccoon.db.DaoTest;
+import de.onyxbits.raccoon.repo.AndroidApp;
+import de.onyxbits.raccoon.repo.AndroidAppDao;
 
 public class PlayProfileDaoTest extends DaoTest {
 
@@ -37,6 +39,11 @@ public class PlayProfileDaoTest extends DaoTest {
 		super.tearDown();
 	}
 
+	/**
+	 * Test if a profile can be modified.
+	 * 
+	 * @throws SQLException
+	 */
 	@Test
 	public void testUpdate() throws SQLException {
 		PlayProfile profile = new PlayProfile();
@@ -45,7 +52,42 @@ public class PlayProfileDaoTest extends DaoTest {
 		dao.add(profile);
 		profile.setAgent("agent");
 		dao.update(profile);
-		assertEquals("agent",dao.get("someone").getAgent());
+		assertEquals("agent", dao.get("someone").getAgent());
+	}
+
+	/**
+	 * Test if an app can be reassigned to another {@link PlayProfile}
+	 * 
+	 * @throws SQLException
+	 */
+	@Test
+	public void testOwnerChange() throws SQLException {
+		PlayProfile first = new PlayProfile();
+		first.setAlias("first");
+		PlayProfile second = new PlayProfile();
+		second.setAlias("second");
+
+		AndroidApp app = new AndroidApp();
+		app.setPackageName("de.onyxbits.testapp");
+		app.setName("A Test App");
+		app.setVersion("1.0");
+		app.setVersionCode(1);
+		AndroidAppDao appDao = dbm.get(AndroidAppDao.class);
+		appDao.saveOrUpdate(app);
+
+		PlayProfileDao profileDao = dbm.get(PlayProfileDao.class);
+		profileDao.add(first);
+		profileDao.add(second);
+
+		PlayAppOwnerDao ownerDao = dbm.get(PlayAppOwnerDao.class);
+
+		ownerDao.own(app, first);
+		assertEquals(app.getAppId(), ownerDao.list(first).get(0).getAppId());
+		assertEquals(0, ownerDao.list(second).size());
+
+		ownerDao.own(app, second);
+		assertEquals(app.getAppId(), ownerDao.list(second).get(0).getAppId());
+		assertEquals(0, ownerDao.list(first).size());
 	}
 
 }

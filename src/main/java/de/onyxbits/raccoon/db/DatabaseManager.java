@@ -135,6 +135,12 @@ public final class DatabaseManager {
 					}
 				}
 				finally {
+					try {
+						c.setAutoCommit(true);
+					}
+					catch (SQLException e) {
+						throw new RuntimeException(e);
+					}
 					disconnect(c);
 				}
 			}
@@ -160,6 +166,7 @@ public final class DatabaseManager {
 			throws SQLException {
 		PreparedStatement st = null;
 		try {
+			// TODO: make this a MERGE statement!
 			st = c.prepareStatement("DELETE FROM versions WHERE dao = ?");
 			st.setString(1, dao);
 			st.close();
@@ -227,12 +234,13 @@ public final class DatabaseManager {
 	 */
 	public void disconnect(Connection c) {
 		try {
-			if (c.getAutoCommit() == false) {
-				// Getting here is actually a bug.
-				c.rollback();
-				c.setAutoCommit(true);
+			if (!c.getAutoCommit()) {
+				throw new RuntimeException(
+						"Connection must be set to autocommit before returning it to the pool!");
 			}
-			pool.push(c);
+			else {
+				pool.push(c);
+			}
 			return;
 		}
 		catch (SQLException e) {

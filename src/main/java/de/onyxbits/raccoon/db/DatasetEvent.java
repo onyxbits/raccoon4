@@ -35,17 +35,23 @@ public class DatasetEvent extends EventObject {
 	/**
 	 * Something was inserted into the dataset
 	 */
-	public static final int CREATION = 1;
+	public static final int CREATE = 1;
 
 	/**
-	 * Something got deleted from the dataset
+	 * No change occurred, but {@link DatasetListener}S are suppose to
+	 * (re-)load/initialize their models.
 	 */
-	public static final int DELETION = 2;
+	public static final int READ = 2;
 
 	/**
 	 * The dataset was modified
 	 */
-	public static final int MODIFICATION = 4;
+	public static final int UPDATE = 4;
+
+	/**
+	 * Something got deleted from the dataset
+	 */
+	public static final int DELETE = 8;
 
 	/**
 	 * DAO specific ops must use numbers larger than this.
@@ -70,16 +76,20 @@ public class DatasetEvent extends EventObject {
 		this.op = op;
 	}
 
-	public boolean isModification() {
-		return (op & MODIFICATION) == MODIFICATION;
+	public boolean isUpdate() {
+		return (op & UPDATE) == UPDATE;
 	}
 
-	public boolean isDeletion() {
-		return (op & DELETION) == DELETION;
+	public boolean isDelete() {
+		return (op & DELETE) == DELETE;
 	}
 
-	public boolean isCreation() {
-		return (op & CREATION) == CREATION;
+	public boolean isCreate() {
+		return (op & CREATE) == CREATE;
+	}
+
+	public boolean isRead() {
+		return (op & READ) == READ;
 	}
 
 }

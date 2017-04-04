@@ -63,14 +63,8 @@ public class PlayAppOwnerDao extends DataAccessObject {
 		PreparedStatement st = null;
 		ResultSet res = null;
 		try {
-			c.setAutoCommit(false);
-			st = c.prepareStatement("DELETE FROM playappownership WHERE aid = ?");
-			st.setLong(1, app.getAppId());
-			st.execute();
-			st.close();
-
 			st = c
-					.prepareStatement("INSERT INTO playappownership (aid, pid) VALUES (?, ?)");
+					.prepareStatement("MERGE INTO playappownership USING (VALUES (?, ?)) AS vals(aid, pid) ON playappownership.aid = vals.aid WHEN MATCHED THEN UPDATE SET playappownership.pid = vals.pid WHEN NOT MATCHED THEN INSERT VALUES vals.aid, vals.pid");
 			st.setLong(1, app.getAppId());
 			st.setString(2, profile.getAlias());
 			st.execute();
@@ -79,13 +73,13 @@ public class PlayAppOwnerDao extends DataAccessObject {
 		}
 
 		finally {
-			manager.disconnect(c);
 			if (st != null) {
 				st.close();
 			}
 			if (res != null) {
 				res.close();
 			}
+			manager.disconnect(c);
 		}
 	}
 

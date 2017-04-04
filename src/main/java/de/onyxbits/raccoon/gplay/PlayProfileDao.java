@@ -168,7 +168,7 @@ public class PlayProfileDao extends DataAccessObject implements Variables {
 			st.setString(9, profile.getGsfId());
 			st.execute();
 			fireOnDataSetChangeEvent(new PlayProfileEvent(this,
-					PlayProfileEvent.CREATION, profile));
+					PlayProfileEvent.CREATE, profile));
 		}
 		finally {
 			manager.disconnect(c);
@@ -188,7 +188,7 @@ public class PlayProfileDao extends DataAccessObject implements Variables {
 			st.execute();
 			if (tmp != null) {
 				fireOnDataSetChangeEvent(new PlayProfileEvent(this,
-						PlayProfileEvent.DELETION, tmp));
+						PlayProfileEvent.DELETE, tmp));
 			}
 		}
 		catch (SQLException e) {
@@ -225,7 +225,7 @@ public class PlayProfileDao extends DataAccessObject implements Variables {
 			st.setString(9, profile.getAlias());
 			st.execute();
 			fireOnDataSetChangeEvent(new PlayProfileEvent(this,
-					PlayProfileEvent.MODIFICATION, profile));
+					PlayProfileEvent.UPDATE, profile));
 		}
 		finally {
 			manager.disconnect(c);
@@ -245,6 +245,6 @@ public class PlayProfileDao extends DataAccessObject implements Variables {
 	public void subscribe(DatasetListener listener) {
 		addDataSetListener(listener);
 		fireOnDataSetChangeEvent(new PlayProfileEvent(this,
-				PlayProfileEvent.ACTIVATED, get()));
+				PlayProfileEvent.ACTIVATED | PlayProfileEvent.READ, get()));
 	}
 }

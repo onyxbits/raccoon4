@@ -55,8 +55,6 @@ import de.onyxbits.raccoon.qr.CopyContentAction;
 import de.onyxbits.raccoon.qr.QrPanel;
 import de.onyxbits.raccoon.repo.AndroidApp;
 import de.onyxbits.raccoon.repo.AndroidAppDao;
-import de.onyxbits.raccoon.repo.AppExpansionMainNode;
-import de.onyxbits.raccoon.repo.AppExpansionPatchNode;
 import de.onyxbits.raccoon.repo.AppGroupDao;
 import de.onyxbits.raccoon.repo.AppInstallerNode;
 import de.onyxbits.raccoon.repo.Layout;
@@ -308,22 +306,9 @@ public class DetailsViewBuilder extends AbstractPanelBuilder implements
 				Messages.getString(ID + ".delete.title"), JOptionPane.YES_NO_OPTION);
 		if (ret == JOptionPane.YES_OPTION && current != null) {
 			try {
-				globals.get(DatabaseManager.class).get(AndroidAppDao.class)
-						.delete(current);
 				Layout layout = globals.get(Layout.class);
-				new AppInstallerNode(layout, current.getPackageName(),
-						current.getVersionCode()).delete();
-
-				AppExpansionMainNode aemn = new AppExpansionMainNode(layout,
-						current.getPackageName(), current.getMainVersion());
-				if (aemn.resolve().exists()) {
-					aemn.resolve().delete();
-				}
-				AppExpansionPatchNode aepn = new AppExpansionPatchNode(layout,
-						current.getPackageName(), current.getPatchVersion());
-				if (aepn.resolve().exists()) {
-					aepn.resolve().delete();
-				}
+				globals.get(DatabaseManager.class).get(AndroidAppDao.class)
+						.delete(layout, current);
 
 				globals.get(MyAppsViewBuilder.class).reloadList();
 				globals.get(LifecycleManager.class).hideWindow(ID);

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.onyxbits.raccoon.gui;
+package de.onyxbits.raccoon.appimporter;
 
 import java.awt.Window;
 import java.awt.event.ActionEvent;
@@ -24,12 +24,16 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-
+import java.util.List;
 
 import de.onyxbits.raccoon.appmgr.DetailsViewBuilder;
 import de.onyxbits.raccoon.db.DatabaseManager;
+import de.onyxbits.raccoon.gplay.PlayAppOwnerDao;
+import de.onyxbits.raccoon.gplay.PlayProfile;
+import de.onyxbits.raccoon.gui.Messages;
 import de.onyxbits.raccoon.repo.AndroidApp;
 import de.onyxbits.raccoon.repo.AndroidAppDao;
+import de.onyxbits.raccoon.repo.AppGroup;
 import de.onyxbits.raccoon.repo.AppInstallerNode;
 import de.onyxbits.raccoon.repo.Layout;
 import de.onyxbits.raccoon.transfer.TransferPeerBuilder;
@@ -66,6 +70,8 @@ public class ImportAppWorker implements TransferWorker, ActionListener {
 	private AndroidApp transferred;
 	private InputStream inputStream;
 	private OutputStream outputStream;
+	private PlayProfile profile;
+	private List<AppGroup> groups;
 
 	/**
 	 * Constructor
@@ -75,12 +81,15 @@ public class ImportAppWorker implements TransferWorker, ActionListener {
 	 * @param source
 	 *          file to copy from.
 	 */
-	public ImportAppWorker(Globals globals, File source) {
+	public ImportAppWorker(Globals globals, File source, PlayProfile profile,
+			List<AppGroup> groups) {
 		this.source = source;
 		this.globals = globals;
 		control = new TransferPeerBuilder(source.getName());
 		control.withChannel(Messages.getString(getClass().getSimpleName()
 				+ ".channel"));
+		this.profile = profile;
+		this.groups = groups;
 	}
 
 	@Override
@@ -118,6 +127,9 @@ public class ImportAppWorker implements TransferWorker, ActionListener {
 	public void onComplete() throws Exception {
 		DatabaseManager dbm = globals.get(DatabaseManager.class);
 		dbm.get(AndroidAppDao.class).saveOrUpdate(transferred);
+		if (profile != null) {
+			dbm.get(PlayAppOwnerDao.class).own(transferred, profile);
+		}
 		closeStreams();
 	}
 
@@ -145,6 +157,7 @@ public class ImportAppWorker implements TransferWorker, ActionListener {
 		if (transferred == null) {
 			throw new IllegalArgumentException("Not an APK!");
 		}
+		transferred.setGroups(groups);
 
 		AppInstallerNode ain = new AppInstallerNode(layout,
 				transferred.getPackageName(), transferred.getVersionCode());

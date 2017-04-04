@@ -13,17 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.onyxbits.raccoon.gui;
+package de.onyxbits.raccoon.appimporter;
 
 import java.awt.event.ActionEvent;
-import java.io.File;
 
 import javax.swing.AbstractAction;
-import javax.swing.JFileChooser;
-import javax.swing.filechooser.FileNameExtensionFilter;
-
 import de.onyxbits.raccoon.repo.AndroidApp;
-import de.onyxbits.raccoon.transfer.TransferManager;
+
 import de.onyxbits.weave.Globals;
 import de.onyxbits.weave.LifecycleManager;
 
@@ -48,21 +44,7 @@ public class ImportAppAction extends AbstractAction {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		JFileChooser chooser = new JFileChooser();
-		chooser.setFileFilter(new FileNameExtensionFilter(Messages
-				.getString(getClass().getSimpleName() + ".description"), "apk"));
-		chooser.setMultiSelectionEnabled(true);
-		int sel = chooser.showOpenDialog(globals.get(LifecycleManager.class)
-				.getWindow());
-		if (sel == JFileChooser.APPROVE_OPTION) {
-			File[] selected = chooser.getSelectedFiles();
-			TransferManager ts = globals.get(TransferManager.class);
-			for (File apk : selected) {
-				if (apk.isFile() && apk.canRead()) {
-					ts.schedule(globals, new ImportAppWorker(globals, apk),
-							TransferManager.LAN);
-				}
-			}
-		}
+		globals.get(LifecycleManager.class).getWindow(ImportAppBuilder.ID)
+				.setVisible(true);
 	}
 }
