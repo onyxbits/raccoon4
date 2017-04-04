@@ -96,8 +96,6 @@ public final class VariableDao extends DataAccessObject implements Variables {
 						key, old, val));
 			}
 			else {
-				// st = c
-				// .prepareStatement("INSERT INTO variables (name,value) VALUES (?, ?)");
 				st = c
 						.prepareStatement("MERGE INTO variables USING (VALUES (?, ?)) AS vals(x,y) ON variables.name = vals.x WHEN MATCHED THEN UPDATE SET variables.value=vals.y WHEN NOT MATCHED THEN INSERT VALUES vals.x , vals.y");
 				st.setString(1, key);

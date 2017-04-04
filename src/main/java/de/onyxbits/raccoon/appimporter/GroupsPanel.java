@@ -75,11 +75,6 @@ class GroupsPanel extends JPanel implements DatasetListener {
 		}
 	}
 
-	// @Override
-	// public Dimension getPreferredSize() {
-	// return new Dimension(400, 150);
-	// }
-
 	public List<AppGroup> getSelected() {
 		ArrayList<AppGroup> ret = new ArrayList<AppGroup>();
 		for (PayloadButtonModel<AppGroup> model : models) {
