@@ -83,6 +83,11 @@ public class Router {
 				Messages.getString(DESC + "gpa-batchdetails"));
 		playAppBatchDetails.setArgName("file");
 		options.addOption(playAppBatchDetails);
+		
+		Option playAppSearch = new Option(null, "gpa-search", true,
+				Messages.getString(DESC + "gpa-search"));
+		playAppSearch.setArgName("query");
+		options.addOption(playAppSearch);
 
 		CommandLine commandLine = null;
 		try {
@@ -123,6 +128,11 @@ public class Router {
 		if (commandLine.hasOption(playAppBatchDetails.getLongOpt())) {
 			Play.details(new File(commandLine.getOptionValue(playAppBatchDetails
 					.getLongOpt())));
+			System.exit(0);
+		}
+		
+		if (commandLine.hasOption(playAppSearch.getLongOpt())) {
+			Play.search(commandLine.getOptionValue(playAppSearch.getLongOpt()));
 			System.exit(0);
 		}
 	}

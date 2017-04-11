@@ -74,6 +74,16 @@ class Play implements Variables {
 		}
 	}
 
+	public static void search(String query) {
+		GooglePlayAPI api = createConnection();
+		try {
+			System.out.println(api.search(query));
+		}
+		catch (Exception e) {
+			Router.fail("play.exception", e.getMessage());
+		}
+	}
+
 	/**
 	 * Perform a details query, print to individual files
 	 * 
