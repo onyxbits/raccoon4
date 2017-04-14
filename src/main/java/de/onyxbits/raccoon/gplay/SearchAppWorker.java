@@ -15,10 +15,8 @@
  */
 package de.onyxbits.raccoon.gplay;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 import javax.swing.SwingWorker;
 
@@ -32,7 +30,7 @@ import com.akdeniz.googleplaycrawler.GooglePlayAPI;
  * @author patrick
  * 
  */
-class SearchAppWorker extends SwingWorker<List<DocV2>, Object> {
+class SearchAppWorker extends SwingWorker<Object, Object> {
 
 	/**
 	 * Number of entries to ask for in the result set by default.
@@ -44,6 +42,8 @@ class SearchAppWorker extends SwingWorker<List<DocV2>, Object> {
 	private int offset;
 	private String query;
 	private PlayManager owner;
+	private DocV2 bestMatch;
+	private List<DocV2> serp;
 
 	/**
 	 * 
@@ -63,33 +63,33 @@ class SearchAppWorker extends SwingWorker<List<DocV2>, Object> {
 		this.offset = offset;
 		this.query = query;
 		this.owner = owner;
+		serp = Collections.emptyList();
 	}
 
 	@Override
-	protected List<DocV2> doInBackground() throws Exception {
+	protected Object doInBackground() throws Exception {
 		SearchResponse res = api.search(query, offset, limit);
+
 		if (res.getDocCount() == 1) {
-			return res.getDoc(0).getChildList();
+			DocV2 doc = res.getDoc(0);
+			if (doc.getDocType() == 46 && doc.getChildCount() == 4) {
+				bestMatch = doc.getChild(0).getChild(0);
+				serp = doc.getChild(3).getChildList();
+			}
+			else {
+				serp = doc.getChildList();
+			}
 		}
-		else {
-			return Collections.emptyList();
-		}
+		return null;
 	}
 
 	@Override
 	public void done() {
-		try {
-			if (!isCancelled()) {
-				owner.fireAppSearchResult(get());
+		if (!isCancelled()) {
+			owner.fireAppSearchResult(serp);
+			if (bestMatch != null) {
+				owner.fireAppView(bestMatch, true);
 			}
-		}
-		catch (ExecutionException e) {
-			e.printStackTrace();
-			owner.fireAppSearchResult(new ArrayList<DocV2>());
-		}
-		catch (InterruptedException e) {
-			e.printStackTrace();
-			owner.fireAppSearchResult(new ArrayList<DocV2>());
 		}
 	}
 
