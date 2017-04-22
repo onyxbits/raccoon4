@@ -20,8 +20,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
+
 import java.util.Vector;
 
 /**
@@ -37,9 +39,13 @@ public class Device {
 	 */
 	public final String serial;
 
-	private String alias;
 	private String host;
 	private int port;
+
+	private ArrayList<String> libs;
+	private ArrayList<String> features;
+	private ArrayList<String> abis;
+	private Properties propertyCache;
 
 	protected Device(String serial) {
 		this(null, 5037, serial);
@@ -49,37 +55,39 @@ public class Device {
 		this.host = host;
 		this.port = port;
 		this.serial = serial;
+		this.propertyCache = new Properties();
 	}
 
 	public String getSerial() {
 		return serial;
 	}
 
-	@Override
-	public String toString() {
-		if (alias != null) {
-			return alias;
+	/**
+	 * Read a system property
+	 * 
+	 * @param name
+	 *          property name
+	 * @param def
+	 *          default value to return if name not found.
+	 * @return the value or the default value.
+	 */
+	public String getProperty(String name, String def) {
+		if (propertyCache.containsKey(name)) {
+			return propertyCache.getProperty(name);
 		}
-		return serial;
-	}
-
-	/**
-	 * Query the devices human readable name
-	 * 
-	 * @return the alias name of the device
-	 */
-	public String getAlias() {
-		return alias;
-	}
-
-	/**
-	 * Every device can have a human readable name
-	 * 
-	 * @param alias
-	 *          a string that describes the device better than the serial number.
-	 */
-	public void setAlias(String alias) {
-		this.alias = alias;
+		String tmp = null;
+		try {
+			// Note to self: the Android property system sources more than just
+			// /system/build.prop, so there is no way to prefetch everything.
+			tmp = exec("getprop " + name).trim();
+		}
+		catch (IOException e) {
+		}
+		if (tmp == null || tmp.length() == 0) {
+			return def;
+		}
+		propertyCache.put(name, tmp);
+		return tmp;
 	}
 
 	/**
@@ -281,7 +289,7 @@ public class Device {
 	 *         slash).
 	 */
 	public String getExternalStorageDir() throws IOException {
-		String ret = exec("echo $EXTERNAL_STORAGE").replace('\n', ' ').trim();
+		String ret = exec("echo $EXTERNAL_STORAGE").trim();
 		if (!(ret.endsWith("/"))) {
 			ret += "/";
 		}
@@ -299,43 +307,79 @@ public class Device {
 	}
 
 	/**
-	 * Query the device's SDK version
+	 * List available libraries
 	 * 
-	 * @return the SDK version
-	 * @throws IOException
+	 * @return installed libraries
 	 */
-	public int getSdkVersion() throws IOException {
-		String s = exec("getprop ro.build.version.sdk").replace('\n', ' ').trim();
-		return Integer.parseInt(s);
+	public List<String> getSharedLibraries() {
+		if (libs == null) {
+			libs = new ArrayList<String>();
+			try {
+				String[] output = exec("pm list libraries").split("\\r?\\n");
+				for (String line : output) {
+					String[] tmp = line.split(":");
+					if (tmp.length == 2) {
+						libs.add(tmp[1]);
+					}
+				}
+			}
+			catch (Exception e) {
+			}
+		}
+		return libs;
 	}
 
 	/**
-	 * Figure out what this device would identify itself to Google Play.
+	 * List available features
 	 * 
-	 * @return a user agent string.
-	 * @throws IOException
+	 * @return device features
 	 */
-	public String getPlayUserAgent() throws IOException {
-		// Safe defaults from a Nexus 7 2012
-		String vn = "3.10.10";
-		String vc = "8016010";
-		try {
-			vn = exec("dumpsys package com.android.vending | grep versionName")
-					.replace('\n', ' ').trim().split("=")[1];
-			vc = exec("dumpsys package com.android.vending | grep versionCode")
-					.replace('\n', ' ').trim().split("=")[1];
+	public List<String> getSystemFeatures() {
+		if (features == null) {
+			features = new ArrayList<String>();
+			try {
+				String[] output = exec("pm list features").split("\\r?\\n");
+				for (String line : output) {
+					String[] tmp = line.split(":");
+					if (tmp.length == 2) {
+						features.add(tmp[1]);
+					}
+				}
+			}
+			catch (Exception e) {
+			}
 		}
-		catch (Exception e) {
-			// Maybe a custom ROM?
-		}
-		Object[] args = { vn, vc, getSdkVersion(),
-				exec("getprop ro.product.device").replace('\n', ' ').trim(),
-				exec("getprop ro.hardware").replace('\n', ' ').trim(),
-				exec("getprop ro.build.product").replace('\n', ' ').trim(),
-				exec("getprop ro.build.id").replace('\n', ' ').trim(),
-				exec("getprop ro.build.type").replace('\n', ' ').trim() };
-		MessageFormat ret = new MessageFormat(
-				"Android-Finsky/{0} (versionCode={1},sdk={2},device={3},hardware={4},product={5},build={6}:{7})");
-		return ret.format(args);
+		return features;
 	}
+
+	public List<String> getAbis() {
+		if (abis == null) {
+			abis = new ArrayList<String>();
+
+			try {
+				// Stuff works differently pre-lollipop
+				if (Integer.parseInt(getProperty("ro.build.version.sdk", null)) < 21) {
+					String tmp = getProperty("ro.product.cpu.abi", null);
+					if (tmp != null) {
+						abis.add(tmp);
+					}
+					tmp = getProperty("ro.product.cpu.abi2", null);
+					if (tmp != null) {
+						abis.add(tmp);
+					}
+				}
+				else {
+					String[] tmp = getProperty("ro.product.cpu.abilist", "").split(
+							" *, *");
+					for (String s : tmp) {
+						abis.add(s);
+					}
+				}
+			}
+			catch (Exception e) {
+			}
+		}
+		return abis;
+	}
+
 }

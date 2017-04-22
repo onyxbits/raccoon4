@@ -20,13 +20,16 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import de.onyxbits.raccoon.db.DataAccessObject;
 import de.onyxbits.raccoon.db.DatasetListener;
 import de.onyxbits.raccoon.db.VariableDao;
 import de.onyxbits.raccoon.db.Variables;
+import de.onyxbits.raccoon.ptools.Device;
 
 public class PlayProfileDao extends DataAccessObject implements Variables {
 
@@ -246,5 +249,28 @@ public class PlayProfileDao extends DataAccessObject implements Variables {
 		addDataSetListener(listener);
 		fireOnDataSetChangeEvent(new PlayProfileEvent(this,
 				PlayProfileEvent.ACTIVATED | PlayProfileEvent.READ, get()));
+	}
+
+	/**
+	 * Create the user agent string of the play client app
+	 * 
+	 * @param vn
+	 *          versionname of the Finsky app
+	 * @param vc
+	 *          versioncode of the Finsky app
+	 * @param dev
+	 *          properties loaded from /system/build.prop
+	 * @return user agent string
+	 */
+	public static String createFinskyUserAgent(String vn, int vc, Device dev) {
+		String[] args = { vn, vc + "", dev.getProperty("ro.build.version.sdk", ""),
+				dev.getProperty("ro.product.device", ""),
+				dev.getProperty("ro.hardware", ""),
+				dev.getProperty("ro.build.product", ""),
+				dev.getProperty("ro.build.id", ""),
+				dev.getProperty("ro.build.type", ""), };
+		MessageFormat ret = new MessageFormat(
+				"Android-Finsky/{0} (versionCode={1},sdk={2},device={3},hardware={4},product={5},build={6}:{7})");
+		return ret.format(args);
 	}
 }
