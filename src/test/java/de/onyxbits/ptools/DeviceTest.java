@@ -74,18 +74,6 @@ public class DeviceTest {
 	}
 
 	@Test
-	public void testGetAbis() {
-		List<String> list = device.getAbis();
-		for (String s : list) {
-			if (s.startsWith("armeabi") || s.startsWith("x86")
-					|| s.startsWith("mips")) {
-				return;
-			}
-		}
-		fail("Device has no ABIs?!");
-	}
-
-	@Test
 	public void testGetProperty() {
 		assertEquals(device.serial, device.getProperty("ro.serialno", null));
 	}

@@ -44,7 +44,7 @@ public class Device {
 
 	private ArrayList<String> libs;
 	private ArrayList<String> features;
-	private ArrayList<String> abis;
+	
 	private Properties propertyCache;
 
 	protected Device(String serial) {
@@ -351,35 +351,4 @@ public class Device {
 		}
 		return features;
 	}
-
-	public List<String> getAbis() {
-		if (abis == null) {
-			abis = new ArrayList<String>();
-
-			try {
-				// Stuff works differently pre-lollipop
-				if (Integer.parseInt(getProperty("ro.build.version.sdk", null)) < 21) {
-					String tmp = getProperty("ro.product.cpu.abi", null);
-					if (tmp != null) {
-						abis.add(tmp);
-					}
-					tmp = getProperty("ro.product.cpu.abi2", null);
-					if (tmp != null) {
-						abis.add(tmp);
-					}
-				}
-				else {
-					String[] tmp = getProperty("ro.product.cpu.abilist", "").split(
-							" *, *");
-					for (String s : tmp) {
-						abis.add(s);
-					}
-				}
-			}
-			catch (Exception e) {
-			}
-		}
-		return abis;
-	}
-
 }
