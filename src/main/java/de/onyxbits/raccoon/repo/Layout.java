@@ -4,8 +4,6 @@ import java.io.File;
 
 import javax.swing.filechooser.FileSystemView;
 
-import de.onyxbits.weave.Globals;
-import de.onyxbits.weave.Lifecycle;
 
 /**
  * Maps all the paths
