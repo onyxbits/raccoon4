@@ -62,7 +62,7 @@ public class PermissionModel extends DefaultTreeModel {
 			HashMap<String, MutableTreeNode> nodes = new HashMap<String, MutableTreeNode>();
 
 			for (String permission : permissions) {
-				int pos = permission.lastIndexOf('.');
+				int pos = Math.max(0, permission.lastIndexOf('.'));
 				char[] chars = permission.toCharArray();
 				String g = new String(chars, 0, pos);
 				String p = new String(chars, pos + 1, chars.length - pos - 1);
