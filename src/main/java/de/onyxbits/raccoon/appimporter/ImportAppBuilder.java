@@ -69,7 +69,9 @@ public class ImportAppBuilder extends AbstractPanelBuilder implements
 
 	public ImportAppBuilder() {
 		scan = new JButton(loadIcon("/icons/famfam/icons/folder_magnify.png"));
+		scan.setToolTipText(Messages.getString(ID + ".scan.short_description"));
 		imprt = new JButton(loadIcon("/icons/famfam/icons/folder_add.png"));
+		imprt.setToolTipText(Messages.getString(ID + ".imprt.short_description"));
 		list = new JList<Candidate>();
 		profile = new JComboBox<PlayProfile>();
 		progress = new JTextField();
@@ -150,7 +152,10 @@ public class ImportAppBuilder extends AbstractPanelBuilder implements
 		gbc.insets = new Insets(2, 2, 2, 2);
 		gbc.weightx = 0;
 		gbc.weighty = 0;
-		importPanel.add(new JButton(editGroups), gbc);
+		JButton editGroupsButton = new JButton(editGroups);
+		editGroupsButton.setToolTipText(Messages.getString(ID
+				+ ".editgroupsbutton.short_description"));
+		importPanel.add(editGroupsButton, gbc);
 
 		gbc.gridx = 0;
 		gbc.gridy = 2;
