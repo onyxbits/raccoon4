@@ -164,7 +164,12 @@ public class ImportAppWorker implements TransferWorker, ActionListener {
 		dest = ain.resolve();
 		iconDest = ain.toIcon().resolve();
 		dest.getParentFile().mkdirs();
-		ain.toIcon().extractFrom(source);
+		try {
+			ain.toIcon().extractFrom(source);
+		}
+		catch (Exception e) {
+			// Some APKs just don't have an icon.
+		}
 		inputStream = new FileInputStream(source);
 		outputStream = new FileOutputStream(dest);
 
