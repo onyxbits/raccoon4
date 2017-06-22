@@ -87,6 +87,7 @@ public class DetailsViewBuilder extends AbstractPanelBuilder implements
 	private BrowseAction showFiles;
 	private JButton deleteApp;
 	private JButton installApp;
+	private JButton renameApp;
 	private InstallAction installAction;
 	private JButton extract;
 	private QrPanel transfer;
@@ -111,8 +112,10 @@ public class DetailsViewBuilder extends AbstractPanelBuilder implements
 		installApp = new JButton(al.localize(installAction, "install"));
 		deleteApp = new JButton(al.localize("delete"));
 		extract = new JButton(al.localize("extract"));
+		renameApp = new JButton(al.localize("rename"));
 		deleteApp.addActionListener(this);
 		extract.addActionListener(this);
+		renameApp.addActionListener(this);
 		transfer = new QrPanel(200);
 		transfer.withActions(new CopyContentAction(globals, transfer));
 		transfer.setBorder(new TitledBorder(Messages.getString(ID + ".transfer")));
@@ -147,7 +150,7 @@ public class DetailsViewBuilder extends AbstractPanelBuilder implements
 		tabs.add(contentsPanel, Messages.getString(ID + ".contents"));
 
 		JPanel actions = new ButtonBarBuilder().addButton(showFiles)
-				.add(installApp)
+				.add(installApp).add(renameApp)
 				.add(deleteApp)
 				// .addButton(recommendApp)
 				.withVerticalAlignment()
@@ -275,6 +278,9 @@ public class DetailsViewBuilder extends AbstractPanelBuilder implements
 		if (src == deleteApp) {
 			doDelete();
 		}
+		if (src == renameApp) {
+			doRename();
+		}
 		if (src == extract) {
 			if (globals.get(Traits.class).isAvailable("4.0.x")) {
 				doExtract(true);
@@ -282,7 +288,25 @@ public class DetailsViewBuilder extends AbstractPanelBuilder implements
 			else {
 				globals.get(LifecycleManager.class).sendBusMessage(new JTextField());
 			}
+		}
+	}
 
+	private void doRename() {
+		Window window = SwingUtilities.getWindowAncestor(container);
+		String ret = JOptionPane.showInputDialog(window,
+				Messages.getString(ID + ".rename.message"),
+				Messages.getString(ID + ".rename.title"), JOptionPane.QUESTION_MESSAGE);
+		if (ret != null && ret.length() > 0 && !ret.equals(current.getName())) {
+			AndroidAppDao dao = globals.get(DatabaseManager.class).get(
+					AndroidAppDao.class);
+			current.setName(ret);
+			titleStrip.setTitle(current.getName());
+			try {
+				dao.saveOrUpdate(current);
+			}
+			catch (SQLException e) {
+				throw new RuntimeException(e);
+			}
 		}
 	}
 
