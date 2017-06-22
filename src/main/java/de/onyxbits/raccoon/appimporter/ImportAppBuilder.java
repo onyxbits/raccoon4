@@ -122,6 +122,9 @@ public class ImportAppBuilder extends AbstractPanelBuilder implements
 		gbc.insets = new Insets(2, 2, 2, 2);
 		scanPanel.add(scan, gbc);
 
+		JScrollPane scroll = new JScrollPane(list);
+		scroll.setPreferredSize(new Dimension(400, 200));
+		scroll.setMinimumSize(new Dimension(400, 200));
 		gbc.gridx = 0;
 		gbc.gridy = 1;
 		gbc.gridwidth = 3;
@@ -130,9 +133,9 @@ public class ImportAppBuilder extends AbstractPanelBuilder implements
 		gbc.insets = new Insets(2, 2, 2, 2);
 		gbc.weightx = 1;
 		gbc.weighty = 1;
-		scanPanel.add(new JScrollPane(list), gbc);
+		scanPanel.add(scroll, gbc);
 
-		JScrollPane scroll = new JScrollPane(groupsPanel);
+		scroll = new JScrollPane(groupsPanel);
 		scroll.setPreferredSize(new Dimension(400, 200));
 		gbc.gridx = 0;
 		gbc.gridy = 0;
