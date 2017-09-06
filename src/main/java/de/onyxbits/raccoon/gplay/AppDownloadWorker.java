@@ -90,7 +90,7 @@ class AppDownloadWorker implements TransferWorker, ActionListener {
 				DocUtil.getAppIconUrl(doc));
 		profile = globals.get(DatabaseManager.class).get(PlayProfileDao.class)
 				.get();
-		paid = doc.getOffer(0).getCheckoutFlowRequired();
+		paid = true; //doc.getOffer(0).getCheckoutFlowRequired();
 	}
 
 	@Override
