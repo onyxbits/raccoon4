@@ -434,6 +434,11 @@ try {
 				.getAppDeliveryData();
 		return new DownloadData(this, appDeliveryData);
 	}
+	
+	public DownloadData purchaseAndDeliver(String packageName, int versionCode, int offerType) throws IOException {
+		purchase(packageName, versionCode, offerType);
+		return delivery(packageName, versionCode, offerType);
+	}
 
 	/**
 	 * Posts given check-in request content and returns
