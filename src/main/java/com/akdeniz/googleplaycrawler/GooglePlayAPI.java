@@ -436,7 +436,12 @@ try {
 	}
 	
 	public DownloadData purchaseAndDeliver(String packageName, int versionCode, int offerType) throws IOException {
-		purchase(packageName, versionCode, offerType);
+		BuyResponse buyResponse = purchase(packageName, versionCode, offerType);
+		AndroidAppDeliveryData ada = buyResponse.getPurchaseStatusResponse().getAppDeliveryData();
+		if (ada.hasDownloadUrl() && ada.getDownloadAuthCookieCount()>0) {
+			// This is for backwards compatibility.
+			return new DownloadData(this, ada);
+		}
 		return delivery(packageName, versionCode, offerType);
 	}
 
