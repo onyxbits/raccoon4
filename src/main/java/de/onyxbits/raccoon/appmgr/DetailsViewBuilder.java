@@ -238,13 +238,10 @@ public class DetailsViewBuilder extends AbstractPanelBuilder implements
 	private void setContent(AndroidApp app) {
 		current = app;
 		installAction.setApps(current);
-		try {
-			globals.get(DatabaseManager.class).get(AndroidAppDao.class)
-					.details(current);
-		}
-		catch (SQLException e) {
-			e.printStackTrace();
-		}
+
+		globals.get(DatabaseManager.class).get(AndroidAppDao.class)
+				.details(current);
+
 		titleStrip.setTitle(current.getName());
 		titleStrip.setSubTitle(current.getVersion());
 		Layout layout = globals.get(Layout.class);

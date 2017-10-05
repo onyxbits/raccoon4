@@ -117,8 +117,6 @@ public final class AndroidAppDao extends DataAccessObject {
 				}
 			}
 			c.commit();
-			fireOnDataSetChangeEvent(new DatasetEvent(this, DatasetEvent.CREATE
-					| DatasetEvent.UPDATE));
 		}
 		catch (SQLException e) {
 			e.printStackTrace();
@@ -134,6 +132,8 @@ public final class AndroidAppDao extends DataAccessObject {
 			}
 			c.setAutoCommit(true);
 			manager.disconnect(c);
+			fireOnDataSetChangeEvent(new DatasetEvent(this, DatasetEvent.CREATE
+					| DatasetEvent.UPDATE));
 		}
 
 		return app;
@@ -244,18 +244,159 @@ public final class AndroidAppDao extends DataAccessObject {
 		}
 	}
 
+	public List<AndroidApp> listByGroup(long gid) {
+		List<AndroidApp> ret = new ArrayList<AndroidApp>(100);
+		Connection c = manager.connect();
+		ResultSet res = null;
+		PreparedStatement st = null;
+		try {
+			st = c
+					.prepareStatement("SELECT aid, packagename, versioncode, mainversion, patchversion, name, version, minsdk FROM androidapps NATURAL JOIN androidapps_appgroups where gid = ? ORDER BY name, versioncode");
+			st.setLong(1, gid);
+			st.execute();
+			res = st.getResultSet();
+			while (res.next()) {
+				AndroidApp app = new AndroidApp();
+				app.setAppId(res.getLong(1));
+				app.setPackageName(res.getString(2));
+				app.setVersionCode(res.getInt(3));
+				app.setMainVersion(res.getInt(4));
+				app.setPatchVersion(res.getInt(5));
+				app.setName(res.getString(6));
+				app.setVersion(res.getString(7));
+				app.setMinSdk(res.getInt(8));
+				ret.add(app);
+			}
+		}
+		catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
+		finally {
+			manager.disconnect(c);
+			if (st != null) {
+				try {
+					st.close();
+				}
+				catch (SQLException e) {
+				}
+			}
+			if (res != null) {
+				try {
+					res.close();
+				}
+				catch (SQLException e) {
+				}
+			}
+		}
+
+		return ret;
+	}
+
 	/**
-	 * List apps that fit a criteria
+	 * List all versions of an app
 	 * 
-	 * @param name
-	 *          name criteria
-	 * @param group
-	 *          group criteria
+	 * @param pn
+	 *          the packagename
+	 * @return all apps that belong to the same package, ordered newest first.
+	 */
+	public List<AndroidApp> listByPackage(String pn) {
+		List<AndroidApp> ret = new ArrayList<AndroidApp>(100);
+		Connection c = manager.connect();
+		ResultSet res = null;
+		PreparedStatement st = null;
+
+		try {
+			st = c
+					.prepareStatement("SELECT aid, packagename, versioncode, mainversion, patchversion, name, version, minsdk FROM androidapps WHERE packagename LIKE ? ORDER BY name, versioncode");
+			st.setString(1, pn);
+			st.execute();
+			res = st.getResultSet();
+			while (res.next()) {
+				AndroidApp app = new AndroidApp();
+				app.setAppId(res.getLong(1));
+				app.setPackageName(res.getString(2));
+				app.setVersionCode(res.getInt(3));
+				app.setMainVersion(res.getInt(4));
+				app.setPatchVersion(res.getInt(5));
+				app.setName(res.getString(6));
+				app.setVersion(res.getString(7));
+				app.setMinSdk(res.getInt(8));
+				ret.add(app);
+			}
+		}
+		catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
+		finally {
+			manager.disconnect(c);
+			if (st != null) {
+				try {
+					st.close();
+				}
+				catch (SQLException e) {
+				}
+			}
+			if (res != null) {
+				try {
+					res.close();
+				}
+				catch (SQLException e) {
+				}
+			}
+		}
+		return ret;
+	}
+
+	/**
+	 * List Apps by their packagename
+	 * 
+	 * @return list of packagenames, ordered alphabetically, duplicates removed.
+	 */
+	public List<String> listPackages() {
+		List<String> ret = new ArrayList<String>(100);
+		Connection c = manager.connect();
+		ResultSet res = null;
+		PreparedStatement st = null;
+
+		try {
+			st = c
+					.prepareStatement("SELECT DISTINCT(packagename) FROM androidapps ORDER BY packagename");
+			st.execute();
+			res = st.getResultSet();
+			while (res.next()) {
+				ret.add(res.getString(1));
+			}
+		}
+		catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
+		finally {
+			manager.disconnect(c);
+			if (st != null) {
+				try {
+					st.close();
+				}
+				catch (SQLException e) {
+				}
+			}
+			if (res != null) {
+				try {
+					res.close();
+				}
+				catch (SQLException e) {
+				}
+			}
+		}
+		return ret;
+	}
+
+	/**
+	 * List all apps sorted by name and versioncode.
+	 * 
 	 * @return A lazy loaded list of matching apps. Collections are not filled in
 	 *         and must be queried using details().
-	 * @throws SQLException
 	 */
-	public List<AndroidApp> list() throws SQLException {
+	public List<AndroidApp> list() {
 		List<AndroidApp> ret = new ArrayList<AndroidApp>(100);
 		Connection c = manager.connect();
 		ResultSet res = null;
@@ -279,16 +420,81 @@ public final class AndroidAppDao extends DataAccessObject {
 				ret.add(app);
 			}
 		}
+		catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
 		finally {
 			manager.disconnect(c);
 			if (st != null) {
-				st.close();
+				try {
+					st.close();
+				}
+				catch (SQLException e) {
+				}
 			}
 			if (res != null) {
-				res.close();
+				try {
+					res.close();
+				}
+				catch (SQLException e) {
+				}
 			}
 		}
 		return ret;
+	}
+
+	/**
+	 * Look up an app by its aid
+	 * 
+	 * @param id
+	 *          app id
+	 * @return the app or null if not found.
+	 */
+	public AndroidApp getByAppId(long id) {
+		Connection c = manager.connect();
+		ResultSet res = null;
+		PreparedStatement st = null;
+		AndroidApp app = null;
+
+		try {
+			st = c
+					.prepareStatement("SELECT aid, packagename, versioncode, mainversion, patchversion, name, version, minsdk FROM androidapps WHERE aid = ?");
+			st.setLong(1, id);
+			st.execute();
+			res = st.getResultSet();
+			while (res.next()) {
+				app = new AndroidApp();
+				app.setAppId(id);
+				app.setPackageName(res.getString(2));
+				app.setVersionCode(res.getInt(3));
+				app.setMainVersion(res.getInt(4));
+				app.setPatchVersion(res.getInt(5));
+				app.setName(res.getString(6));
+				app.setVersion(res.getString(7));
+				app.setMinSdk(res.getInt(8));
+			}
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+		finally {
+			manager.disconnect(c);
+			if (st != null) {
+				try {
+					st.close();
+				}
+				catch (SQLException e) {
+				}
+			}
+			if (res != null) {
+				try {
+					res.close();
+				}
+				catch (SQLException e) {
+				}
+			}
+		}
+		return app;
 	}
 
 	/**
@@ -299,7 +505,7 @@ public final class AndroidAppDao extends DataAccessObject {
 	 *          the app to complete
 	 * @return the submitted app with all the info filled in.
 	 */
-	public AndroidApp details(AndroidApp app) throws SQLException {
+	public AndroidApp details(AndroidApp app) {
 		Connection c = manager.connect();
 		ResultSet res = null;
 		PreparedStatement st = null;
@@ -328,13 +534,24 @@ public final class AndroidAppDao extends DataAccessObject {
 			}
 			app.setGroups(lst);
 		}
+		catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
 		finally {
 			manager.disconnect(c);
 			if (st != null) {
-				st.close();
+				try {
+					st.close();
+				}
+				catch (SQLException e) {
+				}
 			}
 			if (res != null) {
-				res.close();
+				try {
+					res.close();
+				}
+				catch (SQLException e) {
+				}
 			}
 		}
 		app.setUsesPermissions(perms);
