@@ -37,7 +37,7 @@ public final class AndroidAppDao extends DataAccessObject {
 	/**
 	 * Table version
 	 */
-	protected static final int VERSION = 1;
+	protected static final int VERSION = 2;
 
 	@Override
 	protected void upgradeFrom(int oldVersion, Connection c) throws SQLException {
@@ -45,12 +45,15 @@ public final class AndroidAppDao extends DataAccessObject {
 			case 1: {
 				DaoSupport.v1Shared(c);
 			}
+			case 2: {
+				DaoSupport.v2Shared(c);
+			}
 		}
 	}
 
 	@Override
 	protected int getVersion() {
-		return 1;
+		return VERSION;
 	}
 
 	/**

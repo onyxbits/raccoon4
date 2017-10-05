@@ -63,4 +63,11 @@ class DaoSupport {
 		st.execute();
 		st.close();
 	}
+
+	public static void v2Shared(Connection c) throws SQLException {
+		PreparedStatement st = c
+				.prepareStatement("ALTER TABLE permissions ALTER COLUMN name VARCHAR(8192)");
+		st.execute();
+		st.close();
+	}
 }

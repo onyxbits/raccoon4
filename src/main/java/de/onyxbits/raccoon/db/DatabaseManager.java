@@ -166,12 +166,7 @@ public final class DatabaseManager {
 			throws SQLException {
 		PreparedStatement st = null;
 		try {
-			// TODO: make this a MERGE statement!
-			st = c.prepareStatement("DELETE FROM versions WHERE dao = ?");
-			st.setString(1, dao);
-			st.close();
-			st = c
-					.prepareStatement("INSERT INTO versions (dao,version) VALUES (? , ?)");
+			st = c.prepareStatement("MERGE INTO versions USING (VALUES (?, ?)) AS vals(x,y) ON versions.dao = vals.x WHEN MATCHED THEN UPDATE SET versions.version=vals.y WHEN NOT MATCHED THEN INSERT VALUES vals.x , vals.y");
 			st.setString(1, dao);
 			st.setInt(2, version);
 			st.execute();
