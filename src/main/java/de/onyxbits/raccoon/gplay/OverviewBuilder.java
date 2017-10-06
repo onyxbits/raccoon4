@@ -15,6 +15,7 @@
  */
 package de.onyxbits.raccoon.gplay;
 
+import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
@@ -83,7 +84,8 @@ final class OverviewBuilder extends AbstractPanelBuilder implements
 
 		JComponent plugPanel;
 		if (showPlug()) {
-			InfoBuilder plug = new InfoBuilder(Messages.getString(ID + ".plug.title"));
+			InfoBuilder plug = new InfoBuilder(Messages.getString(ID + ".plug.title"))
+					.withTitleColor(Color.RED.darker());
 			plugPanel = plug.build(globals);
 			plug.setInfo(MessageFormat.format(
 					Messages.getString(ID + ".plug.message"), Bookmarks.FEATURELIST,

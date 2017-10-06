@@ -15,6 +15,7 @@
  */
 package de.onyxbits.raccoon.gplay;
 
+import java.awt.Color;
 import java.awt.GridLayout;
 
 import javax.swing.BorderFactory;
@@ -39,6 +40,7 @@ class InfoBuilder extends AbstractPanelBuilder {
 	private HyperTextPane content;
 	private String title;
 	private HyperlinkListener listener;
+	private Color color;
 
 	public InfoBuilder(String title) {
 		this.title = title;
@@ -46,6 +48,11 @@ class InfoBuilder extends AbstractPanelBuilder {
 
 	public InfoBuilder withHyperLinkListener(HyperlinkListener listener) {
 		this.listener = listener;
+		return this;
+	}
+
+	public InfoBuilder withTitleColor(Color c) {
+		this.color = c;
 		return this;
 	}
 
@@ -60,8 +67,12 @@ class InfoBuilder extends AbstractPanelBuilder {
 		}
 		JPanel wrapper = new JPanel(false);
 		wrapper.setLayout(new GridLayout(1, 0, 0, 0));
-		wrapper.add(new JLabel(title, new ImageIcon(getClass().getResource(
-				"/icons/famfam/icons/bell.png")), SwingConstants.LEADING));
+		JLabel lbl = new JLabel(title, new ImageIcon(getClass().getResource(
+				"/icons/famfam/icons/bell.png")), SwingConstants.LEADING);
+		if (color != null) {
+			lbl.setForeground(color);
+		}
+		wrapper.add(lbl);
 		wrapper.setBackground(wrapper.getBackground().darker());
 		wrapper.setBorder(BorderFactory.createEtchedBorder());
 
