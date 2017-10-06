@@ -25,6 +25,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.event.HyperlinkListener;
+import javax.swing.text.html.HTMLEditorKit;
+import javax.swing.text.html.StyleSheet;
 
 import de.onyxbits.raccoon.gui.HyperTextPane;
 import de.onyxbits.weave.swing.AbstractPanelBuilder;
@@ -62,6 +64,11 @@ class InfoBuilder extends AbstractPanelBuilder {
 		ret.setLayout(new BoxLayout(ret, BoxLayout.Y_AXIS));
 
 		content = new HyperTextPane("-").withTransparency();
+		HTMLEditorKit kit = new HTMLEditorKit();
+		content.setEditorKit(kit);
+		StyleSheet styleSheet = kit.getStyleSheet();
+		styleSheet.addRule("body {color:#444444; font-family:Helvetica, Arial, sans-serif; margin: 4px;}");
+		
 		if (listener != null) {
 			content.addHyperlinkListener(listener);
 		}
