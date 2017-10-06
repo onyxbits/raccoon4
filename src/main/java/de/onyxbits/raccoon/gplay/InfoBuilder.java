@@ -67,7 +67,7 @@ class InfoBuilder extends AbstractPanelBuilder {
 		HTMLEditorKit kit = new HTMLEditorKit();
 		content.setEditorKit(kit);
 		StyleSheet styleSheet = kit.getStyleSheet();
-		styleSheet.addRule("body {color:#444444; font-family:Helvetica, Arial, sans-serif; margin: 4px;}");
+		styleSheet.addRule("body {color:#292929; font-family:Helvetica, Arial, sans-serif; margin: 4px;}");
 		
 		if (listener != null) {
 			content.addHyperlinkListener(listener);
