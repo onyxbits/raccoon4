@@ -17,6 +17,7 @@ package de.onyxbits.raccoon.gui;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
@@ -25,6 +26,8 @@ import java.net.URISyntaxException;
 import javax.swing.JEditorPane;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkEvent.EventType;
+import javax.swing.text.html.HTMLEditorKit;
+import javax.swing.text.html.StyleSheet;
 
 import de.onyxbits.weave.swing.BrowseAction;
 
@@ -46,6 +49,11 @@ public class HyperTextPane extends JEditorPane {
 	public HyperTextPane(String txt) {
 		super("text/html", txt);
 		setEditable(false);
+		//setFont(new Font(Font.SANS_SERIF,Font.PLAIN,14));
+		HTMLEditorKit kit = new HTMLEditorKit();
+		setEditorKit(kit);
+		StyleSheet styleSheet = kit.getStyleSheet();
+		styleSheet.addRule("body {color:#444444; font-family:Helvetica, Arial, sans-serif; margin: 4px;}");
 	}
 
 	@Override
@@ -66,6 +74,8 @@ public class HyperTextPane extends JEditorPane {
 	public HyperTextPane withTransparency() {
 		setBackground(new Color(0, 0, 0, 0));
 		setOpaque(false);
+		putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, Boolean.TRUE);
+		setFont(new Font(Font.DIALOG,Font.PLAIN,14));
 		return this;
 	}
 
