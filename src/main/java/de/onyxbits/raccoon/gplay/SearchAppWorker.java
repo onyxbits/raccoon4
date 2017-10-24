@@ -86,10 +86,16 @@ class SearchAppWorker extends SwingWorker<Object, Object> {
 	@Override
 	public void done() {
 		if (!isCancelled()) {
-			if (bestMatch != null) {
-				owner.fireAppView(bestMatch, true);
+			try {
+				get();
+				if (bestMatch != null) {
+					owner.fireAppView(bestMatch, true);
+				}
+				owner.fireAppSearchResult(serp);
 			}
-			owner.fireAppSearchResult(serp);
+			catch (Exception e) {
+				owner.fireUnauthorized();
+			}
 		}
 	}
 

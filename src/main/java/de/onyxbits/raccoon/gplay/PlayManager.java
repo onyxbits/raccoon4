@@ -15,11 +15,15 @@
  */
 package de.onyxbits.raccoon.gplay;
 
+import java.awt.Window;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+
+import javax.swing.JOptionPane;
 
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
@@ -44,6 +48,8 @@ import de.onyxbits.raccoon.db.Variables;
  * 
  */
 public class PlayManager implements Variables {
+
+	private static final String ID = PlayManager.class.getSimpleName();
 
 	private ArrayList<PlayListener> listeners;
 	private String appQuery;
@@ -178,6 +184,15 @@ public class PlayManager implements Variables {
 			listener
 					.onAppSearchResult(apps, appOffset > AppStoreListBuilder.PAGESIZE);
 		}
+	}
+
+	protected void fireUnauthorized() {
+		// TODO: This is a quickfix, not the proper way to handle it!
+		List<DocV2> serp = Collections.emptyList();
+		fireAppSearchResult(serp);
+		JOptionPane.showMessageDialog(Window.getWindows()[0],
+				Messages.getString(ID + ".session.message"),
+				Messages.getString(ID + ".session.title"), JOptionPane.ERROR_MESSAGE);
 	}
 
 	/**
