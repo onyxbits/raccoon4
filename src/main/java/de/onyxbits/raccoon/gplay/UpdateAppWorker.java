@@ -86,6 +86,12 @@ public class UpdateAppWorker extends SwingWorker<Integer, Object> {
 			packs.add(app.getPackageName());
 		}
 		GooglePlayAPI service = PlayManager.createConnection(profile);
+		try {
+			service.login();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 		BulkDetailsResponse response = service.bulkDetails(packs);
 
 		int number = 0;

@@ -23,19 +23,17 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-
 import de.onyxbits.raccoon.db.DataAccessObject;
 import de.onyxbits.raccoon.db.DatasetListener;
 import de.onyxbits.raccoon.db.VariableDao;
 import de.onyxbits.raccoon.db.Variables;
-
 
 public class PlayProfileDao extends DataAccessObject implements Variables {
 
 	/**
 	 * Table version
 	 */
-	protected static final int VERSION = 1;
+	protected static final int VERSION = 2;
 
 	@Override
 	protected void upgradeFrom(int oldVersion, Connection c) throws SQLException {
@@ -43,17 +41,26 @@ public class PlayProfileDao extends DataAccessObject implements Variables {
 			case 1: {
 				v1(c);
 			}
+			case 2: {
+				v2(c);
+			}
 		}
 	}
 
 	@Override
 	protected int getVersion() {
-		return 1;
+		return VERSION;
 	}
 
 	private static void v1(Connection c) throws SQLException {
 		Statement st = c.createStatement();
 		st.execute("CREATE TABLE playprofiles (alias VARCHAR(255) PRIMARY KEY, user VARCHAR(255), token VARCHAR(2048), agent VARCHAR(1024), proxyaddress VARCHAR(255), proxyport INT, proxyuser VARCHAR(255), proxypass VARCHAR(255), gsfid VARCHAR(255) )");
+		st.close();
+	}
+
+	private static void v2(Connection c) throws SQLException {
+		Statement st = c.createStatement();
+		st.execute("ALTER TABLE playprofiles ADD pass VARCHAR(255)");
 		st.close();
 	}
 
@@ -121,6 +128,7 @@ public class PlayProfileDao extends DataAccessObject implements Variables {
 			while (res.next()) {
 				PlayProfile tmp = new PlayProfile();
 				tmp.setAlias(res.getString("alias"));
+				tmp.setPassword(res.getString("pass"));
 				tmp.setUser(res.getString("user"));
 				tmp.setToken(res.getString("token"));
 				tmp.setAgent(res.getString("agent"));
@@ -158,16 +166,17 @@ public class PlayProfileDao extends DataAccessObject implements Variables {
 		PreparedStatement st = null;
 		try {
 			st = c
-					.prepareStatement("INSERT INTO playprofiles (alias, user, token, agent, proxyaddress, proxyport, proxyuser, proxypass, gsfid) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+					.prepareStatement("INSERT INTO playprofiles (alias, user, pass, token, agent, proxyaddress, proxyport, proxyuser, proxypass, gsfid) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 			st.setString(1, profile.getAlias());
 			st.setString(2, profile.getUser());
-			st.setString(3, profile.getToken());
-			st.setString(4, profile.getAgent());
-			st.setString(5, profile.getProxyAddress());
-			st.setInt(6, profile.getProxyPort());
-			st.setString(7, profile.getProxyUser());
-			st.setString(8, profile.getProxyPassword());
-			st.setString(9, profile.getGsfId());
+			st.setString(3, profile.getPassword());
+			st.setString(4, profile.getToken());
+			st.setString(5, profile.getAgent());
+			st.setString(6, profile.getProxyAddress());
+			st.setInt(7, profile.getProxyPort());
+			st.setString(8, profile.getProxyUser());
+			st.setString(9, profile.getProxyPassword());
+			st.setString(10, profile.getGsfId());
 			st.execute();
 			fireOnDataSetChangeEvent(new PlayProfileEvent(this,
 					PlayProfileEvent.CREATE, profile));
@@ -214,17 +223,18 @@ public class PlayProfileDao extends DataAccessObject implements Variables {
 		PreparedStatement st = null;
 		try {
 			st = c
-					.prepareStatement("UPDATE playprofiles SET user = ?, token = ?, agent = ?, proxyaddress = ?, proxyport = ?, proxyuser = ?, proxypass = ?, gsfid = ? WHERE alias = ?");
+					.prepareStatement("UPDATE playprofiles SET user = ?, token = ?, pass = ?, agent = ?, proxyaddress = ?, proxyport = ?, proxyuser = ?, proxypass = ?, gsfid = ? WHERE alias = ?");
 
 			st.setString(1, profile.getUser());
 			st.setString(2, profile.getToken());
-			st.setString(3, profile.getAgent());
-			st.setString(4, profile.getProxyAddress());
-			st.setInt(5, profile.getProxyPort());
-			st.setString(6, profile.getProxyUser());
-			st.setString(7, profile.getProxyPassword());
-			st.setString(8, profile.getGsfId());
-			st.setString(9, profile.getAlias());
+			st.setString(3, profile.getPassword());
+			st.setString(4, profile.getAgent());
+			st.setString(5, profile.getProxyAddress());
+			st.setInt(6, profile.getProxyPort());
+			st.setString(7, profile.getProxyUser());
+			st.setString(8, profile.getProxyPassword());
+			st.setString(9, profile.getGsfId());
+			st.setString(10, profile.getAlias());
 			st.execute();
 			fireOnDataSetChangeEvent(new PlayProfileEvent(this,
 					PlayProfileEvent.UPDATE, profile));

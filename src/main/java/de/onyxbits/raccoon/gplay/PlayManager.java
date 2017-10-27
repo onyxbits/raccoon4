@@ -18,6 +18,7 @@ package de.onyxbits.raccoon.gplay;
 import java.awt.Window;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -222,4 +223,24 @@ public class PlayManager implements Variables {
 		listeners.remove(listener);
 	}
 
+	/**
+	 * Force (re-)authentication with Play and persist the token.
+	 */
+	public void login() {
+		GooglePlayAPI api = createConnection();
+		try {
+			api.login();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		PlayProfile active = databaseManager.get(PlayProfileDao.class).get();
+		active.setToken(api.getToken());
+		try {
+			databaseManager.get(PlayProfileDao.class).update(active);
+		}
+		catch (SQLException e) {
+			// We can live with it not being persisted.
+		}
+	}
 }

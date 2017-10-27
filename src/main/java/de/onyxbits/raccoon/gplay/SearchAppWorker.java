@@ -68,7 +68,14 @@ class SearchAppWorker extends SwingWorker<Object, Object> {
 
 	@Override
 	protected Object doInBackground() throws Exception {
-		SearchResponse res = api.search(query, offset, limit);
+		SearchResponse res = null;
+		try {
+			res = api.search(query, offset, limit);
+		}
+		catch (Exception e) {
+			owner.login();
+			res = owner.createConnection().search(query, offset, limit);
+		}
 
 		if (res.getDocCount() == 1) {
 			DocV2 doc = res.getDoc(0);
