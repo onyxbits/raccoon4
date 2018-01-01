@@ -119,7 +119,7 @@ public class PlayAppOwnerDao extends DataAccessObject {
 	 * @return the owned apps.
 	 * @throws SQLException
 	 */
-	public List<AndroidApp> list(PlayProfile profile) throws SQLException {
+	public List<AndroidApp> list(PlayProfile profile)  {
 		List<AndroidApp> ret = new ArrayList<AndroidApp>(100);
 		Connection c = manager.connect();
 		ResultSet res = null;
@@ -144,13 +144,24 @@ public class PlayAppOwnerDao extends DataAccessObject {
 				ret.add(app);
 			}
 		}
+		catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
 		finally {
 			manager.disconnect(c);
 			if (st != null) {
-				st.close();
+				try {
+					st.close();
+				}
+				catch (SQLException e) {
+				}
 			}
 			if (res != null) {
-				res.close();
+				try {
+					res.close();
+				}
+				catch (SQLException e) {
+				}
 			}
 		}
 		return ret;
