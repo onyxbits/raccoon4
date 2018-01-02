@@ -17,6 +17,7 @@ package de.onyxbits.raccoon.gplay;
 
 import java.awt.Window;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
@@ -25,6 +26,7 @@ import java.util.concurrent.ExecutionException;
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
 
+import com.akdeniz.googleplaycrawler.GooglePlay.AppDetails;
 import com.akdeniz.googleplaycrawler.GooglePlay.BulkDetailsEntry;
 import com.akdeniz.googleplaycrawler.GooglePlay.BulkDetailsResponse;
 import com.akdeniz.googleplaycrawler.GooglePlay.DocV2;
@@ -64,51 +66,28 @@ public class UpdateAppWorker extends SwingWorker<Integer, Object> {
 
 	private Integer update(List<AndroidApp> apps, PlayProfile profile)
 			throws IOException {
-		// TODO: filtering for the latest version code should be the job of the
-		// database.
-		HashMap<String, AndroidApp> tmp = new HashMap<String, AndroidApp>();
-		for (AndroidApp app : apps) {
-			AndroidApp a = tmp.get(app.getPackageName());
-			if (a == null) {
-				tmp.put(app.getPackageName(), app);
-			}
-			else {
-				if (app.getVersionCode() > a.getVersionCode()) {
-					tmp.put(app.getPackageName(), app);
-				}
-			}
-		}
-		apps = new Vector<AndroidApp>(tmp.values());
-		// End TODO
-
-		Vector<String> packs = new Vector<String>();
-		for (AndroidApp app : apps) {
-			packs.add(app.getPackageName());
-		}
-		GooglePlayAPI service = PlayManager.createConnection(profile);
-		try {
-			service.login();
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-		BulkDetailsResponse response = service.bulkDetails(packs);
 
 		int number = 0;
+		List<String> pns = new ArrayList<String>(apps.size());
+		HashMap<String, AndroidApp> map = new HashMap<String, AndroidApp>();
+		for (AndroidApp app : apps) {
+			pns.add(app.getPackageName());
+			map.put(app.getPackageName(), app);
+		}
+		GooglePlayAPI api = PlayManager.createConnection(profile);
 
-		for (BulkDetailsEntry bulkDetailsEntry : response.getEntryList()) {
-			DocV2 doc = bulkDetailsEntry.getDoc();
-			String pn = doc.getBackendDocid();
-			int vc = doc.getDetails().getAppDetails().getVersionCode();
-			for (AndroidApp app : apps) {
-				if (pn.equals(app.getPackageName())) {
-					if (vc > app.getVersionCode()) {
-						globals.get(TransferManager.class).schedule(globals,
-								new AppDownloadWorker(globals, doc), TransferManager.WAN);
-						number++;
-					}
-					break;
-				}
+		BulkDetailsResponse response = api.bulkDetails(pns);
+		List<BulkDetailsEntry> bde = response.getEntryList();
+		for (BulkDetailsEntry entry : bde) {
+			DocV2 doc = entry.getDoc();
+			AppDetails ad = entry.getDoc().getDetails().getAppDetails();
+			String pn = ad.getPackageName();
+			int lvc = map.get(pn).getVersionCode();
+			int rvc = ad.getVersionCode();
+			if (lvc < rvc) {
+				globals.get(TransferManager.class).schedule(globals,
+						new AppDownloadWorker(globals, doc), TransferManager.WAN);
+				number++;
 			}
 		}
 		return number;
