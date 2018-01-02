@@ -293,7 +293,7 @@ try {
 	 * email and password every time.
 	 */
 	public void login() throws Exception {
-
+/*
 		HttpEntity responseEntity = executePost(URL_LOGIN, new String[][] {
 				{ "Email", this.getEmail() },
 				{ "EncryptedPasswd", encryptString(this.getEmail()+"\u0000"+this.password) },
@@ -316,6 +316,9 @@ try {
 		else {
 			throw new GooglePlayException("Authentication failed!");
 		}
+		*/
+		Identity ident = Identity.signIn(getClient(),getEmail(),password);
+		setToken(ident.getAuthToken());
 	}
 
 	/**

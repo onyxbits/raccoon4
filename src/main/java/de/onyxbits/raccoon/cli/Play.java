@@ -17,19 +17,38 @@ package de.onyxbits.raccoon.cli;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Vector;
 
+import com.akdeniz.googleplaycrawler.DownloadData;
+import com.akdeniz.googleplaycrawler.GooglePlay.AppDetails;
+import com.akdeniz.googleplaycrawler.GooglePlay.BulkDetailsEntry;
 import com.akdeniz.googleplaycrawler.GooglePlay.BulkDetailsResponse;
+import com.akdeniz.googleplaycrawler.GooglePlay.DetailsResponse;
 import com.akdeniz.googleplaycrawler.GooglePlayAPI;
 
 import de.onyxbits.raccoon.db.DatabaseManager;
 import de.onyxbits.raccoon.db.VariableDao;
 import de.onyxbits.raccoon.db.Variables;
+import de.onyxbits.raccoon.gplay.PlayAppOwnerDao;
 import de.onyxbits.raccoon.gplay.PlayManager;
+import de.onyxbits.raccoon.gplay.PlayProfile;
 import de.onyxbits.raccoon.gplay.PlayProfileDao;
+import de.onyxbits.raccoon.repo.AndroidApp;
+import de.onyxbits.raccoon.repo.AndroidAppDao;
+import de.onyxbits.raccoon.repo.AppExpansionMainNode;
+import de.onyxbits.raccoon.repo.AppExpansionPatchNode;
+import de.onyxbits.raccoon.repo.AppIconNode;
+import de.onyxbits.raccoon.repo.AppInstallerNode;
+import de.onyxbits.raccoon.repo.Layout;
 import de.onyxbits.weave.Globals;
 
 /**
@@ -46,8 +65,16 @@ class Play implements Variables {
 	public static final String PLAYPROFILESYSPROP = "raccoon.playprofile";
 
 	private static GooglePlayAPI createConnection() {
+		return PlayManager.createConnection(getProfile());
+	}
+
+	private static DatabaseManager getDatabase() {
 		Globals globals = GlobalsProvider.getGlobals();
-		DatabaseManager dbm = globals.get(DatabaseManager.class);
+		return globals.get(DatabaseManager.class);
+	}
+
+	private static PlayProfile getProfile() {
+		DatabaseManager dbm = getDatabase();
 		String alias = dbm.get(VariableDao.class).getVar(
 				PLAYPROFILE,
 				System.getProperty(PLAYPROFILESYSPROP, dbm.get(VariableDao.class)
@@ -55,7 +82,7 @@ class Play implements Variables {
 		if (alias == null) {
 			Router.fail("play.profile");
 		}
-		return PlayManager.createConnection(dbm.get(PlayProfileDao.class).get());
+		return dbm.get(PlayProfileDao.class).get(alias);
 	}
 
 	/**
@@ -162,6 +189,153 @@ class Play implements Variables {
 		}
 		catch (Exception e) {
 			Router.fail("play.inputfile", input.getAbsolutePath());
+		}
+	}
+
+	/**
+	 * Download an app.
+	 * 
+	 * @param doc
+	 *          packagename
+	 * @param vc
+	 *          versioncode (maybe -1 to get the latest one).
+	 * @param ot
+	 *          should always be 1.
+	 */
+	public static void downloadApp(String doc, int vc, int ot) {
+		GooglePlayAPI api = createConnection();
+		DatabaseManager dbm = GlobalsProvider.getGlobals().get(
+				DatabaseManager.class);
+		int vcode = vc;
+		int len;
+		byte[] buffer = new byte[1024 * 8];
+		if (vc == -1) {
+			try {
+				DetailsResponse dr = api.details(doc);
+				vcode = dr.getDocV2().getDetails().getAppDetails().getVersionCode();
+			}
+			catch (IOException e) {
+				Router.fail(e.getMessage());
+			}
+		}
+
+		DownloadData data = null;
+
+		try {
+			data = api.purchaseAndDeliver(doc, vcode, ot);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			Router.fail(e.getMessage());
+		}
+
+		File apkFile = new AppInstallerNode(Layout.DEFAULT, doc, vcode).resolve();
+		apkFile.getParentFile().mkdirs();
+		File mainFile = new AppExpansionMainNode(Layout.DEFAULT, doc,
+				data.getMainFileVersion()).resolve();
+		File patchFile = new AppExpansionPatchNode(Layout.DEFAULT, doc,
+				data.getPatchFileVersion()).resolve();
+
+		try {
+			InputStream in = data.openApp();
+			OutputStream out = new FileOutputStream(apkFile);
+			System.out.println(apkFile);
+			while ((len = in.read(buffer)) > 0) {
+				out.write(buffer, 0, len);
+				System.out.print('#');
+			}
+			System.out.println();
+			out.close();
+			AndroidApp download = AndroidAppDao.analyze(apkFile);
+
+			if (data.hasMainExpansion()) {
+				download.setMainVersion(data.getMainFileVersion());
+				in = data.openMainExpansion();
+				out = new FileOutputStream(mainFile);
+				System.out.println(mainFile);
+				while ((len = in.read(buffer)) > 0) {
+					out.write(buffer, 0, len);
+					System.out.print('#');
+				}
+				System.out.println();
+				out.close();
+			}
+			if (data.hasPatchExpansion()) {
+				download.setPatchVersion(data.getPatchFileVersion());
+				in = data.openPatchExpansion();
+				out = new FileOutputStream(patchFile);
+				System.out.println(patchFile);
+				while ((len = in.read(buffer)) > 0) {
+					out.write(buffer, 0, len);
+					System.out.print('#');
+				}
+				System.out.println();
+				out.close();
+			}
+			dbm.get(AndroidAppDao.class).saveOrUpdate(download);
+			dbm.get(PlayAppOwnerDao.class).own(download, getProfile());
+
+			AppIconNode ain = new AppIconNode(Layout.DEFAULT, doc, vcode);
+			try {
+				ain.extractFrom(apkFile);
+			}
+			catch (IOException e) {
+				// This is (probably) ok. Not all APKs contain icons.
+			}
+		}
+		catch (Exception e) {
+			apkFile.delete();
+			mainFile.delete();
+			patchFile.delete();
+			Router.fail(e.getMessage());
+		}
+	}
+
+	public static void updateApps() {
+		DatabaseManager dbm = getDatabase();
+		PlayAppOwnerDao pad = dbm.get(PlayAppOwnerDao.class);
+		List<AndroidApp> apps = pad.list(getProfile());
+		List<String> pns = new ArrayList<String>(apps.size());
+		HashMap<String, AndroidApp> map = new HashMap<String, AndroidApp>();
+		for (AndroidApp app : apps) {
+			pns.add(app.getPackageName());
+			map.put(app.getPackageName(), app);
+		}
+		GooglePlayAPI api = createConnection();
+		try {
+			BulkDetailsResponse response = api.bulkDetails(pns);
+			List<BulkDetailsEntry> bde = response.getEntryList();
+			for (BulkDetailsEntry entry : bde) {
+				AppDetails ad = entry.getDoc().getDetails().getAppDetails();
+				String pn = ad.getPackageName();
+				int lvc = map.get(pn).getVersionCode();
+				int rvc = ad.getVersionCode();
+				if (lvc < rvc) {
+					System.out.println("^\t"+ pn + "\t" + lvc + "\t->\t" + rvc);
+					downloadApp(pn, rvc, 1);
+				}
+				else {
+					System.out.println("=\t" +pn + "\t" + lvc + "\t->\t" + rvc);
+				}
+			}
+		}
+		catch (IOException e) {
+			Router.fail(e.getMessage());
+			e.printStackTrace();
+		}
+	}
+
+	public static void auth() {
+		PlayProfile pp = getProfile();
+		GooglePlayAPI api = createConnection();
+		try {
+			api.login();
+			pp.setToken(api.getToken());
+			getDatabase().get(PlayProfileDao.class).update(pp);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			Router.fail("");
 		}
 	}
 }

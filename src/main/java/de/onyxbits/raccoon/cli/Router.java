@@ -68,6 +68,10 @@ public class Router {
 				+ "v"));
 		options.addOption(version);
 
+		Option playAuth = new Option(null, "gp-auth", false,
+				Messages.getString(DESC + "gp-auth"));
+		options.addOption(playAuth);
+
 		// GPA: Google Play Apps (we might add different markets later)
 		Option playAppDetails = new Option(null, "gpa-details", true,
 				Messages.getString(DESC + "gpa-details"));
@@ -83,11 +87,20 @@ public class Router {
 				Messages.getString(DESC + "gpa-batchdetails"));
 		playAppBatchDetails.setArgName("file");
 		options.addOption(playAppBatchDetails);
-		
+
 		Option playAppSearch = new Option(null, "gpa-search", true,
 				Messages.getString(DESC + "gpa-search"));
 		playAppSearch.setArgName("query");
 		options.addOption(playAppSearch);
+
+		Option playAppDownload = new Option(null, "gpa-download", true,
+				Messages.getString(DESC + "gpa-download"));
+		playAppDownload.setArgName("pn[,vc[,ot]]");
+		options.addOption(playAppDownload);
+
+		Option playUpdate = new Option(null, "gpa-update", false,
+				Messages.getString(DESC + "gpa-update"));
+		options.addOption(playUpdate);
 
 		CommandLine commandLine = null;
 		try {
@@ -105,13 +118,17 @@ public class Router {
 
 		if (commandLine.hasOption(help.getOpt())) {
 			new HelpFormatter().printHelp("raccoon", Messages.getString("header"),
-					options, Messages.getString("footer"),true);
+					options, Messages.getString("footer"), true);
 			System.exit(0);
 		}
 
 		if (commandLine.hasOption(version.getOpt())) {
 			System.out.println(GlobalsProvider.getGlobals().get(Version.class));
 			System.exit(0);
+		}
+
+		if (commandLine.hasOption(playAuth.getLongOpt())) {
+			Play.auth();
 		}
 
 		if (commandLine.hasOption(playAppDetails.getLongOpt())) {
@@ -130,10 +147,39 @@ public class Router {
 					.getLongOpt())));
 			System.exit(0);
 		}
-		
+
 		if (commandLine.hasOption(playAppSearch.getLongOpt())) {
 			Play.search(commandLine.getOptionValue(playAppSearch.getLongOpt()));
 			System.exit(0);
+		}
+
+		if (commandLine.hasOption(playUpdate.getLongOpt())) {
+			Play.updateApps();
+		}
+
+		if (commandLine.hasOption(playAppDownload.getLongOpt())) {
+			String[] tmp = commandLine.getOptionValue(playAppDownload.getLongOpt())
+					.split(",");
+			if (tmp.length < 1 || tmp.length > 3) {
+				new HelpFormatter().printHelp("raccoon", Messages.getString("header"),
+						options, Messages.getString("footer"), true);
+				System.exit(1);
+			}
+			int vc = -1;
+			int ot = 1;
+			String doc = tmp[0];
+			try {
+				vc = Integer.valueOf(tmp[1]);
+				ot = Integer.valueOf(tmp[2]);
+			}
+			catch (NumberFormatException e) {
+				new HelpFormatter().printHelp("raccoon", Messages.getString("header"),
+						options, Messages.getString("footer"), true);
+				System.exit(1);
+			}
+			catch (Exception e) {
+			}
+			Play.downloadApp(doc, vc, ot);
 		}
 	}
 }
