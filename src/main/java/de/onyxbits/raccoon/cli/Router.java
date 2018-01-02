@@ -95,7 +95,7 @@ public class Router {
 
 		Option playAppDownload = new Option(null, "gpa-download", true,
 				Messages.getString(DESC + "gpa-download"));
-		playAppDownload.setArgName("package[,versioncode[,offertype]]");
+		playAppDownload.setArgName("pn[,vc[,ot]]");
 		options.addOption(playAppDownload);
 
 		Option playUpdate = new Option(null, "gpa-update", false,

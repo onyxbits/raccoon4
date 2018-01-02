@@ -239,32 +239,38 @@ class Play implements Variables {
 		try {
 			InputStream in = data.openApp();
 			OutputStream out = new FileOutputStream(apkFile);
+			System.out.println(apkFile);
 			while ((len = in.read(buffer)) > 0) {
 				out.write(buffer, 0, len);
+				System.out.print('#');
 			}
+			System.out.println();
 			out.close();
-			System.out.println(apkFile);
 			AndroidApp download = AndroidAppDao.analyze(apkFile);
 
 			if (data.hasMainExpansion()) {
 				download.setMainVersion(data.getMainFileVersion());
 				in = data.openMainExpansion();
 				out = new FileOutputStream(mainFile);
+				System.out.println(mainFile);
 				while ((len = in.read(buffer)) > 0) {
 					out.write(buffer, 0, len);
+					System.out.print('#');
 				}
+				System.out.println();
 				out.close();
-				System.out.println(mainFile);
 			}
 			if (data.hasPatchExpansion()) {
 				download.setPatchVersion(data.getPatchFileVersion());
 				in = data.openPatchExpansion();
 				out = new FileOutputStream(patchFile);
+				System.out.println(patchFile);
 				while ((len = in.read(buffer)) > 0) {
 					out.write(buffer, 0, len);
+					System.out.print('#');
 				}
+				System.out.println();
 				out.close();
-				System.out.println(patchFile);
 			}
 			dbm.get(AndroidAppDao.class).saveOrUpdate(download);
 			dbm.get(PlayAppOwnerDao.class).own(download, getProfile());
@@ -304,9 +310,12 @@ class Play implements Variables {
 				String pn = ad.getPackageName();
 				int lvc = map.get(pn).getVersionCode();
 				int rvc = ad.getVersionCode();
-				System.out.println(pn + "\t" + lvc + "\t" + rvc);
 				if (lvc < rvc) {
+					System.out.println("^\t"+ pn + "\t" + lvc + "\t->\t" + rvc);
 					downloadApp(pn, rvc, 1);
+				}
+				else {
+					System.out.println("=\t" +pn + "\t" + lvc + "\t->\t" + rvc);
 				}
 			}
 		}

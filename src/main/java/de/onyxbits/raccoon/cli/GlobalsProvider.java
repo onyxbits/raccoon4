@@ -33,7 +33,7 @@ import de.onyxbits.weave.util.Version;
  * @author patrick
  * 
  */
-final class GlobalsProvider implements GlobalsFactory, Variables {
+final class GlobalsProvider implements GlobalsFactory, Variables, Runnable {
 
 	private static Globals globals;
 
@@ -84,6 +84,7 @@ final class GlobalsProvider implements GlobalsFactory, Variables {
 
 		if (requested.equals(DatabaseManager.class)) {
 			try {
+				Runtime.getRuntime().addShutdownHook(new Thread(new GlobalsProvider()));
 				return new DatabaseManager(Layout.DEFAULT.databaseDir);
 			}
 			catch (Exception e) {
@@ -101,5 +102,10 @@ final class GlobalsProvider implements GlobalsFactory, Variables {
 			e.printStackTrace();
 		}
 		return null;
+	}
+
+	@Override
+	public void run() {
+		getGlobals().get(DatabaseManager.class).shutdown();
 	}
 }
