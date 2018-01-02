@@ -200,7 +200,6 @@ public final class AndroidAppDao extends DataAccessObject {
 					folder.delete();
 				}
 			}
-			fireOnDataSetChangeEvent(new DatasetEvent(this, DatasetEvent.DELETE));
 		}
 		catch (SQLException e) {
 			c.rollback();
@@ -212,6 +211,7 @@ public final class AndroidAppDao extends DataAccessObject {
 			c.setAutoCommit(true);
 			manager.disconnect(c);
 		}
+		fireOnDataSetChangeEvent(new DatasetEvent(this, DatasetEvent.DELETE));
 	}
 
 	/**
