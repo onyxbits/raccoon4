@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Vector;
 import java.util.concurrent.ExecutionException;
 
 import javax.swing.JOptionPane;
@@ -82,12 +81,14 @@ public class UpdateAppWorker extends SwingWorker<Integer, Object> {
 			DocV2 doc = entry.getDoc();
 			AppDetails ad = entry.getDoc().getDetails().getAppDetails();
 			String pn = ad.getPackageName();
-			int lvc = map.get(pn).getVersionCode();
-			int rvc = ad.getVersionCode();
-			if (lvc < rvc) {
-				globals.get(TransferManager.class).schedule(globals,
-						new AppDownloadWorker(globals, doc), TransferManager.WAN);
-				number++;
+			if (map.containsKey(pn)) {
+				int lvc = map.get(pn).getVersionCode();
+				int rvc = ad.getVersionCode();
+				if (lvc < rvc) {
+					globals.get(TransferManager.class).schedule(globals,
+							new AppDownloadWorker(globals, doc), TransferManager.WAN);
+					number++;
+				}
 			}
 		}
 		return number;

@@ -308,14 +308,19 @@ class Play implements Variables {
 			for (BulkDetailsEntry entry : bde) {
 				AppDetails ad = entry.getDoc().getDetails().getAppDetails();
 				String pn = ad.getPackageName();
-				int lvc = map.get(pn).getVersionCode();
 				int rvc = ad.getVersionCode();
-				if (lvc < rvc) {
-					System.out.println("^\t"+ pn + "\t" + lvc + "\t->\t" + rvc);
-					downloadApp(pn, rvc, 1);
+				if (map.containsKey(pn)) {
+					int lvc = map.get(pn).getVersionCode();
+					if (lvc < rvc) {
+						System.out.println("^\t" + pn + "\t" + lvc + "\t->\t" + rvc);
+						downloadApp(pn, rvc, 1);
+					}
+					else {
+						System.out.println("=\t" + pn + "\t" + lvc + "\t->\t" + rvc);
+					}
 				}
 				else {
-					System.out.println("=\t" +pn + "\t" + lvc + "\t->\t" + rvc);
+					System.out.println("?\t" + pn + "\t0\t->\t" + rvc);
 				}
 			}
 		}
