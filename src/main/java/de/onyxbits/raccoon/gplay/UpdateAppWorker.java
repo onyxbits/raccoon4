@@ -70,8 +70,12 @@ public class UpdateAppWorker extends SwingWorker<Integer, Object> {
 		List<String> pns = new ArrayList<String>(apps.size());
 		HashMap<String, AndroidApp> map = new HashMap<String, AndroidApp>();
 		for (AndroidApp app : apps) {
-			pns.add(app.getPackageName());
-			map.put(app.getPackageName(), app);
+			// Note: this check should not exist.
+			if (app.getPackageName() != null && !app.getPackageName().equals("")
+					&& !pns.contains(app.getPackageName())) {
+				pns.add(app.getPackageName());
+				map.put(app.getPackageName(), app);
+			}
 		}
 		GooglePlayAPI api = PlayManager.createConnection(profile);
 
