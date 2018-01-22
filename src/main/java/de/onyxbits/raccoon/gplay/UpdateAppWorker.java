@@ -76,6 +76,7 @@ public class UpdateAppWorker extends SwingWorker<Integer, Object> {
 				pns.add(app.getPackageName());
 				map.put(app.getPackageName(), app);
 			}
+			System.out.println(app.getAppId()+" "+app.getPackageName());
 		}
 		GooglePlayAPI api = PlayManager.createConnection(profile);
 
