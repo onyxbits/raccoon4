@@ -139,7 +139,7 @@ public class GooglePlayAPI {
 		this.password = password;
 		setClient(new DefaultHttpClient(getConnectionManager()));
 		// setUseragent("Android-Finsky/3.10.14 (api=3,versionCode=8016014,sdk=15,device=GT-I9300,hardware=aries,product=GT-I9300)");
-		setUseragent("Android-Finsky/6.5.08.D-all (versionCode=80650800,sdk=23,device=noblelte,hardware=noblelte,product=noblelte,build=MMB29K:user)");
+		setUseragent("Android-Finsky/6.5.08.D-all (versionCode=80650800,sdk=24,device=dream2lte,hardware=dream2lte,product=dream2ltexx,build=NRD90M:user)");
 	}
 
 	/**

@@ -181,12 +181,12 @@ public class Utils {
 				.newBuilder()
 				.setBuild(
 					AndroidBuildProto.newBuilder()
-						.setId("samsung/nobleltejv/noblelte:6.0.1/MMB29K/N920CXXU2BPD6:user/release-keys")
-						.setProduct("noblelte").setCarrier("Google").setRadio("I9300XXALF2")
+						.setId("samsung/dream2ltexx/dream2lte:7.0/NRD90M/G955FXXU1AQGB:user/release-keys")
+						.setProduct("dream2ltexx").setCarrier("Google").setRadio("I9300XXALF2")
 						.setBootloader("PRIMELA03").setClient("android-google")
-						.setTimestamp(new Date().getTime() / 1000).setGoogleServices(16).setDevice("noblelte")
-						.setSdkVersion(23).setModel("SM-N920C").setManufacturer("Samsung")
-						.setBuildProduct("noblelte").setOtaInstalled(false)).setLastCheckinMsec(0)
+						.setTimestamp(new Date().getTime() / 1000).setGoogleServices(16).setDevice("dream2lte")
+						.setSdkVersion(26).setModel("SM-G955F").setManufacturer("Samsung")
+						.setBuildProduct("dream2ltexx").setOtaInstalled(false)).setLastCheckinMsec(0)
 				.setCellOperator("310260").setSimOperator("310260").setRoaming("mobile-notroaming")
 				.setUserNumber(0)).setLocale("en_US").setTimeZone("Europe/Berlin").setVersion(3)
 		.setDeviceConfiguration(getDeviceConfigurationProto()).setFragment(0).build();
