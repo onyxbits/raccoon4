@@ -15,6 +15,7 @@
  */
 package de.onyxbits.raccoon.gplay;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -71,20 +72,30 @@ class SearchAppWorker extends SwingWorker<Object, Object> {
 		SearchResponse res = null;
 		try {
 			res = api.search(query, offset, limit);
+			// System.err.println(res);
 		}
 		catch (Exception e) {
 			owner.login();
 			res = owner.createConnection().search(query, offset, limit);
 		}
 
-		if (res.getDocCount() == 1) {
-			DocV2 doc = res.getDoc(0);
-			if (doc.getDocType() == 46 && doc.getChildCount() == 4) {
-				bestMatch = doc.getChild(0).getChild(0);
-				serp = doc.getChild(3).getChildList();
-			}
-			else {
-				serp = doc.getChildList();
+		if (res.getDocCount() > 0) {
+			serp = descent(res.getDoc(0));
+		}
+		if (serp == null) {
+			serp = new ArrayList<DocV2>();
+		}
+		return null;
+	}
+
+	private List<DocV2> descent(DocV2 doc) {
+		if (doc.getDocType() == 45) {
+			return doc.getChildList();
+		}
+		for (DocV2 d : doc.getChildList()) {
+			List<DocV2> tmp = descent(d);
+			if (tmp != null) {
+				return tmp;
 			}
 		}
 		return null;
