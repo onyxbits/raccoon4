@@ -9,7 +9,7 @@
 
 
 plugins {
-  id "edu.sc.seis.launch4j" version "1.5.1"
+  id "edu.sc.seis.launch4j" version "2.4.3"
 }
 
 
@@ -45,16 +45,14 @@ task fatJar(type: Jar) {
 }
 
 
-copyL4jLib.dependsOn fatJar
-launch4j {
-  externalLaunch4j = false
+createExe {
   copyConfigurable = project.tasks.fatJar.outputs.files
   outfile = 'Raccoon-' +version +'.exe'
   mainClassName = 'de.onyxbits.raccoon.Main'
-  opt='-Dswing.defaultlaf=com.sun.java.swing.plaf.windows.WindowsLookAndFeel'
-  opt='-Djava.net.preferIPv4Stack=true'
+  jvmOptions = [ "-Dswing.defaultlaf=com.sun.java.swing.plaf.windows.WindowsLookAndFeel", "-Djava.net.preferIPv4Stack=true" ]
   jar = "lib/${project.tasks.fatJar.archiveName}"
   icon= '../../icon.ico'
+  jreMinVersion ='1.7.0'
 }
 
 // In this section you declare the dependencies for your production and test code
