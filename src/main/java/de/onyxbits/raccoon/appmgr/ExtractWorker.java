@@ -38,7 +38,6 @@ import net.dongliu.apk.parser.parser.ResourceTableParser;
 import net.dongliu.apk.parser.parser.XmlTranslator;
 import net.dongliu.apk.parser.struct.AndroidConstants;
 import net.dongliu.apk.parser.struct.resource.ResourceTable;
-import net.dongliu.apk.parser.utils.Utils;
 
 import org.apache.commons.io.IOUtils;
 
@@ -92,7 +91,7 @@ class ExtractWorker extends SwingWorker<File, Integer> {
 
 			if (isBinaryXml(filename)) {
 				XmlTranslator xmlTranslator = new XmlTranslator();
-				ByteBuffer buffer = ByteBuffer.wrap(Utils.toByteArray(in));
+				ByteBuffer buffer = ByteBuffer.wrap(IOUtils.toByteArray(in));
 				BinaryXmlParser binaryXmlParser = new BinaryXmlParser(buffer,
 						resourceTable);
 				binaryXmlParser.setLocale(Locale.getDefault());
@@ -155,22 +154,31 @@ class ExtractWorker extends SwingWorker<File, Integer> {
 	}
 
 	private void parseResourceTable() throws IOException {
-		ZipFile zf = new ZipFile(source);
-		ZipEntry entry = Utils.getEntry(zf, AndroidConstants.RESOURCE_FILE);
-		if (entry == null) {
-			// if no resource entry has been found, we assume it is not needed by this
-			// APK
+		ZipFile zf = null;
+		try {
+			zf = new ZipFile(source);
+			ZipEntry entry = zf.getEntry(AndroidConstants.RESOURCE_FILE);
+			if (entry == null) {
+				// if no resource entry has been found, we assume it is not needed by
+				// this
+				// APK
+				this.resourceTable = new ResourceTable();
+				return;
+			}
+
 			this.resourceTable = new ResourceTable();
-			return;
+
+			InputStream in = zf.getInputStream(entry);
+			ByteBuffer buffer = ByteBuffer.wrap(IOUtils.toByteArray(in));
+			ResourceTableParser resourceTableParser = new ResourceTableParser(buffer);
+			resourceTableParser.parse();
+			this.resourceTable = resourceTableParser.getResourceTable();
 		}
-
-		this.resourceTable = new ResourceTable();
-
-		InputStream in = zf.getInputStream(entry);
-		ByteBuffer buffer = ByteBuffer.wrap(Utils.toByteArray(in));
-		ResourceTableParser resourceTableParser = new ResourceTableParser(buffer);
-		resourceTableParser.parse();
-		this.resourceTable = resourceTableParser.getResourceTable();
+		finally {
+			if (zf != null) {
+				zf.close();
+			}
+		}
 	}
 
 }

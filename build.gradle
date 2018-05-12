@@ -59,7 +59,7 @@ createExe {
 dependencies {
     // The production code uses the SLF4J logging API at compile time
     // compile 'org.slf4j:slf4j-api:1.7.7'
-    compile 'net.dongliu:apk-parser:2.0.12'
+    compile 'net.dongliu:apk-parser:2.5.3'
     compile 'org.hsqldb:hsqldb:2.3.3'
     compile 'org.eclipse.jetty:jetty-server:8.1.16.v20140903'
     compile 'com.google.zxing:core:3.2.0'
