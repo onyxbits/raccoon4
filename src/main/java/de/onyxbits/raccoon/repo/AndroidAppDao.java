@@ -594,7 +594,12 @@ public final class AndroidAppDao extends DataAccessObject {
 
 		AndroidApp ret = new AndroidApp();
 		ret.setPackageName(meta.getPackageName());
-		ret.setName(meta.getLabel());
+		if (meta.getLabel() != null) {
+			ret.setName(meta.getLabel());
+		}
+		else {
+			ret.setName(meta.getPackageName());
+		}
 		ret.setVersionCode(meta.getVersionCode().intValue());
 		ret.setVersion(meta.getVersionName());
 		ret.setUsesPermissions(meta.getUsesPermissions());
