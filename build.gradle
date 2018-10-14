@@ -20,7 +20,7 @@ apply plugin: 'edu.sc.seis.launch4j'
 
 
 // Settings
-//sourceCompatibility = 1.7
+sourceCompatibility = 1.7
 targetCompatibility = 1.7
 
 
