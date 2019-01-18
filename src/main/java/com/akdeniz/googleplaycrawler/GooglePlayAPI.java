@@ -517,7 +517,7 @@ try {
 	public UploadDeviceConfigResponse uploadDeviceConfig() throws Exception {
 
 		UploadDeviceConfigRequest request = UploadDeviceConfigRequest.newBuilder()
-				.setDeviceConfiguration(Utils.getDeviceConfigurationProto()).build();
+				.setDeviceConfiguration(Utils.getDeviceConfigurationProto()).setManufacturer("Samsung").build();
 		ResponseWrapper responseWrapper = executePOSTRequest(UPLOADDEVICECONFIG_URL,
 				request.toByteArray(), "application/x-protobuf");
 		return responseWrapper.getPayload().getUploadDeviceConfigResponse();
