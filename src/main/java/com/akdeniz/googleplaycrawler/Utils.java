@@ -202,7 +202,7 @@ public class Utils {
 		.setHasHardKeyboard(false)
 		.setHasFiveWayNavigation(false)
 		.setScreenDensity(320)
-		.setGlEsVersion(131072)
+		.setGlEsVersion(196610)
 		.addAllSystemSharedLibrary(
 			Arrays.asList("android.test.runner", "com.android.future.usb.accessory", "com.android.location.provider",
 				"com.android.nfc_extras", "com.google.android.maps", "com.google.android.media.effects",
