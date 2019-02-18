@@ -22,6 +22,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Stack;
 
 import de.onyxbits.raccoon.repo.AndroidApp;
 import de.onyxbits.raccoon.repo.AppExpansionMainNode;
@@ -62,6 +64,11 @@ public class InstallWorker implements TransferWorker, ActionListener {
 
 	private File patch;
 
+	private ArrayList<File> splits;
+	private int splitIndex;
+
+	private long instSize;
+
 	public InstallWorker(Globals globals, AndroidApp app) {
 		this.globals = globals;
 		this.device = globals.get(BridgeManager.class).getActiveDevice();
@@ -72,6 +79,7 @@ public class InstallWorker implements TransferWorker, ActionListener {
 				app.getPackageName(), app.getVersionCode());
 		globals.get(ImageLoaderService.class).request(control,
 				ain.resolve().toURI().toString());
+		splits = new ArrayList<File>();
 	}
 
 	@Override
@@ -87,6 +95,14 @@ public class InstallWorker implements TransferWorker, ActionListener {
 			output.close();
 			input = null;
 			output = null;
+		}
+		if (!splits.isEmpty() && splitIndex < splits.size()) {
+			input = new FileInputStream(splits.get(splitIndex));
+			String remote = device.getUserTempDir() + "/"
+					+ splits.get(splitIndex).getName();
+			output = device.createPushStream(remote, 0644);
+			splitIndex++;
+			return input;
 		}
 		if (fileCounter == 0) {
 			input = new FileInputStream(inst);
@@ -136,6 +152,7 @@ public class InstallWorker implements TransferWorker, ActionListener {
 		main = amn.resolve();
 		patch = apn.resolve();
 		totalBytes = inst.length();
+		instSize = inst.length();
 
 		if (main.exists()) {
 			totalBytes += main.length();
@@ -144,6 +161,15 @@ public class InstallWorker implements TransferWorker, ActionListener {
 			totalBytes += patch.length();
 		}
 
+		File[] files = inst.getParentFile().listFiles();
+		for (File file : files) {
+			if (file.getName().startsWith("config.")
+					&& file.getName().endsWith("-" + app.getVersionCode() + ".apk")) {
+				splits.add(file);
+				totalBytes += file.length();
+				instSize += file.length();
+			}
+		}
 	}
 
 	@Override
@@ -163,7 +189,26 @@ public class InstallWorker implements TransferWorker, ActionListener {
 		}
 		catch (Exception e) {
 		}
-		device.exec("pm install -rtd " + device.getUserTempDir() + inst.getName());
+		if (splits.isEmpty()) {
+			device
+					.exec("pm install -rtd " + device.getUserTempDir() + inst.getName());
+		}
+		else {
+			String sessionId = device.exec("pm install-create -S " + instSize).trim();
+			int index = 0;
+			if (sessionId.startsWith("Success:")) {
+				sessionId = sessionId.replaceFirst(".*\\[", "");
+				sessionId = sessionId.replaceFirst("\\].*", "");
+				device.exec("pm install-write -S " + inst.length() + " " + sessionId
+						+ " " + index + " " + (device.getUserTempDir() + inst.getName()));
+				for (File file : splits) {
+					index++;
+					device.exec("pm install-write -S " + file.length() + " " + sessionId
+							+ " " + index + " " + (device.getUserTempDir() + file.getName()));
+				}
+				device.exec("pm install-commit " + sessionId);
+			}
+		}
 		cleanUp();
 	}
 
@@ -175,6 +220,9 @@ public class InstallWorker implements TransferWorker, ActionListener {
 	private void cleanUp() {
 		try {
 			device.exec("rm " + device.getUserTempDir() + inst.getName());
+			for (File file : splits) {
+				device.exec("rm " + device.getUserTempDir() + file.getName());
+			}
 		}
 		catch (IOException e) {
 		}

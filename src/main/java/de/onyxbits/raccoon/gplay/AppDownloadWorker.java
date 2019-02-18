@@ -15,13 +15,18 @@
  */
 package de.onyxbits.raccoon.gplay;
 
+import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+
+import javax.imageio.ImageIO;
 
 import com.akdeniz.googleplaycrawler.DownloadData;
 import com.akdeniz.googleplaycrawler.GooglePlay.DocV2;
@@ -29,6 +34,7 @@ import com.akdeniz.googleplaycrawler.GooglePlayAPI;
 
 import de.onyxbits.raccoon.appmgr.DetailsViewBuilder;
 import de.onyxbits.raccoon.db.DatabaseManager;
+import de.onyxbits.raccoon.gui.Traits;
 import de.onyxbits.raccoon.repo.AndroidApp;
 import de.onyxbits.raccoon.repo.AndroidAppDao;
 import de.onyxbits.raccoon.repo.AppExpansionMainNode;
@@ -76,6 +82,8 @@ class AppDownloadWorker implements TransferWorker, ActionListener {
 	private File patchFile;
 
 	private int fileCount;
+	private int splitCount;
+	private String appName;
 
 	public AppDownloadWorker(Globals globals, DocV2 doc) {
 		this.globals = globals;
@@ -91,6 +99,7 @@ class AppDownloadWorker implements TransferWorker, ActionListener {
 		profile = globals.get(DatabaseManager.class).get(PlayProfileDao.class)
 				.get();
 		paid = doc.getOffer(0).getCheckoutFlowRequired();
+		appName = doc.getTitle();
 	}
 
 	@Override
@@ -107,6 +116,12 @@ class AppDownloadWorker implements TransferWorker, ActionListener {
 	@Override
 	public InputStream onNextSource() throws Exception {
 		closeStreams();
+		if (splitCount > 0) {
+			splitCount--;
+			outputStream = new FileOutputStream(new File(apkFile.getParentFile(),
+					data.getSplitId(splitCount) + "-" + versionCode + ".apk"));
+			return data.openSplitDelivery(splitCount);
+		}
 		switch (fileCount) {
 			case 0: {
 				outputStream = new FileOutputStream(apkFile);
@@ -173,6 +188,7 @@ class AppDownloadWorker implements TransferWorker, ActionListener {
 			// for apps that can be downloaded free of charge.
 			data = api.purchaseAndDeliver(packageName, versionCode, offerType);
 		}
+		data.setCompress(globals.get(Traits.class).isAvailable("4.0.x"));
 
 		this.totalBytes = data.getTotalSize();
 		apkFile = new AppInstallerNode(layout, packageName, versionCode).resolve();
@@ -182,6 +198,8 @@ class AppDownloadWorker implements TransferWorker, ActionListener {
 				data.getMainFileVersion()).resolve();
 		patchFile = new AppExpansionPatchNode(layout, packageName,
 				data.getPatchFileVersion()).resolve();
+		splitCount = data.getSplitCount();
+		
 	}
 
 	@Override
@@ -192,9 +210,26 @@ class AppDownloadWorker implements TransferWorker, ActionListener {
 			ain.extractFrom(apkFile);
 		}
 		catch (IOException e) {
-			// This is (probably) ok. Not all APKs contain icons.
+			// This is (probably) ok. Not all APKs have icons. Lets try to fall back
+			// on what we have.
+			try {
+				Image img = control.iconImage;
+				BufferedImage bimage = new BufferedImage(img.getWidth(null),
+						img.getHeight(null), BufferedImage.TYPE_INT_ARGB);
+				Graphics2D bGr = bimage.createGraphics();
+				bGr.drawImage(img, 0, 0, null);
+				bGr.dispose();
+				ImageIO.write(bimage, "png", new FileOutputStream(ain.resolve()));
+			}
+			catch (Exception e2) {
+				// Nope, can't be helped.
+			}
 		}
 		download = AndroidAppDao.analyze(apkFile);
+		if (download.getName().startsWith("@string")) {
+			// Great, split APK ...
+			download.setName(appName);
+		}
 		if (data.hasMainExpansion()) {
 			download.setMainVersion(data.getMainFileVersion());
 		}

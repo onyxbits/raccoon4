@@ -6,6 +6,7 @@ import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
+import java.util.zip.GZIPInputStream;
 
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
@@ -23,16 +24,47 @@ public class DownloadData {
 	private String downloadUrl;
 	private HttpCookie downloadAuthCookie;
 	private GooglePlayAPI api;
-	private long totalSize;
+	private long totalUncompressedSize;
+	private long totalCompressedSize;
+	private boolean compress;
 
 	public DownloadData(GooglePlayAPI api, AndroidAppDeliveryData appDeliveryData) {
 		this.appDeliveryData = appDeliveryData;
 		this.api = api;
 		this.downloadUrl = appDeliveryData.getDownloadUrl();
 		this.downloadAuthCookie = appDeliveryData.getDownloadAuthCookie(0);
-		this.totalSize = appDeliveryData.getDownloadSize();
+		/*
+		 * this.totalSize = appDeliveryData.getDownloadSize(); for (int i = 0; i <
+		 * appDeliveryData.getAdditionalFileCount(); i++) { totalSize +=
+		 * appDeliveryData.getAdditionalFile(i).getSize(); }
+		 */
+		setCompress(false);
+	}
+
+	public void setCompress(boolean c) {
+		compress = c;
+		this.totalUncompressedSize = appDeliveryData.getDownloadSize();
+		this.totalCompressedSize = appDeliveryData.getGzippedDownloadSize();
 		for (int i = 0; i < appDeliveryData.getAdditionalFileCount(); i++) {
-			totalSize += appDeliveryData.getAdditionalFile(i).getSize();
+			if (!appDeliveryData.getAdditionalFile(i).hasCompressedDownloadUrl()) {
+				compress = false;
+			}
+			this.totalUncompressedSize += appDeliveryData.getAdditionalFile(i)
+					.getSize();
+			this.totalCompressedSize += appDeliveryData.getAdditionalFile(i)
+					.getCompressedSize();
+		}
+		for (int i = 0; i < appDeliveryData.getSplitDeliveryDataCount(); i++) {
+			if (!appDeliveryData.getSplitDeliveryData(i).hasGzippedDownloadUrl()) {
+				break;
+			}
+			this.totalUncompressedSize += appDeliveryData.getSplitDeliveryData(i)
+					.getDownloadSize();
+			this.totalCompressedSize += appDeliveryData.getSplitDeliveryData(i)
+					.getGzippedDownloadSize();
+		}
+		if (!appDeliveryData.hasGzippedDownloadUrl()) {
+			compress = false;
 		}
 	}
 
@@ -50,8 +82,16 @@ public class DownloadData {
 	public InputStream openApp() throws IOException, NoSuchAlgorithmException,
 			NoSuchProviderException, NoSuchPaddingException, InvalidKeyException,
 			InvalidAlgorithmParameterException {
-		InputStream ret = api.executeDownload(downloadUrl,
-				downloadAuthCookie.getName() + "=" + downloadAuthCookie.getValue());
+		InputStream ret = null;
+		if (compress) {
+			ret = new GZIPInputStream(api.executeDownload(
+					appDeliveryData.getGzippedDownloadUrl(), downloadAuthCookie.getName()
+							+ "=" + downloadAuthCookie.getValue()));
+		}
+		else {
+			ret = api.executeDownload(downloadUrl, downloadAuthCookie.getName() + "="
+					+ downloadAuthCookie.getValue());
+		}
 		if (appDeliveryData.hasEncryptionParams()) {
 			int version = ret.read();
 			if (version != 0) {
@@ -79,7 +119,12 @@ public class DownloadData {
 	 * @return number of bytes to transfer.
 	 */
 	public long getTotalSize() {
-		return totalSize;
+		if (compress) {
+			return totalCompressedSize;
+		}
+		else {
+			return totalUncompressedSize;
+		}
 	}
 
 	/**
@@ -91,9 +136,17 @@ public class DownloadData {
 		if (appDeliveryData.getAdditionalFileCount() < 1) {
 			return null;
 		}
-		String url = appDeliveryData.getAdditionalFile(0).getDownloadUrl();
-		return api.executeDownload(url, downloadAuthCookie.getName() + "="
-				+ downloadAuthCookie.getValue());
+		if (compress) {
+			String url = appDeliveryData.getAdditionalFile(0)
+					.getCompressedDownloadUrl();
+			return new GZIPInputStream(api.executeDownload(url,
+					downloadAuthCookie.getName() + "=" + downloadAuthCookie.getValue()));
+		}
+		else {
+			String url = appDeliveryData.getAdditionalFile(0).getDownloadUrl();
+			return api.executeDownload(url, downloadAuthCookie.getName() + "="
+					+ downloadAuthCookie.getValue());
+		}
 	}
 
 	public boolean hasMainExpansion() {
@@ -120,9 +173,17 @@ public class DownloadData {
 		if (appDeliveryData.getAdditionalFileCount() < 2) {
 			return null;
 		}
-		String url = appDeliveryData.getAdditionalFile(1).getDownloadUrl();
-		return api.executeDownload(url, downloadAuthCookie.getName() + "="
-				+ downloadAuthCookie.getValue());
+		if (compress) {
+			String url = appDeliveryData.getAdditionalFile(1)
+					.getCompressedDownloadUrl();
+			return new GZIPInputStream(api.executeDownload(url,
+					downloadAuthCookie.getName() + "=" + downloadAuthCookie.getValue()));
+		}
+		else {
+			String url = appDeliveryData.getAdditionalFile(1).getDownloadUrl();
+			return api.executeDownload(url, downloadAuthCookie.getName() + "="
+					+ downloadAuthCookie.getValue());
+		}
 	}
 
 	public boolean hasPatchExpansion() {
@@ -138,6 +199,38 @@ public class DownloadData {
 			return appDeliveryData.getAdditionalFile(1).getVersionCode();
 		}
 		return -1;
+	}
+
+	public int getSplitCount() {
+		return appDeliveryData.getSplitDeliveryDataCount();
+	}
+
+	public InputStream openSplitDelivery(int n) throws IOException {
+		if (getSplitCount() < 1) {
+			return null;
+		}
+		if (compress) {
+			String url = appDeliveryData.getSplitDeliveryData(n)
+					.getGzippedDownloadUrl();
+			return new GZIPInputStream(api.executeDownload(url,
+					downloadAuthCookie.getName() + "=" + downloadAuthCookie.getValue()));
+		}
+		else {
+			String url = appDeliveryData.getSplitDeliveryData(n).getDownloadUrl();
+			return api.executeDownload(url, downloadAuthCookie.getName() + "="
+					+ downloadAuthCookie.getValue());
+		}
+	}
+
+	public String toString() {
+		return appDeliveryData.toString();
+	}
+
+	public String getSplitId(int n) {
+		if (getSplitCount() > 0) {
+			return appDeliveryData.getSplitDeliveryData(n).getId();
+		}
+		return null;
 	}
 
 }

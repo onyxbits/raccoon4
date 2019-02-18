@@ -22,6 +22,7 @@ import java.util.List;
 import javax.swing.SwingWorker;
 
 import com.akdeniz.googleplaycrawler.GooglePlay.DocV2;
+import com.akdeniz.googleplaycrawler.GooglePlay.ListResponse;
 import com.akdeniz.googleplaycrawler.GooglePlay.SearchResponse;
 import com.akdeniz.googleplaycrawler.GooglePlayAPI;
 
@@ -45,6 +46,8 @@ class SearchAppWorker extends SwingWorker<Object, Object> {
 	private PlayManager owner;
 	private DocV2 bestMatch;
 	private List<DocV2> serp;
+
+	protected String nextPageUrl;
 
 	/**
 	 * 
@@ -78,14 +81,23 @@ class SearchAppWorker extends SwingWorker<Object, Object> {
 			owner.login();
 			res = owner.createConnection().search(query, offset, limit);
 		}
+		
+		if (res.hasRedirectUrl() && res.getDocCount()==0) {
+			ListResponse lr = api.nextPage(res.getRedirectUrl());
+			res = SearchResponse.newBuilder().addAllDoc(lr.getDocList()).build();
+		}
 
 		if (res.getDocCount() > 0) {
-			serp = descent(res.getDoc(0));
+			DocV2 doc = res.getDoc(0);
+			serp = descent(doc);
+			if (doc.getContainerMetadata().hasNextPageUrl()) {
+				nextPageUrl = doc.getContainerMetadata().getNextPageUrl();
+			}
 		}
 		if (serp == null) {
 			serp = new ArrayList<DocV2>();
 		}
-		return null;
+		return res;
 	}
 
 	private List<DocV2> descent(DocV2 doc) {

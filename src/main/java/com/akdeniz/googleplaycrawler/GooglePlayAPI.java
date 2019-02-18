@@ -36,7 +36,7 @@ import org.apache.http.message.BasicNameValuePair;
 import com.akdeniz.googleplaycrawler.GooglePlay.AndroidAppDeliveryData;
 import com.akdeniz.googleplaycrawler.GooglePlay.AndroidCheckinRequest;
 import com.akdeniz.googleplaycrawler.GooglePlay.AndroidCheckinResponse;
-import com.akdeniz.googleplaycrawler.GooglePlay.BrowseResponse;
+//import com.akdeniz.googleplaycrawler.GooglePlay.BrowseResponse;
 import com.akdeniz.googleplaycrawler.GooglePlay.BulkDetailsRequest;
 import com.akdeniz.googleplaycrawler.GooglePlay.BulkDetailsRequest.Builder;
 import com.akdeniz.googleplaycrawler.GooglePlay.BulkDetailsResponse;
@@ -139,7 +139,8 @@ public class GooglePlayAPI {
 		this.password = password;
 		setClient(new DefaultHttpClient(getConnectionManager()));
 		// setUseragent("Android-Finsky/3.10.14 (api=3,versionCode=8016014,sdk=15,device=GT-I9300,hardware=aries,product=GT-I9300)");
-		setUseragent("Android-Finsky/6.5.08.D-all (versionCode=80650800,sdk=24,device=dream2lte,hardware=dream2lte,product=dream2ltexx,build=NRD90M:user)");
+		// setUseragent("Android-Finsky/6.5.08.D-all (versionCode=80650800,sdk=24,device=dream2lte,hardware=dream2lte,product=dream2ltexx,build=NRD90M:user)");
+		setUseragent("Android-Finsky/13.1.32-all (versionCode=81313200,sdk=24,device=dream2lte,hardware=dream2lte,product=dream2ltexx,build=NRD90M:user)");
 	}
 
 	/**
@@ -169,7 +170,7 @@ public class GooglePlayAPI {
 		// this first checkin is for generating android-id
 		AndroidCheckinResponse checkinResponse = postCheckin(Utils.generateAndroidCheckinRequest()
 				.toByteArray());
-		this.setAndroidID(BigInteger.valueOf(checkinResponse.getAndroidId()).toString(16));
+		this.setAndroidID(BigInteger.valueOf(checkinResponse.getGsfId()).toString(16));
 		setSecurityToken((BigInteger.valueOf(checkinResponse.getSecurityToken()).toString(16)));
 
 		String c2dmAuth = loginAC2DM();
@@ -369,7 +370,7 @@ try {
 		return responseWrapper.getPayload().getBulkDetailsResponse();
 	}
 
-	/** Fetches available categories */
+	/** Fetches available categories *
 	public BrowseResponse browse() throws IOException {
 
 		return browse(null, null);
@@ -383,7 +384,7 @@ try {
 				{ "ctr", subCategoryId } });
 
 		return responseWrapper.getPayload().getBrowseResponse();
-	}
+	}/*
 
 	/**
 	 * Equivalent of <code>list(categoryId, null, null, null)</code>. It fetches
@@ -410,6 +411,11 @@ try {
 				{ "o", (offset == null) ? null : String.valueOf(offset) },
 				{ "n", (numberOfResult == null) ? null : String.valueOf(numberOfResult) }, });
 
+		return responseWrapper.getPayload().getListResponse();
+	}
+	
+	public ListResponse nextPage(String url) throws IOException {
+		ResponseWrapper responseWrapper = executeGETRequest(FDFE_URL+url,null);
 		return responseWrapper.getPayload().getListResponse();
 	}
 

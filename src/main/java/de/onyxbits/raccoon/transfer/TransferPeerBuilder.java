@@ -64,6 +64,8 @@ public final class TransferPeerBuilder extends AbstractPanelBuilder implements
 
 	private ActionListener viewListener;
 
+	public Image iconImage;
+
 	/**
 	 * Construct a new builder and personalize it with a title string.
 	 * 
@@ -194,6 +196,7 @@ public final class TransferPeerBuilder extends AbstractPanelBuilder implements
 
 	@Override
 	public void onImageReady(String source, Image img) {
+		iconImage = img;
 		icon.setIcon(new ImageIcon(img
 				.getScaledInstance(48, 48, Image.SCALE_SMOOTH)));
 	}
