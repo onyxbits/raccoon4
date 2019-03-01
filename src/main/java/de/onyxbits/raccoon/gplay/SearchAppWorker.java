@@ -32,7 +32,7 @@ import com.akdeniz.googleplaycrawler.GooglePlayAPI;
  * @author patrick
  * 
  */
-class SearchAppWorker extends SwingWorker<Object, Object> {
+class SearchAppWorker extends SwingWorker<SearchEngineResultPage, Object> {
 
 	/**
 	 * Number of entries to ask for in the result set by default.
@@ -40,14 +40,9 @@ class SearchAppWorker extends SwingWorker<Object, Object> {
 	public static final int DEFAULTLIMIT = 15;
 
 	private GooglePlayAPI api;
-	private int limit;
-	private int offset;
 	private String query;
 	private PlayManager owner;
-	private DocV2 bestMatch;
-	private List<DocV2> serp;
-
-	protected String nextPageUrl;
+	private SearchEngineResultPage serp;
 
 	/**
 	 * 
@@ -61,34 +56,36 @@ class SearchAppWorker extends SwingWorker<Object, Object> {
 	 *          number of entries
 	 */
 	public SearchAppWorker(PlayManager owner, GooglePlayAPI api, String query,
-			int offset, int limit) {
+			SearchEngineResultPage serp) {
 		this.api = api;
-		this.limit = limit;
-		this.offset = offset;
 		this.query = query;
 		this.owner = owner;
-		serp = Collections.emptyList();
+		this.serp = serp;
 	}
 
 	@Override
-	protected Object doInBackground() throws Exception {
-		SearchEngineResultPage s = new SearchEngineResultPage(SearchEngineResultPage.SEARCH);
-		s.append(api.searchApp(query));
-		serp = s.getContent();
-		nextPageUrl = s.getNextPageUrl();
+	protected SearchEngineResultPage doInBackground() throws Exception {
+		String tmp = null;
+		if (serp != null) {
+			tmp = serp.getNextPageUrl();
+		}
+		serp = new SearchEngineResultPage(SearchEngineResultPage.SEARCH);
+		if (query != null) {
+			serp.append(api.searchApp(query));
+			tmp = serp.getNextPageUrl();
+		}
+		if (tmp != null && !"".equals(tmp)) {
+			serp.append(api.getList(tmp));
+		}
+
 		return serp;
 	}
-
 
 	@Override
 	public void done() {
 		if (!isCancelled()) {
 			try {
-				get();
-				if (bestMatch != null) {
-					owner.fireAppView(bestMatch, true);
-				}
-				owner.fireAppSearchResult(serp);
+				owner.fireAppSearchResult(get());
 			}
 			catch (Exception e) {
 				owner.fireUnauthorized();

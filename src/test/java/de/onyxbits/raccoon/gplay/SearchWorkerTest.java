@@ -46,7 +46,7 @@ public class SearchWorkerTest {
 		DatabaseManager dbm = new DatabaseManager(Layout.DEFAULT.databaseDir);
 		PlayManager pm = new PlayManager(dbm);
 		SearchAppWorker worker = new SearchAppWorker(pm, pm.createConnection(),
-				"test", 0, 20);
+				"test", new SearchEngineResultPage(SearchEngineResultPage.SEARCH));
 		System.err.println(worker.doInBackground());
 	}
 

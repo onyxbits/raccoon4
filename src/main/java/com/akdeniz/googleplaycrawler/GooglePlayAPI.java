@@ -357,6 +357,10 @@ public class GooglePlayAPI {
 		return responseWrapper;
 	}
 
+	public ResponseWrapper getList(String url) throws IOException {
+		return executeGETRequest(FDFE_URL+url, null);
+	}
+
 	/**
 	 * Fetches detailed information about passed package name. If it is needed to
 	 * fetch information about more than one application, consider to use

@@ -75,6 +75,10 @@ class AppStoreListBuilder extends AbstractPanelBuilder implements
 	public void onAppSearchResult(List<DocV2> apps, boolean append) {
 		if (!append) {
 			catalog.removeAll();
+			catalog.getParent().revalidate();
+			if (catalog.getParent() instanceof JScrollPane) {
+				((JScrollPane)catalog.getParent()).getVerticalScrollBar().setValue(0);
+			}
 		}
 
 		padded = false;
@@ -87,6 +91,13 @@ class AppStoreListBuilder extends AbstractPanelBuilder implements
 			padded = true;
 		}
 		catalog.revalidate();
+		if (!append) {
+			catalog.getParent().revalidate();
+			if (catalog.getParent() instanceof JScrollPane) {
+				JScrollBar bar = ((JScrollPane)catalog.getParent()).getVerticalScrollBar();
+				bar.setValue(bar.getMinimum());
+			}
+		}
 		loading = false;
 	}
 

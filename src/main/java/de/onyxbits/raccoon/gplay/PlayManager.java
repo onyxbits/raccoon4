@@ -54,9 +54,9 @@ public class PlayManager implements Variables {
 
 	private ArrayList<PlayListener> listeners;
 	private String appQuery;
-	private int appOffset;
 	private DatabaseManager databaseManager;
 	private SearchAppWorker currentAppSearch;
+	private SearchEngineResultPage serp;
 
 	public PlayManager(DatabaseManager dbm) {
 		this.listeners = new ArrayList<PlayListener>();
@@ -71,7 +71,7 @@ public class PlayManager implements Variables {
 	 */
 	public void searchApps(String query) {
 		this.appQuery = query;
-		this.appOffset = 0;
+		this.serp = null;
 		moreApps();
 	}
 
@@ -87,8 +87,7 @@ public class PlayManager implements Variables {
 			currentAppSearch.cancel(false);
 		}
 		currentAppSearch = new SearchAppWorker(this, createConnection(), appQuery,
-				appOffset, AppStoreListBuilder.PAGESIZE);
-		appOffset += AppStoreListBuilder.PAGESIZE;
+				serp);
 		currentAppSearch.execute();
 	}
 
@@ -179,18 +178,18 @@ public class PlayManager implements Variables {
 	 * 
 	 * @param apps
 	 */
-	protected void fireAppSearchResult(List<DocV2> apps) {
+	protected void fireAppSearchResult(SearchEngineResultPage s) {
 		currentAppSearch = null;
+		serp = s;
 		for (PlayListener listener : listeners) {
-			listener
-					.onAppSearchResult(apps, appOffset > AppStoreListBuilder.PAGESIZE);
+			listener.onAppSearchResult(s.getContent(), appQuery == null);
 		}
+		appQuery=null;
 	}
 
 	protected void fireUnauthorized() {
 		// TODO: This is a quickfix, not the proper way to handle it!
-		List<DocV2> serp = Collections.emptyList();
-		fireAppSearchResult(serp);
+		fireAppSearchResult(new SearchEngineResultPage(SearchEngineResultPage.ALL));
 		JOptionPane.showMessageDialog(Window.getWindows()[0],
 				Messages.getString(ID + ".session.message"),
 				Messages.getString(ID + ".session.title"), JOptionPane.ERROR_MESSAGE);
