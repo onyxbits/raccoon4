@@ -39,7 +39,7 @@ public class DocUtil {
 		if (doc != null) {
 			for (int i = 0; i < doc.getImageCount(); i++) {
 				if (doc.getImage(i).getImageType() == 4) { // Magic Number
-					return doc.getImage(i).getImageUrl();
+					return doc.getImage(i).getImageUrl()+"=s96";
 				}
 			}
 		}
