@@ -120,7 +120,7 @@ public class DownloadData {
 	 */
 	public long getTotalSize() {
 		if (compress) {
-			return totalCompressedSize;
+			return totalUncompressedSize;
 		}
 		else {
 			return totalUncompressedSize;
