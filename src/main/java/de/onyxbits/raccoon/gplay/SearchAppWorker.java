@@ -72,46 +72,13 @@ class SearchAppWorker extends SwingWorker<Object, Object> {
 
 	@Override
 	protected Object doInBackground() throws Exception {
-		SearchResponse res = null;
-		try {
-			res = api.search(query, offset, limit);
-			// System.err.println(res);
-		}
-		catch (Exception e) {
-			owner.login();
-			res = owner.createConnection().search(query, offset, limit);
-		}
-		
-		if (res.hasRedirectUrl() && res.getDocCount()==0) {
-			ListResponse lr = api.nextPage(res.getRedirectUrl());
-			res = SearchResponse.newBuilder().addAllDoc(lr.getDocList()).build();
-		}
-
-		if (res.getDocCount() > 0) {
-			DocV2 doc = res.getDoc(0);
-			serp = descent(doc);
-			if (doc.getContainerMetadata().hasNextPageUrl()) {
-				nextPageUrl = doc.getContainerMetadata().getNextPageUrl();
-			}
-		}
-		if (serp == null) {
-			serp = new ArrayList<DocV2>();
-		}
-		return res;
+		SearchEngineResultPage s = new SearchEngineResultPage(SearchEngineResultPage.SEARCH);
+		s.append(api.searchApp(query));
+		serp = s.getContent();
+		nextPageUrl = s.getNextPageUrl();
+		return serp;
 	}
 
-	private List<DocV2> descent(DocV2 doc) {
-		if (doc.getDocType() == 45) {
-			return doc.getChildList();
-		}
-		for (DocV2 d : doc.getChildList()) {
-			List<DocV2> tmp = descent(d);
-			if (tmp != null) {
-				return tmp;
-			}
-		}
-		return null;
-	}
 
 	@Override
 	public void done() {
