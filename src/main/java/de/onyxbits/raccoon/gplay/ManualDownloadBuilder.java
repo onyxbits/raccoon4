@@ -22,6 +22,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 
+import javax.swing.Box;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -119,13 +120,14 @@ public class ManualDownloadBuilder extends AbstractPanelBuilder implements
 		gbc.gridy = 2;
 		gbc.gridwidth = 1;
 		gbc.insets.right = 5;
-		panel.add(new JLabel(Messages.getString(ID + ".offertype")), gbc);
+		//panel.add(new JLabel(Messages.getString(ID + ".offertype")), gbc);
+		panel.add(Box.createGlue(), gbc);
 
 		gbc.gridx = 1;
 		gbc.gridy = 2;
 		gbc.gridwidth = 2;
 		gbc.insets.right = 0;
-		panel.add(offerType, gbc);
+		panel.add(Box.createGlue(), gbc);
 
 		gbc.gridx = 0;
 		gbc.gridy = 3;
