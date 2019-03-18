@@ -188,6 +188,7 @@ public final class MainLifecycle implements Lifecycle, GlobalsFactory {
 				.addCheckbox("viewmenu/qrtool", wt.qrtool)
 				.addCheckbox("viewmenu/transfers", wt.transfers)
 				.addItem("helpmenu/handbook", new BrowseAction(Bookmarks.HANDBOOK))
+				.addItem("helpmenu/support", new BrowseAction(Bookmarks.SUPPORT))
 				.addItem("helpmenu/featurelist",
 						new BrowseAction(Bookmarks.FEATURELIST))
 				.addSeparator("helpmenu/---1")

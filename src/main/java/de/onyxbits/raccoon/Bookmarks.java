@@ -26,10 +26,10 @@ import java.net.URI;
 public final class Bookmarks {
 
 	public static final URI BASE = URI.create("http://raccoon.onyxbits.de/");
+	public static final URI PREMIUM = URI.create("http://billing.onyxbits.de/");
 
 	public static final URI HANDBOOK = BASE.resolve("/handbook");
 	public static final URI RELEASES = BASE.resolve("/releases");
-	public static final URI ORDER = BASE.resolve("/ordering");
 	public static final URI LATEST = BASE.resolve("latestversion");
 	public static final URI SETUP = BASE.resolve("/content/first-steps-setup-wizard");
 
@@ -37,6 +37,9 @@ public final class Bookmarks {
 
 	public static final URI USB_DEBUGGING = BASE.resolve("/content/enable-usb-debugging");
 
-	public static final URI FEATURELIST = BASE.resolve("/premiumfeatures");
+	public static final URI FEATURELIST = PREMIUM.resolve("/benefits");
+	
+	public static final URI ORDER = PREMIUM.resolve("/");
+	public static final URI SUPPORT = PREMIUM.resolve("/support/email");
 
 }
