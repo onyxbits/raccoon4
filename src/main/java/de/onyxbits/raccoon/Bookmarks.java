@@ -16,6 +16,8 @@
 package de.onyxbits.raccoon;
 
 import java.net.URI;
+import java.util.Currency;
+import java.util.Locale;
 
 /**
  * A central registry for urls used in various places.
@@ -31,15 +33,23 @@ public final class Bookmarks {
 	public static final URI HANDBOOK = BASE.resolve("/handbook");
 	public static final URI RELEASES = BASE.resolve("/releases");
 	public static final URI LATEST = BASE.resolve("latestversion");
-	public static final URI SETUP = BASE.resolve("/content/first-steps-setup-wizard");
+	public static final URI SETUP = BASE
+			.resolve("/content/first-steps-setup-wizard");
 
 	public static final URI SHOUTBOXFEED = BASE.resolve("/feed/shoutbox");
 
-	public static final URI USB_DEBUGGING = BASE.resolve("/content/enable-usb-debugging");
+	public static final URI USB_DEBUGGING = BASE
+			.resolve("/content/enable-usb-debugging");
 
-	public static final URI FEATURELIST = PREMIUM.resolve("/benefits");
-	
-	public static final URI ORDER = PREMIUM.resolve("/");
-	public static final URI SUPPORT = PREMIUM.resolve("/support/email");
+	public static final URI FEATURELIST;
+	public static final URI ORDER;
+	public static final URI SUPPORT;
 
+	static {
+		Currency currency = Currency.getInstance(Locale.getDefault());
+		String cc = currency.getCurrencyCode().toLowerCase();
+		FEATURELIST = PREMIUM.resolve("/benefits?offer=" + cc);
+		ORDER = PREMIUM.resolve("/?offer=" + cc);
+		SUPPORT = PREMIUM.resolve("/support/email?offer=" + cc);
+	}
 }
