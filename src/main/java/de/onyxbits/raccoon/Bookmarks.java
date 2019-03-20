@@ -48,8 +48,8 @@ public final class Bookmarks {
 	static {
 		Currency currency = Currency.getInstance(Locale.getDefault());
 		String cc = currency.getCurrencyCode().toLowerCase();
-		FEATURELIST = PREMIUM.resolve("/benefits?offer=" + cc);
-		ORDER = PREMIUM.resolve("/?offer=" + cc);
-		SUPPORT = PREMIUM.resolve("/support/email?offer=" + cc);
+		FEATURELIST = PREMIUM.resolve("/benefits?offers=" + cc);
+		ORDER = PREMIUM.resolve("/?offers=" + cc);
+		SUPPORT = PREMIUM.resolve("/support/email?offers=" + cc);
 	}
 }
