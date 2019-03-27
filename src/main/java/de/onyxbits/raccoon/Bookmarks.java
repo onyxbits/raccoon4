@@ -27,8 +27,8 @@ import java.util.Locale;
  */
 public final class Bookmarks {
 
-	public static final URI BASE = URI.create("http://raccoon.onyxbits.de/");
-	public static final URI PREMIUM = URI.create("http://billing.onyxbits.de/");
+	public static final URI BASE = URI.create("https://raccoon.onyxbits.de/");
+	public static final URI PREMIUM = URI.create("https://billing.onyxbits.de/");
 
 	public static final URI HANDBOOK = BASE.resolve("/handbook");
 	public static final URI RELEASES = BASE.resolve("/releases");
