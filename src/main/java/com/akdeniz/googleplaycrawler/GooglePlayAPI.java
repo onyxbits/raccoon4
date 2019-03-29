@@ -378,7 +378,7 @@ public class GooglePlayAPI {
 			throws IOException {
 
 		Builder bulkDetailsRequestBuilder = BulkDetailsRequest.newBuilder();
-		bulkDetailsRequestBuilder.addAllDocid(packageNames);
+		bulkDetailsRequestBuilder.addAllDocid(packageNames).setIncludeDetails(true);
 
 		ResponseWrapper responseWrapper = executePOSTRequest(BULKDETAILS_URL,
 				bulkDetailsRequestBuilder.build().toByteArray(),
