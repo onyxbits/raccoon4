@@ -69,7 +69,7 @@ public class Router {
 		options.addOption(version);
 
 		Option playAuth = new Option(null, "gp-auth", false,
-				Messages.getString(DESC + "gp-auth"));
+				Messages.getString(DESC + "gpa-auth"));
 		options.addOption(playAuth);
 
 		// GPA: Google Play Apps (we might add different markets later)
