@@ -75,14 +75,12 @@ class Play implements Variables {
 
 	private static PlayProfile getProfile() {
 		DatabaseManager dbm = getDatabase();
-		String alias = dbm.get(VariableDao.class).getVar(
-				PLAYPROFILE,
-				System.getProperty(PLAYPROFILESYSPROP, dbm.get(VariableDao.class)
-						.getVar(PLAYPROFILE, null)));
-		if (alias == null) {
+		String alias = System.getProperty(PLAYPROFILESYSPROP,dbm.get(VariableDao.class).getVar(PLAYPROFILE, null));
+		PlayProfile ret = dbm.get(PlayProfileDao.class).get(alias);
+		if (ret == null) {
 			Router.fail("play.profile");
 		}
-		return dbm.get(PlayProfileDao.class).get(alias);
+		return ret;
 	}
 
 	/**
