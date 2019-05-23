@@ -208,7 +208,7 @@ public class Utils {
 				"com.android.nfc_extras", "com.google.android.maps", "com.google.android.media.effects",
 				"com.google.widevine.software.drm", "javax.obex"))
 		.addAllSystemAvailableFeature(
-			Arrays.asList("android.hardware.bluetooth", "android.hardware.camera",
+			Arrays.asList("android.hardware.bluetooth","android.hardware.bluetooth_le", "android.hardware.camera",
 				"android.hardware.camera.autofocus", "android.hardware.camera.flash",
 				"android.hardware.camera.front", "android.hardware.faketouch", "android.hardware.location",
 				"android.hardware.location.gps", "android.hardware.location.network",
