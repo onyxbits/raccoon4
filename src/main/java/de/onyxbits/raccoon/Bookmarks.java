@@ -30,16 +30,14 @@ public final class Bookmarks {
 	public static final URI BASE = URI.create("https://raccoon.onyxbits.de/");
 	public static final URI PREMIUM = URI.create("https://billing.onyxbits.de/");
 
-	public static final URI HANDBOOK = BASE.resolve("/handbook");
-	public static final URI RELEASES = BASE.resolve("/releases");
-	public static final URI LATEST = BASE.resolve("latestversion");
-	public static final URI SETUP = BASE
-			.resolve("/content/first-steps-setup-wizard");
+	public static final URI HANDBOOK;
+	public static final URI RELEASES;
+	public static final URI LATEST;
+	public static final URI SETUP;
 
-	public static final URI SHOUTBOXFEED = BASE.resolve("/feed/shoutbox");
+	public static final URI SHOUTBOXFEED;
 
-	public static final URI USB_DEBUGGING = BASE
-			.resolve("/content/enable-usb-debugging");
+	public static final URI USB_DEBUGGING;
 
 	public static final URI FEATURELIST;
 	public static final URI ORDER;
@@ -50,6 +48,24 @@ public final class Bookmarks {
 		String cc = currency.getCurrencyCode().toLowerCase();
 		FEATURELIST = PREMIUM.resolve("/benefits?offers=" + cc);
 		ORDER = PREMIUM.resolve("/?offers=" + cc);
-		SUPPORT = PREMIUM.resolve("/support/email?offers=" + cc);
+
+		if ("de".equals(Locale.getDefault().getLanguage())) {
+			HANDBOOK = BASE.resolve("/de/apk-downloader-v4/");
+			RELEASES = BASE.resolve("/de/apk-downloader/");
+			LATEST = BASE.resolve("/apk-downloader/index.csv");
+			SETUP = BASE.resolve("/de/apk-downloader-v4/setup/");
+			SHOUTBOXFEED = BASE.resolve("/de/blog/index.xml");
+			USB_DEBUGGING = BASE.resolve("/de/apk-downloader-v4/setup/");
+			SUPPORT = BASE.resolve("/de/support/");
+		}
+		else {
+			HANDBOOK = BASE.resolve("/apk-downloader-v4/");
+			RELEASES = BASE.resolve("/apk-downloader/");
+			LATEST = BASE.resolve("/apk-downloader/index.csv");
+			SETUP = BASE.resolve("/apk-downloader-v4/setup/");
+			SHOUTBOXFEED = BASE.resolve("/blog/index.xml");
+			USB_DEBUGGING = BASE.resolve("/apk-downloader-v4/setup/");
+			SUPPORT = BASE.resolve("/support/");
+		}
 	}
 }

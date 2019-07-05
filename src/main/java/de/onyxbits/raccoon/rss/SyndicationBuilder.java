@@ -20,6 +20,7 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.net.URL;
+import java.text.DateFormat;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -97,13 +98,16 @@ public class SyndicationBuilder extends AbstractPanelBuilder {
 			sb.append("<dt style=\"margin:3px;font-weight:700;\"><a href=\"");
 			sb.append(item.getLink());
 			sb.append("\">");
+			if (!"".equals(item.getTitle())) { 
 			sb.append(item.getTitle());
+			}
+			else {
+				sb.append(item.getPublished());
+			}
 			sb.append("</a></dt>");
 			sb.append("<dd style=\"margin:5px 15px 10px 15px;\">");
 			sb.append(item.getDescription());
-			sb.append("<p><div style=\"text-align:right;\"><small><i>");
-			sb.append(item.getAuthor());
-			sb.append("</i></small></dd>");
+			sb.append("</dd>");
 		}
 		sb.append("</dl>");
 		if (!content.getText().equals(sb.toString())) {
