@@ -233,6 +233,7 @@ class Play implements Variables {
 				data.getMainFileVersion()).resolve();
 		File patchFile = new AppExpansionPatchNode(Layout.DEFAULT, doc,
 				data.getPatchFileVersion()).resolve();
+		List<File> splitFiles = new ArrayList<File>();
 
 		try {
 			InputStream in = data.openApp();
@@ -270,6 +271,20 @@ class Play implements Variables {
 				System.out.println();
 				out.close();
 			}
+			for (int i=0; i<data.getSplitCount(); i++) {
+				File splitFile = new File(apkFile.getParentFile(), data.getSplitId(i) + "-" + vcode + ".apk");
+				splitFiles.add(splitFile);
+				in = data.openSplitDelivery(i);
+				out = new FileOutputStream(splitFile);
+				System.out.println(splitFile);
+				while ((len = in.read(buffer)) > 0) {
+					out.write(buffer, 0, len);
+					System.out.print('#');
+				}
+				System.out.println();
+				out.close();
+			}
+			
 			dbm.get(AndroidAppDao.class).saveOrUpdate(download);
 			dbm.get(PlayAppOwnerDao.class).own(download, getProfile());
 
@@ -285,6 +300,9 @@ class Play implements Variables {
 			apkFile.delete();
 			mainFile.delete();
 			patchFile.delete();
+			for (File splitFile : splitFiles) {
+				splitFile.delete();
+			}
 			Router.fail(e.getMessage());
 		}
 	}
