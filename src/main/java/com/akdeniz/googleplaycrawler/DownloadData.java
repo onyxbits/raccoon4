@@ -112,6 +112,10 @@ public class DownloadData {
 			return ret;
 		}
 	}
+	
+	public long getAppSize() {
+		return appDeliveryData.getDownloadSize();	
+	}
 
 	/**
 	 * Query the total downloadsize
@@ -231,6 +235,13 @@ public class DownloadData {
 			return appDeliveryData.getSplitDeliveryData(n).getId();
 		}
 		return null;
+	}
+
+	public long getSplitSize(int n) {
+		if (getSplitCount() > 0) {
+			return appDeliveryData.getSplitDeliveryData(n).getDownloadSize();
+		}
+		return -1;
 	}
 
 }
