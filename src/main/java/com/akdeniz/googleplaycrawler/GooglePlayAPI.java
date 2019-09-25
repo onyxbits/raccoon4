@@ -706,8 +706,7 @@ public class GooglePlayAPI {
 		HttpResponse response = getClient().execute(request);
 
 		if (response.getStatusLine().getStatusCode() != 200) {
-			throw new GooglePlayException(new String(Utils.readAll(response
-					.getEntity().getContent())));
+			throw GooglePlayException.create(response);
 		}
 
 		return response.getEntity();
