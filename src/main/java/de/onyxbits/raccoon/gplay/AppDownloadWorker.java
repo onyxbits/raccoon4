@@ -25,6 +25,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import javax.imageio.ImageIO;
 
@@ -78,11 +82,8 @@ class AppDownloadWorker implements TransferWorker, ActionListener {
 
 	private File apkFile;
 	private File iconFile;
-	private File mainFile;
-	private File patchFile;
-
-	private int fileCount;
-	private int splitCount;
+	private List<Transfer> transfers;
+	private int nextTransferIndex;
 	private String appName;
 
 	public AppDownloadWorker(Globals globals, DocV2 doc) {
@@ -116,58 +117,13 @@ class AppDownloadWorker implements TransferWorker, ActionListener {
 	@Override
 	public InputStream onNextSource() throws Exception {
 		closeStreams();
-		if (splitCount > 0) {
-			splitCount--;
-			outputStream = new FileOutputStream(new File(apkFile.getParentFile(),
-					data.getSplitId(splitCount) + "-" + versionCode + ".apk"));
-			return data.openSplitDelivery(splitCount);
+		if (nextTransferIndex >= transfers.size()) {
+			return null;
 		}
-		switch (fileCount) {
-			case 0: {
-				outputStream = new FileOutputStream(apkFile);
-				inputStream = data.openApp();
-				break;
-			}
-			case 1: {
-				if (data.hasMainExpansion()) {
-					if (mainFile.exists()) {
-						// Looks like we are updating the app and the expansion of the
-						// previous
-						// version is still valid -> skip the download and make sure the
-						// file
-						// doesn't get deleted if the user cancels.
-						mainFile = null;
-						inputStream = new DevZeroInputStream(data.getMainSize());
-						outputStream = new DevNullOutputStream();
-					}
-					else {
-						inputStream = data.openMainExpansion();
-						outputStream = new FileOutputStream(mainFile);
-					}
-				}
-				break;
-			}
-			case 2: {
-				if (data.hasPatchExpansion()) {
-					if (patchFile.exists()) {
-						// Looks like we are updating the app and the expansion of the
-						// previous
-						// version is still valid -> skip the download and make sure the
-						// file
-						// doesn't get deleted if the user cancels.
-						patchFile = null;
-						inputStream = new DevZeroInputStream(data.getPatchSize());
-						outputStream = new DevNullOutputStream();
-					}
-					else {
-						inputStream = data.openPatchExpansion();
-						outputStream = new FileOutputStream(patchFile);
-					}
-				}
-				break;
-			}
-		}
-		fileCount++;
+		Transfer nextTransfer = transfers.get(nextTransferIndex++);
+		nextTransfer.to.getParentFile().mkdirs();
+		inputStream = nextTransfer.from.openStream();
+		outputStream = new FileOutputStream(nextTransfer.to);
 		return inputStream;
 	}
 
@@ -183,23 +139,37 @@ class AppDownloadWorker implements TransferWorker, ActionListener {
 		if (paid) {
 			// For apps that must be purchased before download
 			data = api.delivery(packageName, versionCode, offerType);
-		}
-		else {
+		} else {
 			// for apps that can be downloaded free of charge.
 			data = api.purchaseAndDeliver(packageName, versionCode, offerType);
 		}
 		data.setCompress(globals.get(Traits.class).isAvailable("4.0.x"));
 
 		this.totalBytes = data.getTotalSize();
-		apkFile = new AppInstallerNode(layout, packageName, versionCode).resolve();
-		apkFile.getParentFile().mkdirs();
-		iconFile = new AppIconNode(layout, packageName, versionCode).resolve();
-		mainFile = new AppExpansionMainNode(layout, packageName,
-				data.getMainFileVersion()).resolve();
-		patchFile = new AppExpansionPatchNode(layout, packageName,
-				data.getPatchFileVersion()).resolve();
-		splitCount = data.getSplitCount();
 		
+		transfers = new ArrayList<Transfer>();
+		apkFile = new AppInstallerNode(layout, packageName, versionCode).resolve();
+		transfers.add(new Transfer(data.getMainApk(), apkFile));
+		for (DownloadData.AdditionalFile additionalFile : data.getAdditionalFiles()) {
+			File destFile = null;
+			switch (additionalFile.getIndex()) {
+				case DownloadData.AdditionalFile.MAIN:
+					destFile = new AppExpansionMainNode(Layout.DEFAULT, packageName, additionalFile.getVersionCode()).resolve();
+					break;
+				case DownloadData.AdditionalFile.PATCH:
+					destFile = new AppExpansionPatchNode(Layout.DEFAULT, packageName, additionalFile.getVersionCode()).resolve();
+					break;
+				default:
+					System.err.println("Unsupported additional file index " + additionalFile.getIndex());
+			}
+			if (destFile != null) {
+				transfers.add(new Transfer(additionalFile, destFile));
+			}
+		}
+		for (DownloadData.SplitApkFile splitApkFile : data.getSplitApkFiles()) {
+			File destFile = new File(apkFile.getParentFile(), splitApkFile.getId() + "-" + versionCode + ".apk");
+			transfers.add(new Transfer(splitApkFile, destFile));
+		}	
 	}
 
 	@Override
@@ -230,12 +200,17 @@ class AppDownloadWorker implements TransferWorker, ActionListener {
 			// Great, split APK ...
 			download.setName(appName);
 		}
-		if (data.hasMainExpansion()) {
-			download.setMainVersion(data.getMainFileVersion());
+		for (DownloadData.AdditionalFile additionalFile : data.getAdditionalFiles()) {
+			switch (additionalFile.getIndex()) {
+				case DownloadData.AdditionalFile.MAIN:
+					download.setMainVersion(additionalFile.getVersionCode());
+					break;
+				case DownloadData.AdditionalFile.PATCH:
+					download.setPatchVersion(additionalFile.getVersionCode());
+					break;
+			}
 		}
-		if (data.hasPatchExpansion()) {
-			download.setPatchVersion(data.getPatchFileVersion());
-		}
+		
 		DatabaseManager dbm = globals.get(DatabaseManager.class);
 		dbm.get(AndroidAppDao.class).saveOrUpdate(download);
 		dbm.get(PlayAppOwnerDao.class).own(download, profile);
@@ -243,17 +218,13 @@ class AppDownloadWorker implements TransferWorker, ActionListener {
 
 	@Override
 	public void onIncomplete(Exception e) {
-		if (apkFile != null) {
-			apkFile.delete();
-		}
 		if (iconFile != null) {
 			iconFile.delete();
 		}
-		if (mainFile != null) {
-			mainFile.delete();
-		}
-		if (patchFile != null) {
-			patchFile.delete();
+		if (transfers != null) {
+			for (Transfer transfer : transfers) {
+				transfer.to.delete();
+			}
 		}
 	}
 
@@ -274,5 +245,15 @@ class AppDownloadWorker implements TransferWorker, ActionListener {
 				DetailsViewBuilder.ID);
 		globals.get(DetailsViewBuilder.class).setApp(download);
 		w.setVisible(true);
+	}
+	
+	private static class Transfer {
+		public final DownloadData.AppFile<?> from;
+		public final File to;
+		
+		public Transfer(DownloadData.AppFile<?> from, File to) {
+			this.from = from;
+			this.to = to;
+		}
 	}
 }

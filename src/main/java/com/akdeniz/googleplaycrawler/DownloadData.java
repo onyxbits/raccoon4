@@ -1,236 +1,252 @@
 package com.akdeniz.googleplaycrawler;
 
+import java.io.DataInputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
+import java.io.OutputStream;
+import java.security.GeneralSecurityException;
 import java.util.zip.GZIPInputStream;
 
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
-import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 import com.akdeniz.googleplaycrawler.GooglePlay.AndroidAppDeliveryData;
+import com.akdeniz.googleplaycrawler.GooglePlay.AppFileMetadata;
+import com.akdeniz.googleplaycrawler.GooglePlay.EncryptionParams;
 import com.akdeniz.googleplaycrawler.GooglePlay.HttpCookie;
+import com.akdeniz.googleplaycrawler.GooglePlay.SplitDeliveryData;
 import com.akdeniz.googleplaycrawler.misc.Base64;
 
-public class DownloadData {
-
-	private AndroidAppDeliveryData appDeliveryData;
-	private String downloadUrl;
-	private HttpCookie downloadAuthCookie;
+public class DownloadData {	
 	private GooglePlayAPI api;
-	private long totalUncompressedSize;
-	private long totalCompressedSize;
+	private AndroidAppDeliveryData appDeliveryData;
+	private long totalSize;
 	private boolean compress;
-
+	
+	private MainApkFile mainApk;
+	private AdditionalFile[] additionalFiles;
+	private SplitApkFile[] splitApkFiles;
+	
 	public DownloadData(GooglePlayAPI api, AndroidAppDeliveryData appDeliveryData) {
-		this.appDeliveryData = appDeliveryData;
 		this.api = api;
-		this.downloadUrl = appDeliveryData.getDownloadUrl();
-		this.downloadAuthCookie = appDeliveryData.getDownloadAuthCookie(0);
-		/*
-		 * this.totalSize = appDeliveryData.getDownloadSize(); for (int i = 0; i <
-		 * appDeliveryData.getAdditionalFileCount(); i++) { totalSize +=
-		 * appDeliveryData.getAdditionalFile(i).getSize(); }
-		 */
-		setCompress(false);
-	}
-
-	public void setCompress(boolean c) {
-		compress = c;
-		this.totalUncompressedSize = appDeliveryData.getDownloadSize();
-		this.totalCompressedSize = appDeliveryData.getGzippedDownloadSize();
-		for (int i = 0; i < appDeliveryData.getAdditionalFileCount(); i++) {
-			if (!appDeliveryData.getAdditionalFile(i).hasCompressedDownloadUrl()) {
-				compress = false;
-			}
-			this.totalUncompressedSize += appDeliveryData.getAdditionalFile(i)
-					.getSize();
-			this.totalCompressedSize += appDeliveryData.getAdditionalFile(i)
-					.getCompressedSize();
+		this.appDeliveryData = appDeliveryData;
+		
+		this.mainApk = new MainApkFile();
+		this.totalSize = mainApk.getSize();
+		this.compress = false;
+		
+		this.additionalFiles = new AdditionalFile[appDeliveryData.getAdditionalFileCount()];
+		for (int i=0; i< additionalFiles.length; i++) {
+			this.additionalFiles[i] = new AdditionalFile(i);
+			this.totalSize += this.additionalFiles[i].getSize();
 		}
-		for (int i = 0; i < appDeliveryData.getSplitDeliveryDataCount(); i++) {
-			if (!appDeliveryData.getSplitDeliveryData(i).hasGzippedDownloadUrl()) {
-				break;
-			}
-			this.totalUncompressedSize += appDeliveryData.getSplitDeliveryData(i)
-					.getDownloadSize();
-			this.totalCompressedSize += appDeliveryData.getSplitDeliveryData(i)
-					.getGzippedDownloadSize();
-		}
-		if (!appDeliveryData.hasGzippedDownloadUrl()) {
-			compress = false;
+		this.splitApkFiles = new SplitApkFile[appDeliveryData.getSplitDeliveryDataCount()];
+		for (int i=0; i< splitApkFiles.length; i++) {
+			this.splitApkFiles[i] = new SplitApkFile(i);
+			this.totalSize += this.splitApkFiles[i].getSize();
 		}
 	}
 
 	/**
-	 * Access the APK file
+	 * Toggles whenever the download is performed in a compressed stream,
+	 * saving some bandwidth.
 	 * 
-	 * @return an inputstream from which the app can be read (already processed
-	 *         through crypto).
-	 * @throws NoSuchPaddingException
-	 * @throws NoSuchProviderException
-	 * @throws NoSuchAlgorithmException
-	 * @throws InvalidAlgorithmParameterException
-	 * @throws InvalidKeyException
+	 * This is only a hint -- SOme of the files to be downloaded might not support it,
+	 * and will fall back to non-compressed download.
 	 */
-	public InputStream openApp() throws IOException, NoSuchAlgorithmException,
-			NoSuchProviderException, NoSuchPaddingException, InvalidKeyException,
-			InvalidAlgorithmParameterException {
-		InputStream ret = null;
-		if (compress) {
-			ret = new GZIPInputStream(api.executeDownload(
-					appDeliveryData.getGzippedDownloadUrl(), downloadAuthCookie.getName()
-							+ "=" + downloadAuthCookie.getValue()));
-		}
-		else {
-			ret = api.executeDownload(downloadUrl, downloadAuthCookie.getName() + "="
-					+ downloadAuthCookie.getValue());
-		}
-		if (appDeliveryData.hasEncryptionParams()) {
-			int version = ret.read();
-			if (version != 0) {
-				throw new IOException("Unknown crypto container!");
-			}
-			ret.skip(4); // Meta data
-			byte[] iv = new byte[16];
-			ret.read(iv);
-			byte[] encoded = appDeliveryData.getEncryptionParams().getEncryptionKey()
-					.getBytes("UTF-8");
-			byte[] decoded = Base64.decode(encoded, Base64.DEFAULT);
-			Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding", "SunJCE");
-			SecretKeySpec key = new SecretKeySpec(decoded, "AES");
-			cipher.init(Cipher.DECRYPT_MODE, key, new IvParameterSpec(iv));
-			return new CipherInputStream(ret, cipher);
-		}
-		else {
-			return ret;
-		}
+	public void setCompress(boolean compress) {
+		this.compress = compress;
+	}
+	
+	public MainApkFile getMainApk() {
+		return mainApk;
+	}
+	
+	public AdditionalFile[] getAdditionalFiles() {
+		return additionalFiles;
+	}
+	
+	public SplitApkFile[] getSplitApkFiles() {
+		return splitApkFiles;
 	}
 
 	/**
-	 * Query the total downloadsize
+	 * Query the total download size
 	 * 
 	 * @return number of bytes to transfer.
 	 */
 	public long getTotalSize() {
-		if (compress) {
-			return totalUncompressedSize;
-		}
-		else {
-			return totalUncompressedSize;
-		}
+		return totalSize;
 	}
-
+	
 	/**
-	 * Access the first expansion
-	 * 
-	 * @return a stream or null if there is no expansion.
+	 * A Base class for various application files that compose the application
+	 * being downloaded.
+	 *
+	 * @param <M> The type of the Google API object corresponding to this AppFile.
 	 */
-	public InputStream openMainExpansion() throws IOException {
-		if (appDeliveryData.getAdditionalFileCount() < 1) {
-			return null;
-		}
-		if (compress) {
-			String url = appDeliveryData.getAdditionalFile(0)
-					.getCompressedDownloadUrl();
-			return new GZIPInputStream(api.executeDownload(url,
-					downloadAuthCookie.getName() + "=" + downloadAuthCookie.getValue()));
-		}
-		else {
-			String url = appDeliveryData.getAdditionalFile(0).getDownloadUrl();
-			return api.executeDownload(url, downloadAuthCookie.getName() + "="
-					+ downloadAuthCookie.getValue());
+	public abstract class AppFile<M> {
+		/**
+		 * Returns the Play API object corresponding to this AppFile.
+		 */
+		public abstract M getMetadata();
+		
+		/** Returns the uncompressed size of this file */
+		public abstract long getSize();
+		
+		/**
+		 * Open a stream to download this file.
+		 * 
+		 * There is no need to worry about compression and encryption -- if any, it will be handled internally.
+		 */
+		public abstract InputStream openStream() throws IOException, GeneralSecurityException;
+		
+		/**
+		 * Helper method to perform a possible-compressed and possibly-encrypted download.
+		 * @throws IOException 
+		 */
+		protected InputStream openStream(String downloadUrl, String gzippedDownloadUrl, EncryptionParams encryptionParams) throws IOException, GeneralSecurityException {
+			HttpCookie cookie = appDeliveryData.getDownloadAuthCookie(0);
+			String cookieStr = cookie.getName() + "=" + cookie.getValue();
+			
+			InputStream ret = null;
+			if (compress && gzippedDownloadUrl != null) {
+				ret = new GZIPInputStream(api.executeDownload(gzippedDownloadUrl, cookieStr));
+			} else if (downloadUrl != null) {
+				ret = api.executeDownload(downloadUrl, cookieStr);
+			} else {
+				throw new NullPointerException("downloadUrl");
+			}
+			
+			if (encryptionParams == null) {
+				return ret;
+			}
+			
+			
+			try {
+				DataInputStream dataIn = new DataInputStream(ret);
+				
+				int version = dataIn.readByte();
+				if (version != 0) {
+					throw new IOException("Unknown crypto container!");
+				}
+				dataIn.readInt(); // Skips 4 bytes of metadata
+				byte[] iv = new byte[16];
+				dataIn.readFully(iv);
+				Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding", "SunJCE");
+				SecretKeySpec key = new SecretKeySpec(Base64.decode(encryptionParams.getEncryptionKey(), Base64.DEFAULT) , "AES");
+				cipher.init(Cipher.DECRYPT_MODE, key, new IvParameterSpec(iv));
+				return new CipherInputStream(dataIn, cipher);
+			} catch (Throwable t) {
+				ret.close();
+				throw t;
+			}
 		}
 	}
-
-	public boolean hasMainExpansion() {
-		return appDeliveryData.getAdditionalFileCount() > 0;
-	}
-
-	public int getMainFileVersion() {
-		if (appDeliveryData.getAdditionalFileCount() > 0) {
-			return appDeliveryData.getAdditionalFile(0).getVersionCode();
+	
+	public class MainApkFile extends AppFile<AndroidAppDeliveryData> {		
+		AndroidAppDeliveryData metadata;
+		
+		public MainApkFile() {
+			metadata = appDeliveryData;
 		}
-		return -1;
-	}
-
-	public long getMainSize() {
-		return appDeliveryData.getAdditionalFile(0).getSize();
-	}
-
-	/**
-	 * Access the second expansion
-	 * 
-	 * @return a stream or null if there is no expansion.
-	 */
-	public InputStream openPatchExpansion() throws IOException {
-		if (appDeliveryData.getAdditionalFileCount() < 2) {
-			return null;
+		
+		@Override
+		public AndroidAppDeliveryData getMetadata() {
+			return metadata;
 		}
-		if (compress) {
-			String url = appDeliveryData.getAdditionalFile(1)
-					.getCompressedDownloadUrl();
-			return new GZIPInputStream(api.executeDownload(url,
-					downloadAuthCookie.getName() + "=" + downloadAuthCookie.getValue()));
+		
+		@Override
+		public long getSize() {
+			return appDeliveryData.getDownloadSize();
 		}
-		else {
-			String url = appDeliveryData.getAdditionalFile(1).getDownloadUrl();
-			return api.executeDownload(url, downloadAuthCookie.getName() + "="
-					+ downloadAuthCookie.getValue());
+		
+		@Override
+		public InputStream openStream() throws IOException, GeneralSecurityException {
+			return openStream(
+					metadata.hasDownloadUrl() ? metadata.getDownloadUrl() : null,
+					metadata.hasGzippedDownloadUrl() ? metadata.getGzippedDownloadUrl() : null,
+					metadata.hasEncryptionParams() ? metadata.getEncryptionParams() : null);
 		}
 	}
-
-	public boolean hasPatchExpansion() {
-		return appDeliveryData.getAdditionalFileCount() > 1;
-	}
-
-	public long getPatchSize() {
-		return appDeliveryData.getAdditionalFile(1).getSize();
-	}
-
-	public int getPatchFileVersion() {
-		if (appDeliveryData.getAdditionalFileCount() > 1) {
-			return appDeliveryData.getAdditionalFile(1).getVersionCode();
+		
+	public class AdditionalFile extends AppFile<AppFileMetadata> {
+		public static final int MAIN = 0;
+		public static final int PATCH = 1;
+		
+		private final int index;
+		private final AppFileMetadata metadata;
+		
+		public AdditionalFile(int index) {
+			this.index = index;
+			this.metadata = appDeliveryData.getAdditionalFile(index);
 		}
-		return -1;
-	}
 
-	public int getSplitCount() {
-		return appDeliveryData.getSplitDeliveryDataCount();
+		public int getIndex() {
+			return index;
+		}
+		
+		@Override
+		public AppFileMetadata getMetadata() {
+			return metadata;
+		}
+		
+		@Override
+		public long getSize() {
+			return metadata.getSize();
+		}
+		
+		public int getVersionCode() {
+			return metadata.getVersionCode();
+		}
+		
+		@Override
+		public InputStream openStream() throws IOException, GeneralSecurityException {
+			return openStream(
+					metadata.hasDownloadUrl() ? metadata.getDownloadUrl() : null,
+					metadata.hasCompressedDownloadUrl() ? metadata.getCompressedDownloadUrl() : null,
+					null);
+		}
 	}
+	
+	public class SplitApkFile extends AppFile<SplitDeliveryData> {
+		private final int index;
+		private final SplitDeliveryData metadata;
 
-	public InputStream openSplitDelivery(int n) throws IOException {
-		if (getSplitCount() < 1) {
-			return null;
+		public SplitApkFile(int index) {
+			this.index = index;
+			this.metadata = appDeliveryData.getSplitDeliveryData(index);
 		}
-		if (compress) {
-			String url = appDeliveryData.getSplitDeliveryData(n)
-					.getGzippedDownloadUrl();
-			return new GZIPInputStream(api.executeDownload(url,
-					downloadAuthCookie.getName() + "=" + downloadAuthCookie.getValue()));
+		
+		@Override
+		public SplitDeliveryData getMetadata() {
+			return metadata;
 		}
-		else {
-			String url = appDeliveryData.getSplitDeliveryData(n).getDownloadUrl();
-			return api.executeDownload(url, downloadAuthCookie.getName() + "="
-					+ downloadAuthCookie.getValue());
+		
+		public String getId() {
+			return metadata.getId();
+		}
+		
+		
+		@Override
+		public long getSize() {
+			return metadata.getDownloadSize();
+		}
+		
+		@Override
+		public InputStream openStream() throws IOException, GeneralSecurityException {
+			return openStream(
+					metadata.hasDownloadUrl() ? metadata.getDownloadUrl() : null,
+					metadata.hasGzippedDownloadUrl() ? metadata.getGzippedDownloadUrl() : null,
+					null);
 		}
 	}
 
 	public String toString() {
 		return appDeliveryData.toString();
 	}
-
-	public String getSplitId(int n) {
-		if (getSplitCount() > 0) {
-			return appDeliveryData.getSplitDeliveryData(n).getId();
-		}
-		return null;
-	}
-
 }

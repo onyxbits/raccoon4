@@ -23,6 +23,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -193,117 +194,79 @@ class Play implements Variables {
 	/**
 	 * Download an app.
 	 * 
-	 * @param doc
+	 * @param name
 	 *          packagename
-	 * @param vc
+	 * @param versionCode
 	 *          versioncode (maybe -1 to get the latest one).
-	 * @param ot
+	 * @param offerType
 	 *          should always be 1.
 	 */
-	public static void downloadApp(String doc, int vc, int ot) {
+	public static void downloadApp(String name, int versionCode, int offerType) {
 		GooglePlayAPI api = createConnection();
-		DatabaseManager dbm = GlobalsProvider.getGlobals().get(
-				DatabaseManager.class);
-		int vcode = vc;
-		int len;
-		byte[] buffer = new byte[1024 * 8];
-		if (vc == -1) {
+		DatabaseManager dbm = GlobalsProvider.getGlobals().get(DatabaseManager.class);
+		if (versionCode == -1) {
 			try {
-				DetailsResponse dr = api.details(doc);
-				vcode = dr.getDocV2().getDetails().getAppDetails().getVersionCode();
-			}
-			catch (IOException e) {
+				DetailsResponse dr = api.details(name);
+				versionCode = dr.getDocV2().getDetails().getAppDetails().getVersionCode();
+			} catch (IOException e) {
 				Router.fail(e.getMessage());
 			}
 		}
 
 		DownloadData data = null;
-
 		try {
-			data = api.purchaseAndDeliver(doc, vcode, ot);
-		}
-		catch (Exception e) {
+			data = api.purchaseAndDeliver(name, versionCode, offerType);
+		} catch (Exception e) {
 			e.printStackTrace();
 			Router.fail(e.getMessage());
 		}
 
-		File apkFile = new AppInstallerNode(Layout.DEFAULT, doc, vcode).resolve();
-		apkFile.getParentFile().mkdirs();
-		File mainFile = new AppExpansionMainNode(Layout.DEFAULT, doc,
-				data.getMainFileVersion()).resolve();
-		File patchFile = new AppExpansionPatchNode(Layout.DEFAULT, doc,
-				data.getPatchFileVersion()).resolve();
-		List<File> splitFiles = new ArrayList<File>();
-
+		List<File> allFiles = new ArrayList<File>();
 		try {
-			InputStream in = data.openApp();
-			OutputStream out = new FileOutputStream(apkFile);
-			System.out.println(apkFile);
-			while ((len = in.read(buffer)) > 0) {
-				out.write(buffer, 0, len);
-				System.out.print('#');
-			}
-			System.out.println();
-			out.close();
-			AndroidApp download = AndroidAppDao.analyze(apkFile);
-
-			if (data.hasMainExpansion()) {
-				download.setMainVersion(data.getMainFileVersion());
-				in = data.openMainExpansion();
-				out = new FileOutputStream(mainFile);
-				System.out.println(mainFile);
-				while ((len = in.read(buffer)) > 0) {
-					out.write(buffer, 0, len);
-					System.out.print('#');
-				}
-				System.out.println();
-				out.close();
-			}
-			if (data.hasPatchExpansion()) {
-				download.setPatchVersion(data.getPatchFileVersion());
-				in = data.openPatchExpansion();
-				out = new FileOutputStream(patchFile);
-				System.out.println(patchFile);
-				while ((len = in.read(buffer)) > 0) {
-					out.write(buffer, 0, len);
-					System.out.print('#');
-				}
-				System.out.println();
-				out.close();
-			}
-			for (int i=0; i<data.getSplitCount(); i++) {
-				File splitFile = new File(apkFile.getParentFile(), data.getSplitId(i) + "-" + vcode + ".apk");
-				splitFiles.add(splitFile);
-				in = data.openSplitDelivery(i);
-				out = new FileOutputStream(splitFile);
-				System.out.println(splitFile);
-				while ((len = in.read(buffer)) > 0) {
-					out.write(buffer, 0, len);
-					System.out.print('#');
-				}
-				System.out.println();
-				out.close();
-			}
+			File mainApkFile = new AppInstallerNode(Layout.DEFAULT, name, versionCode).resolve();
+			downloadFileHelper(data.getMainApk(), mainApkFile, allFiles);
 			
-			dbm.get(AndroidAppDao.class).saveOrUpdate(download);
-			dbm.get(PlayAppOwnerDao.class).own(download, getProfile());
-
-			AppIconNode ain = new AppIconNode(Layout.DEFAULT, doc, vcode);
-			try {
-				ain.extractFrom(apkFile);
+			for (DownloadData.AdditionalFile additionalFile : data.getAdditionalFiles()) {
+				File destFile = null;
+				switch (additionalFile.getIndex()) {
+					case DownloadData.AdditionalFile.MAIN:
+						destFile = new AppExpansionMainNode(Layout.DEFAULT, name, additionalFile.getVersionCode()).resolve();
+						break;
+					case DownloadData.AdditionalFile.PATCH:
+						destFile = new AppExpansionPatchNode(Layout.DEFAULT, name, additionalFile.getVersionCode()).resolve();
+						break;
+					default:
+						System.err.println("Unsupported additional file index " + additionalFile.getIndex());
+				}
+				if (destFile != null) {
+					downloadFileHelper(additionalFile, destFile, allFiles);
+				}
 			}
-			catch (IOException e) {
-				// This is (probably) ok. Not all APKs contain icons.
+			for (DownloadData.SplitApkFile splitApkFile : data.getSplitApkFiles()) {
+				File destFile = new File(mainApkFile.getParentFile(), splitApkFile.getId() + "-" + versionCode + ".apk");
+				downloadFileHelper(splitApkFile, destFile, allFiles);
 			}
-		}
-		catch (Exception e) {
-			apkFile.delete();
-			mainFile.delete();
-			patchFile.delete();
-			for (File splitFile : splitFiles) {
-				splitFile.delete();
+		} catch (Exception e) {
+			for (File file : allFiles) {
+				file.delete();
 			}
 			Router.fail(e.getMessage());
+		}
+	}
+	
+	private static void downloadFileHelper(DownloadData.AppFile from, File to, List<File> allFiles)  throws IOException, GeneralSecurityException {
+		allFiles.add(to);
+		to.getParentFile().mkdirs();
+		System.out.println(to);
+		try (InputStream in = from.openStream(); OutputStream out = new FileOutputStream(to)) {
+			byte[] buffer = new byte[8192];
+			while (true) {
+				int n = in.read(buffer);
+				if (n < 0) break;
+				System.out.print('#');
+				out.write(buffer, 0, n);
+			}
+			System.out.println();
 		}
 	}
 
