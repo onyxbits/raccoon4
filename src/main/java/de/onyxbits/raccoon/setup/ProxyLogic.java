@@ -54,7 +54,7 @@ public class ProxyLogic extends WizardBuilder implements ActionListener,
 		password.setMargin(new Insets(2, 2, 2, 2));
 		server = new JTextField(20);
 		server.setMargin(new Insets(2, 2, 2, 2));
-		port = new JSpinner(new SpinnerNumberModel(3218, 1, Short.MAX_VALUE, 1));
+		port = new JSpinner(new SpinnerNumberModel(3218, 1, 65535, 1));
 		port.setEditor(new JSpinner.NumberEditor(port, "#"));
 		HyperTextPane about = new HyperTextPane(
 				Messages.getString("ProxyLogic.about")).withWidth(500)
@@ -137,7 +137,12 @@ public class ProxyLogic extends WizardBuilder implements ActionListener,
 		server.setText(pp.getProxyAddress());
 		username.setText(pp.getProxyUser());
 		password.setText(pp.getProxyPassword());
-		port.setValue(pp.getProxyPort());
+		if (pp.getProxyPort() == 0) {
+			port.setValue(3128);
+		}
+		else {
+			port.setValue(pp.getProxyPort());
+		}
 		previous.setEnabled(true);
 		next.setEnabled(server.getText().length() > 0);
 	}

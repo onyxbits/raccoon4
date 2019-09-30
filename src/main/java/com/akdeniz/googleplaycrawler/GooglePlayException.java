@@ -14,32 +14,43 @@ import com.google.protobuf.WireFormat;
 
 public class GooglePlayException extends IOException {
 	private static final long serialVersionUID = 1L;
-	
-	private final int httpStatus;
 
+	private final int httpStatus;
 
 	public GooglePlayException(int httpStatus, String message) {
 		super(message);
 		this.httpStatus = httpStatus;
 	}
-	
+
 	public int getHttpStatus() {
 		return httpStatus;
 	}
-	
+
 	public static GooglePlayException create(HttpResponse httpResponse) {
-		String message = httpResponse.getStatusLine().getReasonPhrase();	
-		
-		// If the reponse contains a Protobuf response, retrieves the message from a ResponseWrapper object
-		try (InputStream content = httpResponse.getEntity().getContent()) {
-			if ("application/protobuf".equals(httpResponse.getEntity().getContentType().getValue())) {
+		String message = httpResponse.getStatusLine().getReasonPhrase();
+
+		// If the reponse contains a Protobuf response, retrieves the message from a
+		// ResponseWrapper object
+		InputStream content=null;
+		try {
+			content = httpResponse.getEntity().getContent();
+			if ("application/protobuf".equals(httpResponse.getEntity()
+					.getContentType().getValue())) {
 				ResponseWrapper rw = ResponseWrapper.parseFrom(content);
 				if (rw.hasCommands() && rw.getCommands().hasDisplayErrorMessage()) {
 					message = rw.getCommands().getDisplayErrorMessage();
 				}
 			}
-		} catch (Exception e) {}
+		}
+		catch (Exception e) {
+		}
+		try {
+			content.close();
+		}
+		catch (IOException e) {
+		}
 
-		return new GooglePlayException(httpResponse.getStatusLine().getStatusCode(), message);
+		return new GooglePlayException(
+				httpResponse.getStatusLine().getStatusCode(), message);
 	}
 }
