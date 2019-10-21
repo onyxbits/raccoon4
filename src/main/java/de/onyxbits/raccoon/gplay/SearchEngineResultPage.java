@@ -102,7 +102,11 @@ public class SearchEngineResultPage {
 				break;
 			}
 			case 45: {
-				items.addAll(doc.getChildList());
+				for (DocV2 d:doc.getChildList()) {
+					if (d.getDocType()==1) {
+						items.add(d);
+					}
+				}
 				nextPageUrl = null;
 				if (doc.hasContainerMetadata()) {
 					nextPageUrl = doc.getContainerMetadata().getNextPageUrl();
