@@ -158,19 +158,30 @@ public class GooglePlayAPI {
 	}
 
 	/**
-	 * Performs authentication on "ac2dm" service and match up android id,
-	 * security token and email by checking them in on this server.
+	 * Performs authentication on "ac2dm" service using a default device profile
+	 * and match up android id, security token and email by checking them in on this server.
+	 *
+	 * This function sets check-inded android ID and that can be taken either by
+	 * using <code>getToken()</code> or from returned
+	 * {@link AndroidCheckinResponse} instance.
+	 *
+	 */
+	public AndroidCheckinResponse checkin() throws Exception {
+		return checkin(Utils.generateAndroidCheckinRequest());
+	}
+
+	/**
+	 * Performs authentication on "ac2dm" service sugin the specified checkin info
+	 * and match up android id, security token and email by checking them in on this server.
 	 * 
 	 * This function sets check-inded android ID and that can be taken either by
 	 * using <code>getToken()</code> or from returned
 	 * {@link AndroidCheckinResponse} instance.
 	 * 
 	 */
-	public AndroidCheckinResponse checkin() throws Exception {
-
+	public AndroidCheckinResponse checkin(AndroidCheckinRequest checkinRequest) throws Exception {
 		// this first checkin is for generating android-id
-		AndroidCheckinResponse checkinResponse = postCheckin(Utils
-				.generateAndroidCheckinRequest().toByteArray());
+		AndroidCheckinResponse checkinResponse = postCheckin(checkinRequest.toByteArray());
 		this.setAndroidID(BigInteger.valueOf(checkinResponse.getGsfId()).toString(
 				16));
 		setSecurityToken((BigInteger.valueOf(checkinResponse.getSecurityToken())
@@ -180,10 +191,8 @@ public class GooglePlayAPI {
 		// login();
 		// String c2dmAuth= getToken();
 
-		AndroidCheckinRequest.Builder checkInbuilder = AndroidCheckinRequest
-				.newBuilder(Utils.generateAndroidCheckinRequest());
-
-		AndroidCheckinRequest build = checkInbuilder
+		AndroidCheckinRequest build = AndroidCheckinRequest
+				.newBuilder(checkinRequest)
 				.setId(new BigInteger(this.getAndroidID(), 16).longValue())
 				.setSecurityToken(new BigInteger(getSecurityToken(), 16).longValue())
 				.addAccountCookie("[" + getEmail() + "]").addAccountCookie(c2dmAuth)
