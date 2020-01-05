@@ -127,7 +127,7 @@ public class PlayAppOwnerDao extends DataAccessObject {
 
 		try {
 			st = c
-					.prepareStatement("SELECT aid, packagename, versioncode, mainversion, patchversion, name, version, minsdk FROM androidapps NATURAL JOIN playappownership WHERE pid = ? ORDER BY name, versioncode DESC");
+					.prepareStatement("SELECT aid, packagename, versioncode, mainversion, patchversion, name, version, minsdk FROM androidapps NATURAL JOIN playappownership WHERE pid = ? ORDER BY packagename, versioncode DESC");
 			st.setString(1, profile.getAlias());
 			st.execute();
 			res = st.getResultSet();
