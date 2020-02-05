@@ -84,7 +84,7 @@ public class LoginLogic extends WizardBuilder {
 		try {
 			PlayProfile pp = globals.get(PlayProfile.class);
 			GooglePlayAPI api = PlayManager.createConnection(pp);
-			api.setClient(createClient());
+			api.setClient(createLoginClient());
 			api.login();
 			pp.setToken(api.getToken());
 		}
@@ -93,12 +93,14 @@ public class LoginLogic extends WizardBuilder {
 		}
 	}
 
-	private HttpClient createClient() {
+	protected static HttpClient createLoginClient() {
 		RegistryBuilder<ConnectionSocketFactory> rb = RegistryBuilder.create();
 		rb.register("https", new DroidConnectionSocketFactory());
 		// rb.register("http", new DroidConnectionSocketFactory());
 		PoolingHttpClientConnectionManager connManager = new PoolingHttpClientConnectionManager(
 				rb.build());
+		connManager.setMaxTotal(100);
+		connManager.setDefaultMaxPerRoute(30);
 		// TODO: Increase the max connection limits. If we are doing bulkdownloads,
 		// we will download from multiple hosts.
 		int timeout = 9;

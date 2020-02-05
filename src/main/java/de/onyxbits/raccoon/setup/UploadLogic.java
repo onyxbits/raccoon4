@@ -84,6 +84,7 @@ public class UploadLogic extends WizardBuilder {
 		}
 
 		GooglePlayAPI api = PlayManager.createConnection(pp);
+		api.setClient(LoginLogic.createLoginClient());
 		try {
 			if (pp.getGsfId() == null) {
 				api.checkin(); // Generates the GSF ID
