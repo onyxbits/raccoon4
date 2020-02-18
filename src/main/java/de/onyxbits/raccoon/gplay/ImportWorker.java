@@ -54,6 +54,7 @@ class ImportWorker extends SwingWorker<List<BulkDetailsEntry>, Object> {
 		try {
 			List<BulkDetailsEntry> entries = get();
 			for (BulkDetailsEntry entry : entries) {
+				if (!entry.hasDoc()) continue; // Entry does not have doc ignore
 				doc = entry.getDoc();
 				globals.get(TransferManager.class).schedule(globals,
 						new AppDownloadWorker(globals, doc),TransferManager.WAN);
