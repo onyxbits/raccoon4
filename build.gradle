@@ -53,6 +53,7 @@ createExe {
   jar = "lib/${project.tasks.fatJar.archiveName}"
   icon= '../../icon.ico'
   jreMinVersion ='1.7.0'
+  bundledJrePath = '%JAVA_HOME%'
 }
 
 // In this section you declare the dependencies for your production and test code
