@@ -79,6 +79,7 @@ class FullAppDescriptionBuilder extends AbstractPanelBuilder implements
 	private JLabel ratingCount;
 	private JLabel price;
 	private JLabel downloads;
+	private JLabel version;
 	private DocV2 current;
 	private TitleStrip titleStrip;
 	private ScreenshotBuilder screenshots;
@@ -129,6 +130,9 @@ class FullAppDescriptionBuilder extends AbstractPanelBuilder implements
 				loadIcon("/icons/famfam/icons/calendar.png"), SwingConstants.LEFT);
 		Dimension max = published.getPreferredSize();
 		published.setPreferredSize(max);
+        version = new JLabel(loadIcon("/icons/famfam/icons/world.png"),
+                SwingConstants.LEFT);
+        version.setPreferredSize(max);
 		size = new JLabel(loadIcon("/icons/famfam/icons/package.png"),
 				SwingConstants.LEFT);
 		size.setPreferredSize(max);
@@ -158,6 +162,10 @@ class FullAppDescriptionBuilder extends AbstractPanelBuilder implements
 		gbc.gridx = 1;
 		gbc.gridy = 0;
 		stats.add(published, gbc);
+
+		gbc.gridx = 2;
+		gbc.gridy = 0;
+		stats.add(version, gbc);
 
 		gbc.gridx = 0;
 		gbc.gridy = 1;
@@ -232,6 +240,7 @@ class FullAppDescriptionBuilder extends AbstractPanelBuilder implements
 			price.setText(doc.getOffer(0).getFormattedAmount());
 		}
 		published.setText(doc.getDetails().getAppDetails().getUploadDate());
+		version.setText(doc.getDetails().getAppDetails().getVersionString());
 		downloads.setText(doc.getDetails().getAppDetails().getNumDownloads());
 
 		size.setText(TransferManager.humanReadableByteCount(doc.getDetails()
