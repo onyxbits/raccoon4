@@ -66,7 +66,7 @@ class JellyBeanTlsClient extends DefaultTlsClient {
 
 	@Override
 	public TlsAuthentication getAuthentication() throws IOException {
-		return new DefaultTlsAuthentication();
+		return new DefaultTlsAuthentication(selectedCipherSuite);
 	}
 
 	public ProtocolVersion getClientVersion() {
