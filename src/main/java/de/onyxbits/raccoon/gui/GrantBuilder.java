@@ -26,6 +26,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
@@ -65,14 +66,19 @@ public class GrantBuilder extends AbstractPanelBuilder implements
 		gbc.gridx = 0;
 		gbc.gridy = 0;
 		gbc.gridwidth = 2;
-		gbc.fill = GridBagConstraints.NONE;
+		gbc.weightx = 1;
+		gbc.weighty = 1;
+		gbc.fill = GridBagConstraints.BOTH;
 		gbc.anchor = GridBagConstraints.NORTHWEST;
 		content.add(about, gbc);
 
 		gbc.gridy = 1;
 		gbc.gridwidth = 1;
 		gbc.insets.top = 15;
+		gbc.weightx = 0;
+		gbc.weighty = 0;
 		gbc.anchor = GridBagConstraints.WEST;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
 		content.add(new JLabel(Messages.getString(Traits.rev("yek.esnecil"))), gbc);
 
 		gbc.gridx = 1;
