@@ -83,7 +83,9 @@ public class DownloadData {
 			NoSuchProviderException, NoSuchPaddingException, InvalidKeyException,
 			InvalidAlgorithmParameterException {
 		InputStream ret = null;
-		if (compress) {
+		if (compress
+				&& appDeliveryData.getGzippedDownloadUrl() != null
+				&& !appDeliveryData.getGzippedDownloadUrl().isEmpty()) {
 			ret = new GZIPInputStream(api.executeDownload(
 					appDeliveryData.getGzippedDownloadUrl(), downloadAuthCookie.getName()
 							+ "=" + downloadAuthCookie.getValue()));
@@ -140,7 +142,9 @@ public class DownloadData {
 		if (appDeliveryData.getAdditionalFileCount() < 1) {
 			return null;
 		}
-		if (compress) {
+		if (compress
+				&& appDeliveryData.getAdditionalFile(0).getCompressedDownloadUrl() != null
+				&& !appDeliveryData.getAdditionalFile(0).getCompressedDownloadUrl().isEmpty()) {
 			String url = appDeliveryData.getAdditionalFile(0)
 					.getCompressedDownloadUrl();
 			return new GZIPInputStream(api.executeDownload(url,
@@ -177,7 +181,9 @@ public class DownloadData {
 		if (appDeliveryData.getAdditionalFileCount() < 2) {
 			return null;
 		}
-		if (compress) {
+		if (compress
+				&& appDeliveryData.getAdditionalFile(1).getCompressedDownloadUrl() != null
+				&& !appDeliveryData.getAdditionalFile(1).getCompressedDownloadUrl().isEmpty()) {
 			String url = appDeliveryData.getAdditionalFile(1)
 					.getCompressedDownloadUrl();
 			return new GZIPInputStream(api.executeDownload(url,
@@ -213,7 +219,9 @@ public class DownloadData {
 		if (getSplitCount() < 1) {
 			return null;
 		}
-		if (compress) {
+		if (compress
+				&& appDeliveryData.getSplitDeliveryData(n).getGzippedDownloadUrl() != null
+				&& !appDeliveryData.getSplitDeliveryData(n).getGzippedDownloadUrl().isEmpty()) {
 			String url = appDeliveryData.getSplitDeliveryData(n)
 					.getGzippedDownloadUrl();
 			return new GZIPInputStream(api.executeDownload(url,
