@@ -510,6 +510,7 @@ public class GooglePlayAPI {
 	public InputStream executeDownload(String url, String cookie)
 			throws IOException {
 
+		if (cookie!= null) {
 		String[][] headerParams = new String[][] {
 				{ "Cookie", cookie },
 				{ "User-Agent",
@@ -517,6 +518,15 @@ public class GooglePlayAPI {
 
 		HttpEntity httpEntity = executeGet(url, null, headerParams);
 		return httpEntity.getContent();
+		}
+		else {
+			String[][] headerParams = new String[][] {
+				{ "User-Agent",
+						"AndroidDownloadManager/4.1.1 (Linux; U; Android 4.1.1; Nexus S Build/JRO03E)" }, };
+
+		HttpEntity httpEntity = executeGet(url, null, headerParams);
+		return httpEntity.getContent();
+		}
 	}
 
 	/**
