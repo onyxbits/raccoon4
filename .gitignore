@@ -15,3 +15,6 @@ DEADJOE
 .classpath
 .project
 .settings/
+
+# IntelliJ IDEA files
+.idea
