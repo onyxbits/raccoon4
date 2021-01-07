@@ -13,10 +13,13 @@ Building
 --------
 
 Raccoon is build with gradle. It is recommended to use the "launch4j" task
-instead of the standard one. Also, the version of the build must be submitted
-via the "version" property, e.g.:
+instead of the standard one. Version can be changed via 'gradle.properties' file.
 
-gradlew -Pversion=4.x.y-DEV createExe
+#### How to build on Linux/MacOS/Windows (git bash/powershell terminal):
+./gradlew createExe
+
+#### How to build on Windows (cmd.exe terminal):
+gradlew createExe
 
 Prebuild binaries are available at
 

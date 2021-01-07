@@ -9,15 +9,10 @@
 
 
 plugins {
-  id "edu.sc.seis.launch4j" version "2.4.3"
+    id "java"
+    id "eclipse"
+    id "edu.sc.seis.launch4j" version "2.4.9"
 }
-
-
-// Apply the java plugin to add support for Java
-apply plugin: 'java'
-apply plugin: 'eclipse'
-apply plugin: 'edu.sc.seis.launch4j'
-
 
 // Settings
 sourceCompatibility = 1.7
@@ -35,10 +30,10 @@ repositories {
 
 task fatJar(type: Jar) {
     manifest {
-      // version must be supplied via '-Pversion=' on the commandline
-      attributes 'Implementation-Version': version, 'Main-Class': 'de.onyxbits.raccoon.Main'
+      // version can be changed via 'gradle.properties' file
+      attributes 'Implementation-Version': archiveVersion, 'Main-Class': 'de.onyxbits.raccoon.Main'
     }
-    baseName = project.name
+    archiveBaseName = project.name
     from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
     exclude 'META-INF/*', 'META-INF/maven/'
     with jar
@@ -78,3 +73,7 @@ dependencies {
     testCompile "junit:junit:4.11"
 }
 
+wrapper {
+    gradleVersion = "6.7.1"
+    distributionType = Wrapper.DistributionType.ALL
+}
