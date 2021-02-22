@@ -78,6 +78,9 @@ public class UpdateAppWorker extends SwingWorker<Integer, Object> {
 			}
 			System.out.println(app.getAppId()+" "+app.getPackageName());
 		}
+		if (pns.size()==0) {
+			return 0;
+		}
 		GooglePlayAPI api = PlayManager.createConnection(profile);
 
 		BulkDetailsResponse response = api.bulkDetails(pns);

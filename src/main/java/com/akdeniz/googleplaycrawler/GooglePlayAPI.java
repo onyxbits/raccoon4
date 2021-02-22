@@ -378,11 +378,11 @@ public class GooglePlayAPI {
 			throws IOException {
 
 		Builder bulkDetailsRequestBuilder = BulkDetailsRequest.newBuilder();
-		bulkDetailsRequestBuilder.addAllDocid(packageNames).setIncludeDetails(true);
+		bulkDetailsRequestBuilder.addAllDocid(packageNames).setIncludeDetails(true).setIncludeChildDocs(true);
 
 		ResponseWrapper responseWrapper = executePOSTRequest(BULKDETAILS_URL,
 				bulkDetailsRequestBuilder.build().toByteArray(),
-				"application/x-protobuf");
+				"application/protobuf");
 
 		return responseWrapper.getPayload().getBulkDetailsResponse();
 	}
