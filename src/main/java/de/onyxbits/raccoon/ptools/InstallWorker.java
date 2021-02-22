@@ -194,7 +194,7 @@ public class InstallWorker implements TransferWorker, ActionListener {
 					.exec("pm install -rtd " + device.getUserTempDir() + inst.getName());
 		}
 		else {
-			String sessionId = device.exec("pm install-create -S " + instSize).trim();
+			String sessionId = device.exec("pm install-create -r -S " + instSize).trim();
 			int index = 0;
 			if (sessionId.startsWith("Success:")) {
 				sessionId = sessionId.replaceFirst(".*\\[", "");
