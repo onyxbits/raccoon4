@@ -73,17 +73,16 @@ public final class AndroidAppDao extends DataAccessObject {
 
 		try {
 			c.setAutoCommit(false);
-			st = c
-					.prepareStatement("DELETE FROM androidapps WHERE packagename = ? and versioncode = ?");
+			st = c.prepareStatement(
+					"DELETE FROM androidapps WHERE packagename = ? and versioncode = ?");
 			st.setString(1, app.getPackageName());
 			st.setInt(2, app.getVersionCode());
 			st.execute();
 			st.close();
 
-			st = c
-					.prepareStatement(
-							"INSERT INTO androidapps ( aid, packagename, versioncode, mainversion, patchversion, name, version, minsdk) VALUES ( DEFAULT, ?, ?, ?, ?, ?, ?, ?)",
-							Statement.RETURN_GENERATED_KEYS);
+			st = c.prepareStatement(
+					"INSERT INTO androidapps ( aid, packagename, versioncode, mainversion, patchversion, name, version, minsdk) VALUES ( DEFAULT, ?, ?, ?, ?, ?, ?, ?)",
+					Statement.RETURN_GENERATED_KEYS);
 
 			st.setString(1, app.getPackageName());
 			st.setInt(2, app.getVersionCode());
@@ -100,8 +99,8 @@ public final class AndroidAppDao extends DataAccessObject {
 			st.close();
 
 			if (app.getUsesPermissions() != null) {
-				st = c
-						.prepareStatement("INSERT INTO permissions (pid, name) VALUES (?, ?)");
+				st = c.prepareStatement(
+						"INSERT INTO permissions (pid, name) VALUES (?, ?)");
 				for (String p : app.getUsesPermissions()) {
 					st.setLong(1, app.getAppId());
 					st.setString(2, p);
@@ -111,8 +110,8 @@ public final class AndroidAppDao extends DataAccessObject {
 			}
 
 			if (app.getGroups() != null) {
-				st = c
-						.prepareStatement("INSERT INTO androidapps_appgroups (aid, gid) VALUES (?, ?)");
+				st = c.prepareStatement(
+						"INSERT INTO androidapps_appgroups (aid, gid) VALUES (?, ?)");
 				for (AppGroup g : app.getGroups()) {
 					st.setLong(1, app.getAppId());
 					st.setLong(2, g.getGroupId());
@@ -135,8 +134,8 @@ public final class AndroidAppDao extends DataAccessObject {
 			}
 			c.setAutoCommit(true);
 			manager.disconnect(c);
-			fireOnDataSetChangeEvent(new DatasetEvent(this, DatasetEvent.CREATE
-					| DatasetEvent.UPDATE));
+			fireOnDataSetChangeEvent(
+					new DatasetEvent(this, DatasetEvent.CREATE | DatasetEvent.UPDATE));
 		}
 
 		return app;
@@ -167,8 +166,8 @@ public final class AndroidAppDao extends DataAccessObject {
 			for (AndroidApp app : apps) {
 				// An obb file may be shared between app versions. Do NOT delete an OBB,
 				// if it is still referenced by another APK.
-				st = c
-						.prepareStatement("SELECT * FROM androidapps WHERE packagename = ? AND mainversion = ?");
+				st = c.prepareStatement(
+						"SELECT * FROM androidapps WHERE packagename = ? AND mainversion = ?");
 				st.setString(1, app.getPackageName());
 				st.setInt(2, app.getMainVersion());
 				st.execute();
@@ -196,6 +195,11 @@ public final class AndroidAppDao extends DataAccessObject {
 
 				apk.delete();
 				icon.delete();
+				for (File file : folder.listFiles()) {
+					if (file.getName().endsWith("-" + app.getVersionCode() + ".apk")) {
+						file.delete();
+					}
+				}
 				if (folder.list().length == 0) {
 					folder.delete();
 				}
@@ -211,7 +215,7 @@ public final class AndroidAppDao extends DataAccessObject {
 			c.setAutoCommit(true);
 			manager.disconnect(c);
 		}
-		fireOnDataSetChangeEvent(new DatasetEvent(this, DatasetEvent.DELETE));
+		//fireOnDataSetChangeEvent(new DatasetEvent(this, DatasetEvent.DELETE));
 	}
 
 	/**
@@ -229,8 +233,8 @@ public final class AndroidAppDao extends DataAccessObject {
 		ResultSet res = null;
 
 		try {
-			st = c
-					.prepareStatement("SELECT * FROM androidapps WHERE packagename = ? AND versioncode = ?");
+			st = c.prepareStatement(
+					"SELECT * FROM androidapps WHERE packagename = ? AND versioncode = ?");
 			st.setString(1, app.getPackageName());
 			st.setInt(2, app.getVersionCode());
 			st.execute();
@@ -253,8 +257,8 @@ public final class AndroidAppDao extends DataAccessObject {
 		ResultSet res = null;
 		PreparedStatement st = null;
 		try {
-			st = c
-					.prepareStatement("SELECT aid, packagename, versioncode, mainversion, patchversion, name, version, minsdk FROM androidapps NATURAL JOIN androidapps_appgroups where gid = ? ORDER BY name, versioncode");
+			st = c.prepareStatement(
+					"SELECT aid, packagename, versioncode, mainversion, patchversion, name, version, minsdk FROM androidapps NATURAL JOIN androidapps_appgroups where gid = ? ORDER BY name, versioncode");
 			st.setLong(1, gid);
 			st.execute();
 			res = st.getResultSet();
@@ -309,8 +313,8 @@ public final class AndroidAppDao extends DataAccessObject {
 		PreparedStatement st = null;
 
 		try {
-			st = c
-					.prepareStatement("SELECT aid, packagename, versioncode, mainversion, patchversion, name, version, minsdk FROM androidapps WHERE packagename LIKE ? ORDER BY name, versioncode");
+			st = c.prepareStatement(
+					"SELECT aid, packagename, versioncode, mainversion, patchversion, name, version, minsdk FROM androidapps WHERE packagename LIKE ? ORDER BY name, versioncode");
 			st.setString(1, pn);
 			st.execute();
 			res = st.getResultSet();
@@ -362,8 +366,8 @@ public final class AndroidAppDao extends DataAccessObject {
 		PreparedStatement st = null;
 
 		try {
-			st = c
-					.prepareStatement("SELECT DISTINCT(packagename) FROM androidapps ORDER BY packagename");
+			st = c.prepareStatement(
+					"SELECT DISTINCT(packagename) FROM androidapps ORDER BY packagename");
 			st.execute();
 			res = st.getResultSet();
 			while (res.next()) {
@@ -406,8 +410,8 @@ public final class AndroidAppDao extends DataAccessObject {
 		PreparedStatement st = null;
 
 		try {
-			st = c
-					.prepareStatement("SELECT aid, packagename, versioncode, mainversion, patchversion, name, version, minsdk FROM androidapps ORDER BY name, versioncode");
+			st = c.prepareStatement(
+					"SELECT aid, packagename, versioncode, mainversion, patchversion, name, version, minsdk FROM androidapps ORDER BY name, versioncode");
 			st.execute();
 			res = st.getResultSet();
 			while (res.next()) {
@@ -460,8 +464,8 @@ public final class AndroidAppDao extends DataAccessObject {
 		AndroidApp app = null;
 
 		try {
-			st = c
-					.prepareStatement("SELECT aid, packagename, versioncode, mainversion, patchversion, name, version, minsdk FROM androidapps WHERE aid = ?");
+			st = c.prepareStatement(
+					"SELECT aid, packagename, versioncode, mainversion, patchversion, name, version, minsdk FROM androidapps WHERE aid = ?");
 			st.setLong(1, id);
 			st.execute();
 			res = st.getResultSet();
@@ -524,8 +528,8 @@ public final class AndroidAppDao extends DataAccessObject {
 			st.close();
 			res.close();
 
-			st = c
-					.prepareStatement("SELECT gid,name FROM androidapps_appgroups JOIN appgroups ON (appgroups.gid=androidapps_appgroups.gid) WHERE aid = ? ");
+			st = c.prepareStatement(
+					"SELECT gid,name FROM androidapps_appgroups JOIN appgroups ON (appgroups.gid=androidapps_appgroups.gid) WHERE aid = ? ");
 			st.setLong(1, app.getAppId());
 			res = st.executeQuery();
 			ArrayList<AppGroup> lst = new ArrayList<AppGroup>();
