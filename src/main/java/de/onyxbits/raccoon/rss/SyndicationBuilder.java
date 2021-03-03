@@ -97,7 +97,7 @@ public class SyndicationBuilder extends AbstractPanelBuilder {
 		for (FeedItem item : items) {
 			sb.append("<dt style=\"margin:3px;font-weight:700;\"><a href=\"");
 			sb.append(item.getLink());
-			sb.append("?utm_source=raccoon\">");
+			sb.append("?utm_source=raccoon4\">");
 			if (!"".equals(item.getTitle())) { 
 			sb.append(item.getTitle());
 			}
