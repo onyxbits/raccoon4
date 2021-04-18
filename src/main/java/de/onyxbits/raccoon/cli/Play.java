@@ -204,23 +204,33 @@ class Play implements Variables {
 		GooglePlayAPI api = createConnection();
 		DatabaseManager dbm = GlobalsProvider.getGlobals().get(
 				DatabaseManager.class);
+		boolean paid = false;
 		int vcode = vc;
 		int len;
 		byte[] buffer = new byte[1024 * 8];
-		if (vc == -1) {
-			try {
-				DetailsResponse dr = api.details(doc);
+
+		try {
+			DetailsResponse dr = api.details(doc);
+			paid = dr.getDocV2().getOffer(0).getCheckoutFlowRequired();
+			if (vc == -1) {
 				vcode = dr.getDocV2().getDetails().getAppDetails().getVersionCode();
 			}
-			catch (IOException e) {
-				Router.fail(e.getMessage());
-			}
+		}
+		catch (IOException e) {
+			Router.fail(e.getMessage());
 		}
 
 		DownloadData data = null;
 
 		try {
-			data = api.purchaseAndDeliver(doc, vcode, ot);
+			if (paid) {
+				// For apps that must be purchased before download
+				data = api.delivery(doc, vcode, ot);
+			}
+			else {
+				// for apps that can be downloaded free of charge.
+				data = api.purchaseAndDeliver(doc, vcode, ot);
+			}
 		}
 		catch (Exception e) {
 			e.printStackTrace();
