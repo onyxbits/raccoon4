@@ -199,8 +199,10 @@ class Play implements Variables {
 	 *          versioncode (maybe -1 to get the latest one).
 	 * @param ot
 	 *          should always be 1.
+	 * @param downloadDir
+	 *          alternate download location
 	 */
-	public static void downloadApp(String doc, int vc, int ot) {
+	public static void downloadApp(String doc, int vc, int ot, String downloadDir) {
 		GooglePlayAPI api = createConnection();
 		DatabaseManager dbm = GlobalsProvider.getGlobals().get(
 				DatabaseManager.class);
@@ -237,12 +239,12 @@ class Play implements Variables {
 			Router.fail(e.getMessage());
 		}
 
-		File apkFile = new AppInstallerNode(Layout.DEFAULT, doc, vcode).resolve();
+		File apkFile = new AppInstallerNode(Layout.DEFAULT, doc, vcode).resolve(downloadDir);
 		apkFile.getParentFile().mkdirs();
 		File mainFile = new AppExpansionMainNode(Layout.DEFAULT, doc,
-				data.getMainFileVersion()).resolve();
+				data.getMainFileVersion()).resolve(downloadDir);
 		File patchFile = new AppExpansionPatchNode(Layout.DEFAULT, doc,
-				data.getPatchFileVersion()).resolve();
+				data.getPatchFileVersion()).resolve(downloadDir);
 		List<File> splitFiles = new ArrayList<File>();
 
 		try {
@@ -294,16 +296,18 @@ class Play implements Variables {
 				System.out.println();
 				out.close();
 			}
-			
-			dbm.get(AndroidAppDao.class).saveOrUpdate(download);
-			dbm.get(PlayAppOwnerDao.class).own(download, getProfile());
 
-			AppIconNode ain = new AppIconNode(Layout.DEFAULT, doc, vcode);
-			try {
-				ain.extractFrom(apkFile);
-			}
-			catch (IOException e) {
-				// This is (probably) ok. Not all APKs contain icons.
+			if (downloadDir == "") {
+				dbm.get(AndroidAppDao.class).saveOrUpdate(download);
+				dbm.get(PlayAppOwnerDao.class).own(download, getProfile());
+
+				AppIconNode ain = new AppIconNode(Layout.DEFAULT, doc, vcode);
+				try {
+					ain.extractFrom(apkFile);
+				}
+				catch (IOException e) {
+					// This is (probably) ok. Not all APKs contain icons.
+				}
 			}
 		}
 		catch (Exception e) {
@@ -343,7 +347,7 @@ class Play implements Variables {
 					int lvc = map.get(pn).getVersionCode();
 					if (lvc < rvc) {
 						System.out.println("^\t" + pn + "\t" + lvc + "\t->\t" + rvc);
-						downloadApp(pn, rvc, 1);
+						downloadApp(pn, rvc, 1, "");
 					}
 					else {
 						System.out.println("=\t" + pn + "\t" + lvc + "\t->\t" + rvc);

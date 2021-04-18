@@ -82,7 +82,7 @@ public class AppExpansionPatchNode extends AppNode implements FilenameFilter {
 	public static AppExpansionPatchNode findFor(AppInstallerNode ain) {
 		AppExpansionPatchNode tmp = new AppExpansionPatchNode(ain.layout,
 				ain.packageName, ain.versionCode);
-		String[] candidates = tmp.resolveContainer().list(tmp);
+		String[] candidates = tmp.resolveContainer("").list(tmp);
 		if (candidates.length == 0) {
 			return null;
 		}
