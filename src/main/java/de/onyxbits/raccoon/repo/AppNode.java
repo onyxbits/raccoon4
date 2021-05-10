@@ -37,8 +37,12 @@ public abstract class AppNode extends AbstractNode {
 		FileUtils.copyFile(src, resolve());
 	}
 
+	public final File resolve(String appsDir) {
+		return new File(resolveContainer(appsDir), getFileName());
+	}
+
 	public final File resolve() {
-		return new File(resolveContainer(), getFileName());
+		return new File(resolveContainer(""), getFileName());
 	}
 
 	/**
@@ -48,8 +52,12 @@ public abstract class AppNode extends AbstractNode {
 	 *          layout to resolve against
 	 * @return the directory of the app.
 	 */
-	public final File resolveContainer() {
-		return new File(layout.appsDir, packageName);
+	public final File resolveContainer(String appsDir) {
+		if (appsDir != "") {
+			return new File(appsDir, packageName);
+		} else {
+			return new File(layout.appsDir, packageName);
+		}
 	}
 
 	/**

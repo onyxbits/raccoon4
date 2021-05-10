@@ -98,11 +98,17 @@ public class Router {
 		playAppDownload.setArgName("pn[,vc[,ot]]");
 		options.addOption(playAppDownload);
 
+		Option playAppDownloadDirectory = new Option(null, "gpa-download-dir", true,
+				Messages.getString(DESC + "gpa-download-dir"));
+		playAppDownloadDirectory.setArgName("directory");
+		options.addOption(playAppDownloadDirectory);
+
 		Option playUpdate = new Option(null, "gpa-update", false,
 				Messages.getString(DESC + "gpa-update"));
 		options.addOption(playUpdate);
 
 		CommandLine commandLine = null;
+		String downloadDir = "";
 		try {
 			commandLine = new DefaultParser().parse(options, args);
 		}
@@ -157,6 +163,20 @@ public class Router {
 			Play.updateApps();
 		}
 
+		if (commandLine.hasOption(playAppDownloadDirectory.getLongOpt())) {
+			downloadDir = commandLine.getOptionValue(playAppDownloadDirectory.getLongOpt());
+			if (downloadDir == "") {
+				new HelpFormatter().printHelp("raccoon", Messages.getString("header"),
+						options, Messages.getString("footer"), true);
+				System.exit(1);
+			}
+			try {
+				downloadDir = new File(downloadDir).getAbsolutePath();
+			} catch (Exception e) {
+				Router.fail("play.directory", downloadDir);
+			}
+		}
+
 		if (commandLine.hasOption(playAppDownload.getLongOpt())) {
 			String[] tmp = commandLine.getOptionValue(playAppDownload.getLongOpt())
 					.split(",");
@@ -179,7 +199,7 @@ public class Router {
 			}
 			catch (Exception e) {
 			}
-			Play.downloadApp(doc, vc, ot);
+			Play.downloadApp(doc, vc, ot, downloadDir);
 		}
 	}
 }

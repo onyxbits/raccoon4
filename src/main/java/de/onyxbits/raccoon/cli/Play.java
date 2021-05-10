@@ -199,40 +199,52 @@ class Play implements Variables {
 	 *          versioncode (maybe -1 to get the latest one).
 	 * @param ot
 	 *          should always be 1.
+	 * @param downloadDir
+	 *          alternate download location
 	 */
-	public static void downloadApp(String doc, int vc, int ot) {
+	public static void downloadApp(String doc, int vc, int ot, String downloadDir) {
 		GooglePlayAPI api = createConnection();
 		DatabaseManager dbm = GlobalsProvider.getGlobals().get(
 				DatabaseManager.class);
+		boolean paid = false;
 		int vcode = vc;
 		int len;
 		byte[] buffer = new byte[1024 * 8];
-		if (vc == -1) {
-			try {
-				DetailsResponse dr = api.details(doc);
+
+		try {
+			DetailsResponse dr = api.details(doc);
+			paid = dr.getDocV2().getOffer(0).getCheckoutFlowRequired();
+			if (vc == -1) {
 				vcode = dr.getDocV2().getDetails().getAppDetails().getVersionCode();
 			}
-			catch (IOException e) {
-				Router.fail(e.getMessage());
-			}
+		}
+		catch (IOException e) {
+			Router.fail(e.getMessage());
 		}
 
 		DownloadData data = null;
 
 		try {
-			data = api.purchaseAndDeliver(doc, vcode, ot);
+			if (paid) {
+				// For apps that must be purchased before download
+				data = api.delivery(doc, vcode, ot);
+			}
+			else {
+				// for apps that can be downloaded free of charge.
+				data = api.purchaseAndDeliver(doc, vcode, ot);
+			}
 		}
 		catch (Exception e) {
 			e.printStackTrace();
 			Router.fail(e.getMessage());
 		}
 
-		File apkFile = new AppInstallerNode(Layout.DEFAULT, doc, vcode).resolve();
+		File apkFile = new AppInstallerNode(Layout.DEFAULT, doc, vcode).resolve(downloadDir);
 		apkFile.getParentFile().mkdirs();
 		File mainFile = new AppExpansionMainNode(Layout.DEFAULT, doc,
-				data.getMainFileVersion()).resolve();
+				data.getMainFileVersion()).resolve(downloadDir);
 		File patchFile = new AppExpansionPatchNode(Layout.DEFAULT, doc,
-				data.getPatchFileVersion()).resolve();
+				data.getPatchFileVersion()).resolve(downloadDir);
 		List<File> splitFiles = new ArrayList<File>();
 
 		try {
@@ -284,16 +296,18 @@ class Play implements Variables {
 				System.out.println();
 				out.close();
 			}
-			
-			dbm.get(AndroidAppDao.class).saveOrUpdate(download);
-			dbm.get(PlayAppOwnerDao.class).own(download, getProfile());
 
-			AppIconNode ain = new AppIconNode(Layout.DEFAULT, doc, vcode);
-			try {
-				ain.extractFrom(apkFile);
-			}
-			catch (IOException e) {
-				// This is (probably) ok. Not all APKs contain icons.
+			if (downloadDir == "") {
+				dbm.get(AndroidAppDao.class).saveOrUpdate(download);
+				dbm.get(PlayAppOwnerDao.class).own(download, getProfile());
+
+				AppIconNode ain = new AppIconNode(Layout.DEFAULT, doc, vcode);
+				try {
+					ain.extractFrom(apkFile);
+				}
+				catch (IOException e) {
+					// This is (probably) ok. Not all APKs contain icons.
+				}
 			}
 		}
 		catch (Exception e) {
@@ -333,7 +347,7 @@ class Play implements Variables {
 					int lvc = map.get(pn).getVersionCode();
 					if (lvc < rvc) {
 						System.out.println("^\t" + pn + "\t" + lvc + "\t->\t" + rvc);
-						downloadApp(pn, rvc, 1);
+						downloadApp(pn, rvc, 1, "");
 					}
 					else {
 						System.out.println("=\t" + pn + "\t" + lvc + "\t->\t" + rvc);
