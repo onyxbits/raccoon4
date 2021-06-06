@@ -135,13 +135,15 @@ public final class DatabaseManager {
 					}
 				}
 				finally {
-					try {
-						c.setAutoCommit(true);
+					if (c != null) {
+						try {
+							c.setAutoCommit(true);
+						}
+						catch (SQLException e) {
+							throw new RuntimeException(e);
+						}
+						disconnect(c);
 					}
-					catch (SQLException e) {
-						throw new RuntimeException(e);
-					}
-					disconnect(c);
 				}
 			}
 			if (dbVer > codeVer) {
