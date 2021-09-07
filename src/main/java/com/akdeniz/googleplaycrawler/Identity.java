@@ -140,6 +140,7 @@ class Identity {
 		params.add(new BasicNameValuePair("EncryptedPasswd", epwd));
 		params.add(new BasicNameValuePair("service", SERVICE));
 		params.add(new BasicNameValuePair("add_account", "1"));
+		params.add(new BasicNameValuePair("sdk_version", "16"));
 		params.add(new BasicNameValuePair("accountType", "HOSTED_OR_GOOGLE"));
 		params.add(new BasicNameValuePair("hasPermission", "1"));
 		params.add(new BasicNameValuePair("source", "android"));

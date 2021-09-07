@@ -266,7 +266,7 @@ public class GooglePlayAPI {
 						{ "has_permission", "1" }, { "source", "android" },
 						{ "app", "com.google.android.gsf" }, { "device_country", "us" },
 						{ "device_country", "us" }, { "lang", "en" },
-						{ "sdk_version", "17" }, }, null);
+						{ "sdk_version", "16" }, }, null);
 
 		Map<String, String> c2dmAuth = Utils.parseResponse(new String(Utils
 				.readAll(c2dmResponseEntity.getContent())));

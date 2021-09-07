@@ -91,6 +91,7 @@ public class UploadLogic extends WizardBuilder {
 				api.login();
 				api.uploadDeviceConfig();
 				pp.setGsfId(api.getAndroidID());
+				Thread.sleep(6000);
 			}
 		}
 		catch (Exception e) {
