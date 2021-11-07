@@ -17,6 +17,7 @@ package de.onyxbits.weave.diag;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.math.BigInteger;
 import java.text.MessageFormat;
 
 /**
@@ -67,7 +68,11 @@ public class DefaultReportHandler implements ReportHandler {
 	}
 
 	private File getFile(Report report) {
-		String hashtext = report.getFingerprint().toString(16);
+		BigInteger fingerprint = report.getFingerprint();
+		String hashtext = null;
+		if (fingerprint != null) {
+			hashtext = fingerprint.toString(16);
+		}
 		if (hashtext == null) {
 			hashtext = "";
 		}
@@ -77,8 +82,7 @@ public class DefaultReportHandler implements ReportHandler {
 		String category = report.getCategory();
 		if (category == null) {
 			category = "report";
-		}
-		else {
+		} else {
 			category = category.toLowerCase();
 		}
 

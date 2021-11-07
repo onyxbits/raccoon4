@@ -23,7 +23,7 @@ import java.awt.image.BufferedImage;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 
-//import de.onyxbits.weave.core.LifecycleManager;
+import de.onyxbits.weave.LifecycleManager;
 
 /**
  * An alternative to using a logging framework.
@@ -104,13 +104,16 @@ public final class ReportManager {
 		ReportBackend.capture(report);
 
 		try {
-			MessageDigest md = MessageDigest.getInstance("MD5");
-			md.reset();
-			md.update(e.getMessage().getBytes());
-			byte[] digest = md.digest();
-			report.setFingerprint(new BigInteger(1, digest));
-		}
-		catch (Exception exp) {
+			String msg = e.getMessage();
+			if (msg == null) {
+				msg = e.toString();
+			}
+			if (msg != null) {
+				MessageDigest md = MessageDigest.getInstance("MD5");
+				byte[] digest = md.digest(msg.getBytes());
+				report.setFingerprint(new BigInteger(1, digest));
+			}
+		} catch (Exception exp) {
 		}
 		return report;
 
@@ -119,7 +122,7 @@ public final class ReportManager {
 	/**
 	 * Compile a system configuration report
 	 * 
-	 * @param o
+	 * @param cfg
 	 *          optional objects to include
 	 * @return the report (may be amended).
 	 */
