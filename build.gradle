@@ -1,7 +1,7 @@
 plugins {
     id "java"
     id "eclipse"
-    id "edu.sc.seis.launch4j" version "2.4.9"
+    id "edu.sc.seis.launch4j" version "2.5.1"
 }
 
 // Settings
@@ -30,7 +30,7 @@ createExe {
   outfile = 'Raccoon-' +version +'.exe'
   mainClassName = 'de.onyxbits.raccoon.Main'
   jvmOptions = [ "-Dswing.defaultlaf=com.sun.java.swing.plaf.windows.WindowsLookAndFeel", "-Djava.net.preferIPv4Stack=true" ]
-  jar = "lib/${project.tasks.fatJar.archiveName}"
+  jarTask = project.tasks.fatJar
   icon= '../../icon.ico'
   jreMinVersion ='1.7.0'
 }
@@ -59,6 +59,6 @@ dependencies {
 }
 
 wrapper {
-    gradleVersion = "6.8.2"
+    gradleVersion = "6.9.2"
     distributionType = Wrapper.DistributionType.ALL
 }
