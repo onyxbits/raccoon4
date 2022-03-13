@@ -12,8 +12,8 @@ Raccoon is an APK downloader for fetching apps from Google Play.
 Building
 --------
 
-Raccoon is build with gradle. It is recommended to use the "launch4j" task
-instead of the standard one. Version can be changed via 'gradle.properties' file.
+Raccoon is build with gradle.
+Project version can be changed via 'gradle.properties' file.
 
 #### How to build on Linux/MacOS/Windows (git bash/powershell terminal):
 ./gradlew createExe
