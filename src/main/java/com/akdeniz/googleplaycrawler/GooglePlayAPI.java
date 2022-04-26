@@ -141,7 +141,7 @@ public class GooglePlayAPI {
 		setClient(new DefaultHttpClient(getConnectionManager()));
 		// setUseragent("Android-Finsky/3.10.14 (api=3,versionCode=8016014,sdk=15,device=GT-I9300,hardware=aries,product=GT-I9300)");
 		// setUseragent("Android-Finsky/6.5.08.D-all (versionCode=80650800,sdk=24,device=dream2lte,hardware=dream2lte,product=dream2ltexx,build=NRD90M:user)");
-		setUseragent("Android-Finsky/13.1.32-all (versionCode=81313200,sdk=24,device=dream2lte,hardware=dream2lte,product=dream2ltexx,build=NRD90M:user)");
+		setUseragent("Android-Finsky/30.2.18-21 (api=3,versionCode=83021810,sdk=31,device=r9q,hardware=qcom,product=r9qxeea,platformVersionRelease=12,model=SM-G990B,buildId=SP1A.210812.016)");
 	}
 
 	/**
