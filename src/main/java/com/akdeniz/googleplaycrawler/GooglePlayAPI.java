@@ -452,12 +452,25 @@ public class GooglePlayAPI {
 				.getAppDeliveryData());
 
 	}
-
+	
 	public DownloadData delivery(String packageName, int versionCode,
 			int offerType) throws IOException {
-		ResponseWrapper responseWrapper = executeGETRequest(DELIVERY_URL,
+		return delivery(packageName, versionCode, offerType,null);
+	}
+
+	public DownloadData delivery(String packageName, int versionCode,
+			int offerType, String dtok) throws IOException {
+		ResponseWrapper responseWrapper = null; 
+		if (dtok == null) {
+		responseWrapper = executeGETRequest(DELIVERY_URL,
 				new String[][] { { "ot", String.valueOf(offerType) },
 						{ "doc", packageName }, { "vc", String.valueOf(versionCode) }, });
+		}
+		else {
+			responseWrapper = executeGETRequest(DELIVERY_URL,
+					new String[][] { { "ot", String.valueOf(offerType) },
+							{ "doc", packageName }, { "vc", String.valueOf(versionCode) },{"dtok",dtok} });
+		}
 
 		AndroidAppDeliveryData appDeliveryData = responseWrapper.getPayload()
 				.getDeliveryResponse().getAppDeliveryData();
@@ -473,7 +486,7 @@ public class GooglePlayAPI {
 			// This is for backwards compatibility.
 			return new DownloadData(this, ada);
 		}
-		return delivery(packageName, versionCode, offerType);
+		return delivery(packageName, versionCode, offerType,buyResponse.getEncodedDeliveryToken());
 	}
 
 	/**
