@@ -93,7 +93,7 @@ public class LoginLogic extends WizardBuilder {
 		}
 	}
 
-	protected static HttpClient createLoginClient() {
+	public static HttpClient createLoginClient() {
 		RegistryBuilder<ConnectionSocketFactory> rb = RegistryBuilder.create();
 		rb.register("https", new DroidConnectionSocketFactory());
 		// rb.register("http", new DroidConnectionSocketFactory());

@@ -49,6 +49,7 @@ import de.onyxbits.raccoon.repo.AppExpansionPatchNode;
 import de.onyxbits.raccoon.repo.AppIconNode;
 import de.onyxbits.raccoon.repo.AppInstallerNode;
 import de.onyxbits.raccoon.repo.Layout;
+import de.onyxbits.raccoon.setup.LoginLogic;
 import de.onyxbits.weave.Globals;
 
 /**
@@ -367,6 +368,7 @@ class Play implements Variables {
 	public static void auth() {
 		PlayProfile pp = getProfile();
 		GooglePlayAPI api = createConnection();
+		api.setClient(LoginLogic.createLoginClient());
 		try {
 			api.login();
 			pp.setToken(api.getToken());
