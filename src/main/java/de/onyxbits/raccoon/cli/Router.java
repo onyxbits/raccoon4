@@ -106,6 +106,10 @@ public class Router {
 		Option playUpdate = new Option(null, "gpa-update", false,
 				Messages.getString(DESC + "gpa-update"));
 		options.addOption(playUpdate);
+		
+		Option playNewGsfId = new Option(null, "gp-renew-gsfid", false,
+				"Register a new GSF ID");
+		options.addOption(playNewGsfId);
 
 		CommandLine commandLine = null;
 		String downloadDir = "";
@@ -200,6 +204,10 @@ public class Router {
 			catch (Exception e) {
 			}
 			Play.downloadApp(doc, vc, ot, downloadDir);
+		}
+		
+		if (commandLine.hasOption(playNewGsfId.getLongOpt())) {
+			Play.registerNewGsfId();
 		}
 	}
 }

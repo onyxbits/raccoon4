@@ -76,7 +76,8 @@ class Play implements Variables {
 
 	private static PlayProfile getProfile() {
 		DatabaseManager dbm = getDatabase();
-		String alias = System.getProperty(PLAYPROFILESYSPROP,dbm.get(VariableDao.class).getVar(PLAYPROFILE, null));
+		String alias = System.getProperty(PLAYPROFILESYSPROP,
+				dbm.get(VariableDao.class).getVar(PLAYPROFILE, null));
 		PlayProfile ret = dbm.get(PlayProfileDao.class).get(alias);
 		if (ret == null) {
 			Router.fail("play.profile");
@@ -203,10 +204,11 @@ class Play implements Variables {
 	 * @param downloadDir
 	 *          alternate download location
 	 */
-	public static void downloadApp(String doc, int vc, int ot, String downloadDir) {
+	public static void downloadApp(String doc, int vc, int ot,
+			String downloadDir) {
 		GooglePlayAPI api = createConnection();
-		DatabaseManager dbm = GlobalsProvider.getGlobals().get(
-				DatabaseManager.class);
+		DatabaseManager dbm = GlobalsProvider.getGlobals()
+				.get(DatabaseManager.class);
 		boolean paid = false;
 		int vcode = vc;
 		int len;
@@ -240,7 +242,8 @@ class Play implements Variables {
 			Router.fail(e.getMessage());
 		}
 
-		File apkFile = new AppInstallerNode(Layout.DEFAULT, doc, vcode).resolve(downloadDir);
+		File apkFile = new AppInstallerNode(Layout.DEFAULT, doc, vcode)
+				.resolve(downloadDir);
 		apkFile.getParentFile().mkdirs();
 		File mainFile = new AppExpansionMainNode(Layout.DEFAULT, doc,
 				data.getMainFileVersion()).resolve(downloadDir);
@@ -284,8 +287,9 @@ class Play implements Variables {
 				System.out.println();
 				out.close();
 			}
-			for (int i=0; i<data.getSplitCount(); i++) {
-				File splitFile = new File(apkFile.getParentFile(), data.getSplitId(i) + "-" + vcode + ".apk");
+			for (int i = 0; i < data.getSplitCount(); i++) {
+				File splitFile = new File(apkFile.getParentFile(),
+						data.getSplitId(i) + "-" + vcode + ".apk");
 				splitFiles.add(splitFile);
 				in = data.openSplitDelivery(i);
 				out = new FileOutputStream(splitFile);
@@ -379,4 +383,32 @@ class Play implements Variables {
 			Router.fail("");
 		}
 	}
+
+	public static void registerNewGsfId() {
+		PlayProfile pp = getProfile();
+
+		if (pp.getAgent() == null) {
+			// TODO: rewrite the GooglePlayAPI. The whole device config stuff is
+			// hardcoded and poorly exposed.
+			pp.setAgent(new GooglePlayAPI("", "").getUseragent());
+		}
+
+		GooglePlayAPI api = PlayManager.createConnection(pp);
+		api.setClient(LoginLogic.createLoginClient());
+		try {
+			String tmp = pp.getAlias() +": "+pp.getGsfId();
+			api.checkin(); // Generates the GSF ID
+			// api.login();
+			api.uploadDeviceConfig();
+			pp.setGsfId(api.getAndroidID());
+			getDatabase().get(PlayProfileDao.class).update(pp);
+			tmp = tmp + " -> "+ pp.getGsfId();
+			Thread.sleep(6000);
+			System.out.println(tmp);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
 }
