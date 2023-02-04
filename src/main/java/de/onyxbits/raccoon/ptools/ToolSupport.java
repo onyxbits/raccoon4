@@ -117,6 +117,9 @@ class ToolSupport {
 			while (entries.hasMoreElements()) {
 				ZipEntry entry = entries.nextElement();
 				File entryDestination = new File(binDir, entry.getName());
+     if (!entryDestination.toPath().normalize().startsWith(binDir.toPath().normalize())) {
+       throw new IOException("Bad zip entry");
+     }
 				if (entry.isDirectory())
 					entryDestination.mkdirs();
 				else {
