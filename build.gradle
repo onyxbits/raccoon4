@@ -1,13 +1,14 @@
 plugins {
     id "java"
     id "eclipse"
-    id "edu.sc.seis.launch4j" version "2.5.2"
-    id "com.github.johnrengelman.shadow" version "7.1.2"
+    id "edu.sc.seis.launch4j" version "3.0.5"
+    id "com.github.johnrengelman.shadow" version "8.1.1"
 }
 
-// Settings
-sourceCompatibility = 1.7
-targetCompatibility = 1.7
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_7
+    targetCompatibility = JavaVersion.VERSION_1_7
+}
 
 // In this section you declare where to find the dependencies of your project
 repositories {
@@ -23,11 +24,11 @@ shadowJar  {
 }
 
 launch4j {
-  outfile = 'Raccoon-' +version +'.exe'
+  outfile = 'Raccoon-' + project.version +'.exe'
   mainClassName = 'de.onyxbits.raccoon.Main'
   jvmOptions = [ "-Dswing.defaultlaf=com.sun.java.swing.plaf.windows.WindowsLookAndFeel", "-Djava.net.preferIPv4Stack=true" ]
   jarTask = project.tasks.shadowJar
-  icon= '../../icon.ico'
+  icon= "${rootDir}/icon.ico"
   jreMinVersion ='1.7.0'
 }
 
@@ -55,6 +56,6 @@ dependencies {
 }
 
 wrapper {
-    gradleVersion = "7.4.2"
+    gradleVersion = "8.5-rc-3"
     distributionType = Wrapper.DistributionType.ALL
 }
